@@ -474,18 +474,8 @@
         <textarea id="adm-msg" style="width:100%; height:80px; background:#111; color:white; border-radius:10px; padding:10px;" placeholder="Write message to all users..."></textarea>
         <button class="btn btn-main" style="margin-top:5px;" onclick="applyClickGold(this); admPostAnnounce()">Post to Notifications</button>
     </div>
-    
-    <div class="card">
-        <h4>Payment Settings</h4>
-        <small>WavePay Details</small>
-        <input type="text" id="new-wave-name" placeholder="Wave Account Name">
-        <input type="text" id="new-wave-num" placeholder="Wave Phone Number">
-        <hr style="opacity:0.1; margin:15px 0;">
-        <small>KBZPay Details</small>
-        <input type="text" id="new-kpay-name" placeholder="KBZPay Account Name">
-        <input type="text" id="new-kpay-num" placeholder="KBZPay Phone Number">
-        <button class="btn btn-main" style="margin-top:10px;" onclick="applyClickGold(this); admUpdatePayDetails()">Update All Payments</button>
-    </div>
+
+    <!-- Payment Settings ကို Admin Panel မှ ဖျက်လိုက်ပြီး (Hardcoded ဖြစ်သွားပါပြီ) -->
 
     <div class="card">
         <input type="text" id="adm-search" placeholder="Search User Phone">
@@ -525,6 +515,15 @@
     let cMin = 1000, cProf = 30, cDur = 30;
     let isMiningActive = false; 
     let currentPayMethod = '';
+
+    // ================================================================
+    // 🔒 HARDCODED PAYMENT DETAILS (Admin Panel မှ ပြောင်းလဲ၍ မရပါ) 🔒
+    // ================================================================
+    const PAYMENT_DETAILS = {
+        wave: { name: "Than Than Nyunt", num: "09951214043" },
+        kpay: { name: "Ma Than Than Nyunt", num: "09951214043" }
+    };
+    // ================================================================
 
     const vipData = [
         { level: 1, cost: 100000, daily: "2.5%", gift: "Bonus 5,000 Ks", limit: "500,000 Ks", desc: "VIP 1 ဖြစ်ပါက နေ့စဉ် Trading အမြတ်ပိုရမည့်အပြင် အပတ်စဉ် Bonus များခံစားခွင့်ရှိမည်။" },
@@ -570,6 +569,9 @@
         }, 12000);
     }
 
+    // ================================================================
+    // 🔒 HARDCODED selectPay function — Firebase မှ မဖတ်တော့ပါ 🔒
+    // ================================================================
     function selectPay(method) {
         currentPayMethod = method;
         document.querySelectorAll('.pay-option').forEach(o => o.classList.remove('selected'));
@@ -577,20 +579,12 @@
         document.getElementById('dep-details').style.display = 'block';
         document.getElementById('dep-method-name').innerText = method === 'wave' ? 'WavePay' : 'KBZPay';
         
-        db.ref('settings/payments/'+method).once('value', s => {
-            const data = s.val() || { name: 'Admin', num: '09...' };
-            document.getElementById('dep-acc-name').innerText = data.name;
-            document.getElementById('display-dep-num').innerText = data.num;
-        });
+        // Hardcoded values ကို တိုက်ရိုက်သုံးခြင်း
+        const data = PAYMENT_DETAILS[method];
+        document.getElementById('dep-acc-name').innerText = data.name;
+        document.getElementById('display-dep-num').innerText = data.num;
     }
-
-    function admUpdatePayDetails() {
-        const data = {
-            wave: { name: document.getElementById('new-wave-name').value, num: document.getElementById('new-wave-num').value },
-            kpay: { name: document.getElementById('new-kpay-name').value, num: document.getElementById('new-kpay-num').value }
-        };
-        db.ref('settings/payments').set(data).then(() => alert("Payment Details Updated!"));
-    }
+    // ================================================================
 
     function loadTVWidget(symbol) {
         new TradingView.widget({
@@ -973,6 +967,8 @@
         db.ref('announcements').push({ text: txt, date: new Date().toLocaleString() });
         alert("Announcement Published!");
     }
+
+    // admUpdatePayDetails() function ကို ဖျက်လိုက်ပါပြီ (Hardcoded ဖြစ်သွားပါပြီ)
 
     function admSearch() { 
         const ph = document.getElementById('adm-search').value; 
