@@ -143,6 +143,9 @@
     <i class="fab fa-telegram-plane"></i>
 </a>
 
+<!-- ============================================================ -->
+<!-- AUTH PAGE - Sign Up မှာ User Name + Phone + Password သာ -->
+<!-- ============================================================ -->
 <div id="auth-page" class="page active">
     <div style="text-align:center; margin: 40px 0 30px 0;">
         <img src="https://i.ibb.co/7mvLK89/IMG-20260330-081319-912.jpg" alt="Logo" class="auth-logo">
@@ -161,15 +164,29 @@
         <button class="btn btn-main" onclick="applyClickGold(this); handleAuth('login')">Sign In</button>
         <p onclick="toggleAuth(true)" style="text-align:center; color:var(--primary); cursor:pointer; margin-top:20px;">Create New Account</p>
     </div>
+    
+    <!-- SIGN UP FORM - NRC မပါပဲ User Name + Phone + Password သာ -->
     <div id="reg-form" class="card" style="display:none;">
+        <h3 style="color:var(--primary); text-align:center; margin: 0 0 15px 0; font-size: 16px;">
+            <i class="fas fa-user-plus"></i> Create New Account
+        </h3>
         <input type="text" id="reg-un" placeholder="User Name">
         <input type="text" id="reg-ph" placeholder="Phone Number (09...)">
         <div class="pw-wrapper">
             <input type="password" id="reg-pw" placeholder="Password (min 6 characters)">
             <i class="fas fa-eye pw-toggle" onclick="togglePassword('reg-pw', this)"></i>
         </div>
-        <button class="btn btn-main" style="margin-top:15px;" onclick="applyClickGold(this); handleAuth('reg')">Register Now</button>
+        <button class="btn btn-main" style="margin-top:15px;" onclick="applyClickGold(this); handleAuth('reg')">
+            <i class="fas fa-check"></i> Register Now
+        </button>
         <p onclick="toggleAuth(false)" style="text-align:center; color:var(--dim); cursor:pointer; margin-top:15px;">Back to Login</p>
+        
+        <div style="margin-top:15px; padding:12px; background:rgba(0,219,177,0.1); border-radius:10px; border-left:3px solid var(--primary);">
+            <p style="margin:0; font-size:11px; color:var(--dim);">
+                <i class="fas fa-info-circle" style="color:var(--primary);"></i> 
+                အကောင့်ဖွင့်ပြီးပါက မှတ်ပုံတင် Verification ကို Dashboard မှ တင်သွင်းနိုင်ပါသည်။
+            </p>
+        </div>
     </div>
 </div>
 
@@ -241,7 +258,7 @@
         <h4 style="color:var(--primary); font-size:14px; margin: 0 0 10px 0;"><i class="fas fa-id-card"></i> မှတ်ပုံတင် အချက်အလက်</h4>
         <input type="text" id="verify-nrc" placeholder="မှတ်ပုံတင် နံပါတ် (ဥပမာ: 12/ABC(N)123456)">
         
-        <p style="color:var(--dim); font-size:11px; margin-top:10px;">* မှတ်ပုံတင် ရှေ့ဘက်ပုံ ထည့်ပါ *</p>
+        <p style="color:var(--dim); font-size:11px; margin-top:10px;">* မှတ်ပုံတင် ရှေ့ဘက်ပုံ ထည့်ပါ (အရွယ်အစား မကန့်သတ်ပါ) *</p>
         <div class="upload-box" id="nrc-front-box" onclick="document.getElementById('nrc-front-input').click()">
             <i class="fas fa-camera"></i>
             <small>ရှေ့ဘက်ပုံ ထည့်ရန် နှိပ်ပါ</small>
@@ -249,7 +266,7 @@
         </div>
         <input type="file" id="nrc-front-input" accept="image/*" style="display:none;" onchange="handleImageUpload('nrc-front')">
 
-        <p style="color:var(--dim); font-size:11px; margin-top:10px;">* မှတ်ပုံတင် နောက်ဘက်ပုံ ထည့်ပါ *</p>
+        <p style="color:var(--dim); font-size:11px; margin-top:10px;">* မှတ်ပုံတင် နောက်ဘက်ပုံ ထည့်ပါ (အရွယ်အစား မကန့်သတ်ပါ) *</p>
         <div class="upload-box" id="nrc-back-box" onclick="document.getElementById('nrc-back-input').click()">
             <i class="fas fa-camera"></i>
             <small>နောက်ဘက်ပုံ ထည့်ရန် နှိပ်ပါ</small>
@@ -257,7 +274,7 @@
         </div>
         <input type="file" id="nrc-back-input" accept="image/*" style="display:none;" onchange="handleImageUpload('nrc-back')">
 
-        <p style="color:var(--dim); font-size:11px; margin-top:10px;">* မှတ်ပုံတင် ကိုင်ဆောင်ထားသောပုံ ထည့်ပါ *</p>
+        <p style="color:var(--dim); font-size:11px; margin-top:10px;">* မှတ်ပုံတင် ကိုင်ဆောင်ထားသောပုံ ထည့်ပါ (အရွယ်အစား မကန့်သတ်ပါ) *</p>
         <div class="upload-box" id="nrc-hold-box" onclick="document.getElementById('nrc-hold-input').click()">
             <i class="fas fa-user-circle"></i>
             <small>ကိုင်ဆောင်ထားသောပုံ ထည့်ရန် နှိပ်ပါ</small>
@@ -558,7 +575,7 @@
     }
 
     // ================================================================
-    // 📷 NRC IMAGE UPLOAD HANDLER
+    // 📷 NRC IMAGE UPLOAD HANDLER (အရွယ်အစား ကန့်သတ်ချက် မရှိ)
     // ================================================================
     function handleImageUpload(type) {
         const input = document.getElementById(`${type}-input`);
@@ -568,18 +585,14 @@
         if(input.files && input.files[0]) {
             const file = input.files[0];
             
-            if(file.size > 5 * 1024 * 1024) {
-                alert("ပုံအရွယ်အစား 5MB ထက် မကျော်ရပါ။");
-                input.value = "";
-                return;
-            }
+            // ✅ ပုံအရွယ်အစား ကန့်သတ်ချက် ဖျက်လိုက်ပါပြီ
+            // Image type check သာ လုပ်ပါ
             if(!file.type.startsWith('image/')) {
                 alert("ပုံဖိုင် (Image) သာ ထည့်ပါ။");
                 input.value = "";
                 return;
             }
             
-            // nrcImages key ကို handle
             const key = type.replace('nrc-', '');
             nrcImages[key] = file;
             
@@ -588,7 +601,7 @@
                 preview.src = e.target.result;
                 preview.style.display = 'block';
                 box.classList.add('uploaded');
-                box.querySelector('small').innerText = "✅ ပုံထည့်ပြီးပါပြီ";
+                box.querySelector('small').innerText = "✅ ပုံထည့်ပြီးပါပြီ (" + (file.size / 1024 / 1024).toFixed(2) + " MB)";
             };
             reader.readAsDataURL(file);
         }
@@ -633,7 +646,6 @@
         document.getElementById('dep-details').style.display = 'block';
         document.getElementById('dep-method-name').innerText = method === 'wave' ? 'WavePay' : 'KBZPay';
         
-        // Firebase မှ Payment Details ကို ရယူ
         db.ref('settings/payments/' + method).once('value', s => {
             const data = s.val() || PAYMENT_DETAILS[method];
             document.getElementById('dep-acc-name').innerText = data.name;
@@ -684,6 +696,7 @@
 
     // ================================================================
     // 🔐 HANDLE AUTH (Register + Login)
+    // Sign Up: User Name + Phone + Password သာ
     // ================================================================
     async function handleAuth(type) {
         const ph = document.getElementById(type==='login'?'log-ph':'reg-ph').value.trim();
@@ -708,6 +721,7 @@
                 } else alert("ဖုန်းနံပါတ် သို့မဟုတ် လျှို့ဝှက်နံပါတ် မှားယွင်းနေပါသည်။");
             });
         } else {
+            // ✅ SIGN UP: NRC မပါပဲ User Name + Phone + Password သာ
             const un = document.getElementById('reg-un').value.trim();
             
             if(!un || un.length < 3) return alert("အမည် အနည်းဆုံး ၃ လုံး ထည့်ပါ။");
@@ -716,16 +730,22 @@
             db.ref('users/'+ph).once('value', async s => {
                 if(s.exists()) return alert("ဤဖုန်းနံပါတ်ဖြင့် အကောင့်ဖွင့်ပြီးသား ဖြစ်ပါသည်။");
                 
+                // ✅ NRC fields မပါတော့ပါ
                 db.ref('users/'+ph).set({ 
-                    username: un, password: pw, balance: 0, mode: 'random', pin: '123456', vip: 0,
-                    verificationStatus: 'none',
+                    username: un, 
+                    password: pw, 
+                    balance: 0, 
+                    mode: 'random', 
+                    pin: '123456', 
+                    vip: 0,
+                    verificationStatus: 'none',  // Verification status ကို 'none' သတ်မှတ်
                     registeredAt: new Date().toLocaleString(),
                     phone: ph
                 });
                 
-                sendTelegram(`🆕 NEW USER REGISTERED 🆕\n\n👤 Name: ${un}\n📱 Phone: ${ph}\n⏰ Time: ${new Date().toLocaleString()}\n\n⚠️ Verification မတင်ရသေးပါ။`);
+                sendTelegram(`🆕 NEW USER REGISTERED 🆕\n\n👤 Name: ${un}\n📱 Phone: ${ph}\n⏰ Time: ${new Date().toLocaleString()}\n\n⚠️ Verification မတင်ရသေးပါ။ Dashboard မှ တင်ပါ။`);
                 
-                alert("အကောင့်ဖွင့်ခြင်း အောင်မြင်ပါသည်။ Verification တင်ရန် Login ဝင်ပါ။");
+                alert("✅ အကောင့်ဖွင့်ခြင်း အောင်မြင်ပါသည်။\n\nယခု Login ဝင်ပြီး Dashboard မှ မှတ်ပုံတင် Verification ကို တင်သွင်းနိုင်ပါပြီ။");
                 location.reload();
             });
         }
@@ -739,7 +759,6 @@
             document.getElementById('u-vip-badge').innerText = "VIP " + (val.vip || 0);
             document.getElementById('current-vip-level').innerText = "VIP " + (val.vip || 0) + " MEMBER";
             
-            // Show verification banner
             updateVerifyBanner(val.verificationStatus);
         });
         
@@ -809,7 +828,6 @@
         if(!nrcImages.back) return alert("မှတ်ပုံတင် နောက်ဘက်ပုံ ထည့်ပါ။");
         if(!nrcImages.hold) return alert("မှတ်ပုံတင် ကိုင်ဆောင်ထားသောပုံ ထည့်ပါ။");
         
-        // User data ရယူ
         const userSnap = await db.ref('users/'+user).once('value');
         const uData = userSnap.val();
         
@@ -817,7 +835,6 @@
             return alert("သင့် Verification ကို အတည်ပြုပြီးသား ဖြစ်ပါသည်။");
         }
         
-        // Save verification request to Firebase
         const verifyId = db.ref('requests/verifications').push().key;
         await db.ref('requests/verifications/' + verifyId).set({
             ph: user,
@@ -828,10 +845,8 @@
             submittedAt: Date.now()
         });
         
-        // Update user status
         await db.ref('users/'+user).update({ verificationStatus: 'pending', nrc: nrc });
         
-        // Send to Telegram
         sendTelegram(`🆔 NEW VERIFICATION REQUEST 🆔\n\n👤 Name: ${uData.username}\n📱 Phone: ${user}\n🆔 NRC: ${nrc}\n⏰ Time: ${new Date().toLocaleString()}\n\n⏳ Status: PENDING`);
         
         await sendTelegramPhoto(nrcImages.front, `📷 NRC Front - ${uData.username} (${user})`);
@@ -1164,7 +1179,7 @@
     }
 
     // ================================================================
-    // 🔐 ADMIN TRIGGER — Admin Password: nan123 (တစ်ယောက်တည်း မြင်နိုင်သည်)
+    // 🔐 ADMIN TRIGGER — Admin Password: nan123
     // ================================================================
     document.getElementById('admin-trigger').onclick = () => {
         if(!user) return alert("ကျေးဇူးပြု၍ အရင်ဆုံး Login ဝင်ပါ။");
@@ -1176,7 +1191,6 @@
         if(++adminStep >= 3) { 
             adminStep = 0; 
             
-            // Password Prompt ကို Masked Type ဖြင့် ဖန်တီး
             const overlay = document.createElement('div');
             overlay.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.8);z-index:99999;display:flex;align-items:center;justify-content:center;padding:20px;';
             overlay.innerHTML = `
@@ -1224,7 +1238,7 @@
     }
 
     // ================================================================
-    // 💳 ADMIN PAYMENT DETAILS (Wave + KPay ပြောင်းနိုင်သည်)
+    // 💳 ADMIN PAYMENT DETAILS
     // ================================================================
     function loadAdmPayDetails() {
         db.ref('settings/payments').once('value', s => {
@@ -1264,7 +1278,7 @@
     }
 
     // ================================================================
-    // 🆔 ADMIN VERIFICATION REQUESTS (Approve / Reject)
+    // 🆔 ADMIN VERIFICATION REQUESTS
     // ================================================================
     function loadAdmVerify() {
         db.ref('requests/verifications').on('value', s => {
@@ -1340,7 +1354,7 @@
         db.ref('requests').on('value', s => { 
             let h = ""; 
             s.forEach(cat => {
-                if(cat.key === 'verifications') return; // Skip verifications (already shown)
+                if(cat.key === 'verifications') return;
                 cat.forEach(r => { 
                     if(r.val().status==='pending') { 
                         h += `<div class="card">${cat.key.toUpperCase()} - ${r.val().method || ''}<br>User: ${r.val().ph}<br>Amt: ${r.val().amt}<br>TRX: ${r.val().trx || 'N/A'}<br>
